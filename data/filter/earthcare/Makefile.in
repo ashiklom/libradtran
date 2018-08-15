@@ -1,0 +1,54 @@
+#
+# Makefile for libRadtran's data/filter/earthcare directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = earthcare
+
+DATAFILES = earthcare_bbr_shortwave earthcare_bbr_total earthcare_msi_b1 \
+            earthcare_msi_b2 earthcare_msi_b3 earthcare_msi_b4 \
+            earthcare_msi_b7 earthcare_msi_b8 earthcare_msi_b9
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

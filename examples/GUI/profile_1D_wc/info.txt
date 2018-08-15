@@ -1,0 +1,5 @@
+Title: 1D cloud effect
+This example shows the effect of a 1D cloud on direct, global diffuse
+downward and upwelling irradiance. In addition the zenith and nadir
+radiances are calculated. The calculation is performed for a single
+wavelength with output at several altitudes.

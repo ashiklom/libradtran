@@ -1,0 +1,58 @@
+This directory contains the version 0.99-alpha release of libRadtran.
+
+LibRadtran is under rapid development and new version releases will
+be coming soon.
+
+As of this release, libRadtran is known to run on the following
+configurations: 
+
+                dec-alpha               using f2c and gcc
+                hpux                    using f2c and gcc
+		linux                   using g77/f2c and gcc
+		Windows 98/NT           using g77 and gcc
+
+It should run on any system using g77/f2c and gcc. 
+
+See the file INSTALL to find out how to configure, build, install, and
+port libRadtran.  
+
+LibRadtran is completely documented by the texinfo manual
+found in the `doc/' subdirectory.  The manual is under writing and
+contains some known errors and omissions; we regret that we do not
+have the resources to work on the manual as much as we would like.   
+
+Sample programs including the much used uvspec program are found in
+the `tools' directory.
+
+Send bug reports and other comments to bugs@libradtran.org.
+
+LibRadtran is free software  See the file COPYING for copying
+conditions. And see below as well.
+
+Contributors to libRadtran
+==========================
+  
+   LibRadtran was written originally by Bernhard Mayer and Arve
+Kylling. Some parts of the Radtran libraries was developed by other people.
+
+   * The disort.f fortran routine and related routines were written by
+     K. Stamnes, S. C. Tsay, and W. Wiscombe. These routines are in
+     the public domain.
+
+   * The zspl3.f and spl3.f fortran routines comes from
+     http://www.netlib.no/cheney-kincaid and is under the following
+     copyright 
+
+        /*
+         * The authors of this software are <authors>.
+         * Copyright (c) <year> by <org>.
+         * Permission to use, copy, modify, and distribute this software for any
+         * purpose without fee is hereby granted, provided that this entire notice
+         * is included in all copies of any software which is or includes a copy
+         * or modification of this software and in all copies of the supporting
+         * documentation for such software.
+         * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
+         * WARRANTY.  IN PARTICULAR, NEITHER THE AUTHORS NOR <org> MAKE ANY
+         * REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
+         * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
+         */

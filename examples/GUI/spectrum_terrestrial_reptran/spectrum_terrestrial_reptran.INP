@@ -1,0 +1,12 @@
+sza 32.0
+atmosphere_file ../data/atmmod/afglss.dat
+pressure 1010.0
+output_process per_cm-1
+rte_solver disort
+mol_modify O3 300.0 DU
+output_user lambda wavenumber eglo
+source thermal
+mol_abs_param reptran fine
+wavelength 2500 40000
+quiet 
+albedo 0.3

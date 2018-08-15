@@ -1,0 +1,690 @@
+\chapter{Radiative transfer theory}
+\label{chap:rttheory}
+
+\section{Overview}
+
+Radiative transfer in planetary atmospheres is a complex problem. The
+best tool for the solution may vary depending on the problem.
+The {\sl libRadtran} package contains numerous tools that handle
+various aspects of atmospheric radiative transfer. The main tools
+will be presented later in chapter~\ref{chap:rt}. To give the
+user a background for the problem to be solved, the theory behind will
+briefly be presented below. The radiative transfer
+equation is presented first, and solution methods and approximations are 
+outlined afterwards. 
+
+The number of equations in this chapter may be intimidating
+even for the brave-hearted. If you just want to get things done and
+wonder if the {\sl libRadtran} package includes tools that may be used
+for your problem, jump directly to chapter~\ref{chap:rt}. Another good
+starting point is to try the examples available through the Graphical
+User Interface to the \code{uvspec} tool.
+
+
+\section{The radiative transfer equation}
+Quite generally, the distribution of photons in a dilute gas may be
+described by the Boltzmann equation\footnote{For a derivation of the
+  Boltzmann equation see a textbook on statistical mechanics, for
+  example \citet{Reif1965}. Also note that the Boltzmann equation is
+  not a fundamental equation. For a derivation of the radiative
+  transfer equation from the Maxwell equations see
+  \citet{Mishchenko2002}.} 
+\begin{eqnarray}
+  {\frac{\partial f}{\partial t}} + \nabla_{{\bf r}}({\bf v}\; f ) +
+  \nabla_{{\bf p}}({\bf F} \;f ) = Q({\bf r},\hat{n}, \nu, t).
+  \label{eq:Boltzmann}
+\end{eqnarray}
+Here, the photon distribution function $f({\bf r},\hat{n}, \nu,  t)$ 
+varies with location (${\bf r}$), direction of propagation
+($\hat{n}$), frequency ($\nu$) and time ($t$). It is defined such that
+\begin{eqnarray}
+f({\bf r},\hat{n}, \nu, t)\;c\; \hat{n}\cdot d{\bf S}\;d\Omega\; d\nu\; dt
+  \label{eq:photon_distribution}
+\end{eqnarray}
+represents the number of photons with frequency between $\nu$ and $\nu+d\nu$
+crossing a surface element $d{\bf S}$ in direction $\hat{n}$ into
+solid angle $d\Omega$ in time $dt$ (Stamnes 1986). 
+The units of $f({\bf r},\hat{n}, \nu, t)$ are $cm^{-3}\; sr^{-1}\; Hz^{-1}$
+and $c$ is the speed of light.
+Furthermore, $\nabla_{{\bf r}}$ and $\nabla_{{\bf p}}$ are the divergence
+operators in configuration and momentum space, respectively. The 
+photons may be subject to an external force ${\bf F}({\bf r},\hat{n}, \nu, t)$
+and there may be sources and sinks of photons due to collisions and/or
+`true' production and loss, which are represented by 
+$Q({\bf r},\hat{n}, \nu, t)$. 
+
+In the absence of relativistic effects ${\bf F}=0$, and the photons propagate 
+in straight lines with velocity ${\bf v}=c\;\hat{n}$ between
+collisions. Using the relation  
+\begin{eqnarray}
+\nabla_{{\bf r}}({\bf v}\; f ) = f\;\nabla_{{\bf r}}{\bf v} +
+{\bf v}\cdot \nabla f  = {\bf v}\cdot \nabla f,
+\end{eqnarray}
+where {\bf r} and {\bf v} are independent variables,
+Eq.~\ref{eq:Boltzmann} may be written as  
+\begin{eqnarray}
+  {\partial f \over \partial t} + c\;( \hat{n}\cdot \nabla)\; f
+  = Q({\bf r},\hat{n}, \nu, t)
+\label{eq:Boltzmann_simpler}
+\end{eqnarray}
+where the ${\bf r}$ subscript on the gradient operator $\nabla$  has
+been omitted. 
+
+The differential energy associated with the photon distribution is
+\begin{eqnarray}
+dE = c\; h\nu\; f\; \hat{n}\cdot d{\bf S} \;d\Omega\; d\nu \; dt.
+  \label{eq:diff_energy}
+\end{eqnarray}
+The specific intensity of photons
+$I({\bf r},\hat{n}, \nu, t)$ is defined such that
+($\hat{n}\cdot d{\bf S} = \cos \theta \;dS$)
+\begin{eqnarray}
+dE = I({\bf r},\hat{n}, \nu, t)\; dS \;\cos\theta\; d\Omega\; d\nu \; dt,
+  \label{eq2.5}
+\end{eqnarray}
+which  gives
+\begin{eqnarray}
+I({\bf r},\hat{n}, \nu, t) = c\; h\nu \;f({\bf r},\hat{n}, \nu, t).
+  \label{eq2.6}
+\end{eqnarray}
+In a steady state situation Eq.~\ref{eq:Boltzmann_simpler} may then be
+written as
+\begin{eqnarray}
+  ( \hat{n}\cdot \nabla)\;I({\bf r},\hat{n}, \nu)  
+     = h\nu \;Q({\bf r},\hat{n}, \nu). 
+  \label{eq:Boltzmann_rte}
+\end{eqnarray}
+Eq.~\ref{eq:Boltzmann_rte} may be interpreted as the radiative
+transfer equation in a general geometry. However, as long as the
+source term $Q({\bf r},\hat{n}, \nu)$ is not specified it is of little
+use. First, however, the two most common geometries for radiative
+transfer in planetary atmospheres will be described.
+
+\subsection{The streaming term}
+The streaming term $\hat{n}\cdot \nabla$ defines the geometry. In
+planetary atmospheres the cartesian and spherical geometries are
+most common. In cartesian geometry the plane-parallel approximation is
+often used while in spherical geometry the pseudo-spherical and
+spherical shell approximations are popular.
+\subsubsection{Cartesian geometry - plane-parallel atmosphere}
+In a Cartesian coordinate system the streaming term may be written
+\citep{Rottmann1991,Kuo1996}
+\begin{eqnarray}
+   \hat{n}\cdot \nabla &=& n_x \frac{\partial}{\partial x} + n_y
+   \frac{\partial}{\partial y} + n_z \frac{\partial}{\partial
+     z}\nonumber \\ &=&
+   \cos\phi\sqrt{1-\mu^2}\frac{\partial}{\partial x} +
+   \sin\phi\sqrt{1-\mu^2}\frac{\partial}{\partial y} +
+   \mu \frac{\partial}{\partial z},
+  \label{eq:CartesianStreamingTerm}
+\end{eqnarray}
+where $(n_x, n_y, n_z)$ are the components of the unit vector,
+$\mu=\cos\theta$ and $\phi$ is the azimuth angle.
+
+In a plane-parallel geometry (Flat Earth approximation) the atmosphere
+is divided into parallel layers of infinite extensions in the $x$- and
+$y$-directions. This implies that there are no variation in the $x$- and
+$y$-directions. Hence, for this approximation the streaming term becomes
+\begin{eqnarray}
+   \hat{n}\cdot \nabla =  \mu \frac{\partial}{\partial z}.
+  \label{eq:PlaneParallelStreamingTerm}
+\end{eqnarray}
+This approximation is used by numerous radiative transfer solvers,
+including the much used DISORT solver \citep{Stamnes1988c}.
+
+\subsubsection{Spherical geometry - pseudo-spherical atmosphere}
+In spherical geometry the streaming term becomes\footnote{A derivation
+is provided in Appendix~O of \citet{Thomas1999}. The appendix is
+available from http://odin.mat.stevens-tech.edu/rttext/.} 
+\begin{eqnarray}
+   \hat{n}\cdot{\bf\nabla} &=& 
+\mu\frac{\partial}{\partial r} + 
+\frac{1-\mu^{2}}{r}\frac{\partial}{\partial \mu}  \nonumber \\
+&&\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!\!
++ \frac{\sqrt{1-\mu^{2}}\sqrt{1-{\mu_{0}}^{2}}}{r}\left[
+\cos(\phi-\phi_{0})\frac{\partial}{\partial \mu_{0}} +
+\frac{\mu_{0}}{1-\mu_{0}^{2}}\sin(\phi-\phi_{0})
+\frac{\partial}{\partial (\phi-\phi_{0})} 
+\right].
+  \label{eq:SphericalStreamingTerm}
+\end{eqnarray}
+
+In a spherically symmetric (=spherical shell) atmosphere the streaming term reduces to
+\begin{eqnarray}
+   \hat{n}\cdot{\bf\nabla} &=& 
+\mu\frac{\partial}{\partial r} + 
+\frac{1-\mu^{2}}{r}\frac{\partial}{\partial \mu}.
+  \label{eq:SphericalSymmetricStreamingTerm}
+\end{eqnarray}
+\citet{Dahlback1991} has shown that for mean intensities it is
+sufficient to include only the first term in
+Eq.~\ref{eq:SphericalSymmetricStreamingTerm} for solar zenith angles
+up to 90$^{\circ}$. Thus, 
+\begin{eqnarray}
+   \hat{n}\cdot{\bf\nabla} &=& 
+\mu\frac{\partial}{\partial r}.
+  \label{eq:PseudoSphericalSymmetricStreamingTerm}
+\end{eqnarray}
+For this to hold the direct beam must be calculated in spherical
+geometry. This is the so-called pseudo-spherical approximation. It
+may work well for irradiances, mean intensities and nadir and zenith
+radiances. For irradiances in off-zenith and off-nadir directions it
+must be shown the angle derivatives are indeed negligible. This is
+rarely done in practice.
+
+\subsection{The source term}
+The source term on the right hand side of Eq.~\ref{eq:Boltzmann_rte}
+includes all losses and gains of radiation in the direction and
+frequency of interest. For photons in a planetary atmosphere the
+source term may be written as\footnote{For a derivation of the
+  individual terms see e.g. \citet{chand60}.}
+\begin{eqnarray}
+h\nu\;Q( r,\hat{n}, \nu) &=& h\nu\;Q(r, \theta, \phi, \nu)
+= -\beta^{ext}(r, \nu)\;
+I(r,\theta, \phi, \nu)
+\nonumber\\ &&
++\frac{1}{4\pi}\int_{0}^{\infty}\beta^{sca}(r,\nu,\nu')\int_{0}^{2\pi}d\phi '\int_{0}^{\pi}d\theta '
+p(r,\theta, \phi; \theta', \phi') 
+I( r,\theta ', \phi ', \nu') d\nu'
+\nonumber\\ &&
++\beta^{abs}(r, \nu)\;B[T(r)].
+  \label{eq:GeneralSource}
+\end{eqnarray}
+The first term represents loss of radiation due to absorption and
+scattering (=extinction)
+out of the photon beam. The second term (multiple scattering term) describes the
+number of photons scattered into the beam from all other directions
+and frequencies, finally, the third term gives the amount of thermal
+radiation emitted in the frequency range of interest. 
+
+The lower part of the Earth's atmosphere, may to a good approximation,
+be assumed to be in local thermodynamic equilibrium
+\footnote{
+The hypothesis of local thermodynamic equilibrium (LTE) makes the
+assumption that all thermodynamic properties of the medium are the same as
+their thermodynamic equilibrium (T.E.) values at the local $T$ and density.
+Only the radiation field is allowed to depart from its T.E. value of
+$B[T(r)]$ and is obtained from a solution of the transfer equation. Such
+an approach is manifestly {\it internally inconsistent}. $\ldots$ 
+`However, if the medium is subject  only to {\it small} gradients over the
+mean free path a photon can travel before it is destroyed and 
+thermalized by a collisional process, then the LTE approach is valid.'
+(adapted from \citet[p. 26]{Mihalas1978})}.
+Thus, the
+emitted radiation is proportional to the Planck function, $B[T(r)]$,
+integrated over the frequency or wavelength region of interest.
+Furthermore, by Kirchhoff's law the emissivity coefficient $\beta^{emi}$
+is equal to the absorption coefficient $\beta^{abs}$.
+
+The absorption, scattering and extinction coefficients are defined as
+\citep{Stamnes1986b}
+\begin{eqnarray}
+\beta^{abs}(r, \nu)=\sum_{i}\beta^{abs}_{i}(r, \nu), &&
+\beta^{abs}_{i}(r, \nu)=n_{i}(r) \sigma_{i}^{abs}(\nu)
+\label{eq:abs}
+\\
+\beta^{sca}(r, \nu)=\sum_{i}\beta^{sca}_{i}(r, \nu), &&
+\beta^{sca}_{i}(r, \nu)=n_{i}(r) \sigma_{i}^{sca}(\nu)
+\label{eq:sca}
+\end{eqnarray}
+\begin{eqnarray}
+\beta^{ext}(r, \nu)=\beta^{abs}(r, \nu)+\beta^{sca}(r, \nu)
+\nonumber
+\end{eqnarray}
+where $n_{i}(r)$ is the density of the atmospheric molecule species $i$ and 
+$\sigma_{i}^{abs}(\nu)$ and $\sigma_{i}^{sca}(\nu)$  are the
+corresponding absorption and scattering cross sections. The phase function
+is defined as
+\begin{eqnarray}
+p(r, \theta, \phi; \theta ', \phi ', \nu)=
+\frac{\sum_{i}\beta_{i}^{sca}(r, \nu)
+p_{i}(\theta, \phi; \theta ', \phi ', \nu)}
+{\sum_{i}\beta_{i}^{sca}(r, \nu)}
+\nonumber
+\end{eqnarray}
+where the phase function for each species 
+\begin{eqnarray}
+p_{i}(\theta, \phi; \theta ', \phi ', \nu)=
+p_{i}(\cos\Theta, \nu)=
+\frac{\sigma_{i}^{sca}(\nu, \cos\Theta)}
+{\int_{4\pi}d\Omega\;\sigma_{i}^{sca}(\nu, \cos\Theta)}
+\nonumber
+\end{eqnarray}
+and the scattering angle $\Theta$ is related to the local polar and 
+azimuth angles through
+\begin{eqnarray}
+\cos\Theta = \cos\theta\;\cos\theta ' + \sin\theta\;\sin\theta '\;
+\cos(\phi-\phi ').
+\nonumber
+\end{eqnarray}
+The temperature profile, the densities and absorption and scattering 
+cross sections are all needed to solve the radiative transfer equation.
+Temperatures and densities may readily be obtained from measurements
+or atmospheric models. Cross sections are taken from
+measurements, from theoretical models or a combination of both.
+
+\subsection{The radiative transfer equation in 1D}
+In plane-parallel geometry the monochromatic\footnote{Frequency
+  redistribution is required if Raman scattering is included in the
+  calculation. For many applications Raman scattering is negligible
+  and the photons are assumed not to change frequency. They are
+  monochromatic. Thus, all frequency dependence have been suppressed
+  in Eq.~\ref{eq:RTE_1D}.}
+radiative transfer
+equation~\ref{eq:Boltzmann_rte} is written by combining
+Eq.~\ref{eq:PlaneParallelStreamingTerm} and
+Eq.~\ref{eq:GeneralSource}
+\begin{eqnarray}
+ - \mu {dI(z,\mu,\phi) \over \beta^{ext}dz}&=& I(z,\mu,\phi) \nonumber\\
+ && - {\omega(z) \over 4\pi } \int^{2\pi}_{0}d\phi' \int^{1}_{-1}d\mu'
+   p(z,\mu,\phi;\mu',\phi')I(z,\mu',\phi') \nonumber\\
+& &-(1-\omega(z))B[T(z)]
+  \label{eq:RTE_1D}
+\end{eqnarray}
+where the single scattering albedo 
+\begin{eqnarray}
+\omega(z)=\omega(z,\nu)=
+\frac{\beta_{i}^{sca}(z, \nu)}{\beta_{i}^{ext}(z, \nu)}=
+\frac{\beta_{i}^{sca}(z, \nu)}{\beta_{i}^{abs}(z, \nu)+\beta_{i}^{sca}(z, \nu)}.
+\nonumber
+\end{eqnarray}
+Formally the pseudo-spherical radiative transfer equation is similar
+to Eq.~\ref{eq:RTE_1D}, but with $z$ replaced by $r$.
+
+
+
+\subsection{Polarization - scalar versus vector}
+The intensity or radiance $I$, solved for in the above equations have
+a magnitude, a direction and a wavelength. In addition to this light
+also possesses a property called polarization. When assuming randomly
+oriented particles the radiative transfer equation formally does not
+change when including polarization. However, the scalar radiance $I$
+is replaced with the vector quantity ${\bf I}$
+\begin{eqnarray}
+{\bf I} = (I, Q, U, V),
+\end{eqnarray}
+where $I$, $Q$, $U$ and $V$ are the so-called Stokes parameters (see
+e.g. \citet{bohren1998}). Furthermore, the phase function $p(r,\theta,
+\phi; \theta', \phi')$ is replaced by the $4\times 4$ phase matrix ${\bf
+  P}(r,\theta, \phi; \theta', \phi')$, and if thermal radiation is under
+consideration the Stokes emission vector must also be accounted for.
+
+The degree of polarization $p$ is defined as
+\begin{equation}
+  \label{eq:polarization:pol_degree}
+  p = \frac{\sqrt{Q^2 + U^2 + V^2}}{I}.
+\end{equation}
+For completely polarized radiation, $Q^2 + U^2 + V^2 = I^2$, thus $p =
+1$, and for unpolarized radiation, $Q = U = V = 0$, thus $p = 0$.
+
+In addition to the degree of polarization, $p$, the degree of linear
+polarization is defined as
+\begin{equation}
+  \label{eq:polarization:p_lin}
+ p_{lin} = \frac{\sqrt{Q^2 + U^2}}{I},
+\end{equation}
+and the the degree of circular polarization is defined as
+\begin{equation}
+  \label{eq:polarization:p_circ}
+ p_{circ} = \frac{V}{I}. 
+\end{equation}
+Polarization is often ignored in radiative transfer calculations both
+due to the complexity involved in the solution of the RTE including
+polarization and the higher demand on computer resources by these
+solution methods. Also, for many applications polarization may be
+ignored. If you are concerned about your specific application,
+\code{uvspec} makes it easy to change solvers and thus readily allows 
+comparisons to be made between scalar and vector calculations.
+
+
+\section{General solution considerations}
+A multitude of methods exist to solve the radiative transfer
+equation~\ref{eq:Boltzmann_rte}. Most methods have some commonalities
+and they are briefly described below.
+
+\subsection{Direct beam/diffuse radiation splitting}
+The integro-differential radiative transfer
+equation~\ref{eq:Boltzmann_rte} gives the radiance field when solved
+with  appropriate boundary conditions, that is, the 
+radiation incident at the bottom and the top of the atmosphere. At the 
+bottom of the atmosphere the Earth partly reflects radiation and also
+emits radiation as a quasi-black-body. At the top of the atmosphere
+($z=z_{{\text{toa}}}$) a parallel beam of  sunlight with magnitude
+$I^{0}$ in the direction $\mu_{0}$ may be present
+\begin{eqnarray}
+I(z_{{\text toa}},\mu)= I^{0} \delta(\mu-\mu_{0}),
+  \label{eq:Boundary_toa}
+\end{eqnarray}
+where $\delta(\mu-\mu_{0})$ is the Dirac delta-function. It is akward
+to use a delta function for a boundary condition. However, a
+homogeneous differential equation with inhomogeneous boundary conditions
+may always be turned into an inhomogeneous differential equation with
+homogeneous boundary conditions. Since the  integro-differential
+equation~\ref{eq:Boltzmann_rte} is already inhomogeneous, the addition
+of another inhomogeneous term does not necessarily complicate the problem.
+Hence  the intensity field is written as the sum of the direct
+($\text{dir}$) and the scattered ($\text{sca}$)(or diffuse) radiation
+\begin{eqnarray}
+I(z,\mu, \phi)=I^{\text{dir}}(z,\mu_0, \phi_0)+I^{\text{sca}}(z,\mu, \phi),
+\label{eq:DirectDiffuse}
+\end{eqnarray}
+where $\mu_0$ and $\phi_0$ are the solar zenith and azimuth angles
+respectively. Inserting Eq.~\ref{eq:DirectDiffuse} into
+Eq.~\ref{eq:Boltzmann_rte} it is seen that the direct beam satisfies
+\begin{eqnarray}
+-\mu\frac{dI^{\text{dir}}(z,\mu_0, \phi_0)}{\beta^{ext}dz}=
+-\mu\frac{dI^{\text{dir}}(z,\mu_0, \phi_0)}{d\tau}=I^{\text{dir}}(z,\mu_0, \phi_0)
+  \label{eq:DirectRTE}
+\end{eqnarray}
+where the optical depth is defined as $d\tau = \beta^{ext}dz$.
+The scattered intensity satisfies in 1D (the $\text{sca}$
+superscript is omitted) 
+\begin{eqnarray}
+ - \mu {dI(\tau,\mu, \phi) \over d\tau}& =& I(\tau,\mu, \phi) 
+ \nonumber \\ & & -
+  {\omega(r) \over 4\pi } \int^{2\pi}_{0}d\phi' \int^{1}_{-1}d\mu'
+   p(\tau,\mu, \phi;\mu', \phi')I(\tau,\mu', \phi)
+ \nonumber \\ & & 
+   -(1-\omega(\tau))B[T(\tau)] 
+\nonumber \\
+& &    -\frac{\omega(\tau)I^{0}}{4\pi}p(\tau,\mu, \phi;\mu_{0}, \phi_0 )e^{-\tau/\mu_{0}}.
+  \label{eq:DiffuseRTE}
+\end{eqnarray}
+Solution of Eq.~\ref{eq:DirectRTE} for the direct beam yields the 
+Beer-Lambert-Bouguer law
+\begin{eqnarray}
+I^{dir}(\tau,\mu_0)=I^{0}\;e^{-\tau/\mu_{0}}.
+  \label{eq:Beerlaw}
+\end{eqnarray}
+The popular {\bf disort} solver \citep{Stamnes1988c,stamnes2000}
+solves Eqs.~\ref{eq:DirectRTE}-\ref{eq:DiffuseRTE}.
+
+\subsection{Pseudo-spherical approximation}
+In the pseudo-spherical approximation the extinction path
+$\tau/\mu_{0}$ in Eqs.~\ref{eq:DiffuseRTE} and \ref{eq:Beerlaw} is
+replaced by the Chapman function, $ch(r,\mu_{0})$
+\citep{Rees1989B,Dahlback1991}
+\begin{eqnarray}
+ch(r_{0},\mu_{0})=\int_{r_{0}}^{\infty}
+              \frac{\beta^{ext}(r,\nu)\;dr}
+        {\sqrt{1-\left(\frac{R+r_{0}}{R+r}\right)^{2}
+         \left(1-\mu^{2}_{0}\right)}}.
+  \label{eq2.24}
+\end{eqnarray}
+Here $R$ is the radius of the earth and $r_{0}$ the distance above the
+earth's surface. The Chapman function describes the extinction
+path in a spherical atmosphere.
+
+Thus, in the pseudo-spherical approximation the direct beam is
+correctly described by
+\begin{eqnarray}
+I^{dir}(r,\mu)=I^{0}\;e^{-ch(r,\mu_{0})}
+  \label{eq:pseudoBeer}
+\end{eqnarray}
+and the diffuse radiation is approximated by replacing the
+plane-parallel direct beam source in Eq.~\ref{eq:DiffuseRTE} with the
+corresponding direct beam source in spherical geometry
+\begin{eqnarray}
+ - \mu {dI(\tau,\mu, \phi) \over d\tau}& =& I(\tau,\mu, \phi) 
+ \nonumber \\ & & -
+  {\omega(r) \over 4\pi } \int^{2\pi}_{0}d\phi' \int^{1}_{-1}d\mu'
+   p(\tau,\mu, \phi;\mu', \phi')I(\tau,\mu', \phi)
+ \nonumber \\ & & 
+   -(1-\omega(\tau))B[T(\tau)] 
+\nonumber \\
+& &    -\frac{\omega(\tau)I^{0}}{4\pi}p(\tau,\mu, \phi;\mu_{0}, \phi_0 )e^{-ch(\tau,\mu_{0})}.
+  \label{eq:pseudoDiffuseRTE}
+\end{eqnarray}
+The {\bf sdisort} solver included in the libRadtran software package
+\citep{mayer2005} solves
+Eqs.~\ref{eq:pseudoBeer}-\ref{eq:pseudoDiffuseRTE}. 
+
+\subsection{Boundary conditions}
+The diffuse radiative transfer Eq.~\ref{eq:DiffuseRTE} is solved
+subject to boundary conditions at the top and bottom of the
+atmosphere. At the top boundary there is no incident diffuse
+intensity\footnote{The DISORT type RTE-solvers, {\bf disort 1.3}, {\bf
+    disort 2.0}, {\bf sdisort} and {\bf twostr}, may include a diffuse
+  radiation source at the top boundary. This may be of interest when
+  for example modelling the aurora.}
+($\mu \ge 0$) 
+\begin{eqnarray}
+I(\tau=0, -\mu, \phi )=0.
+  \label{eq:TopBoundary}
+\end{eqnarray}
+The bottom boundary condition may quite generally be formulated in
+terms of a bidirectional reflectivity, $\rho(\mu,\phi;-\mu',\phi')$,
+and directional emissivity, $\epsilon(\mu)$,
+\begin{eqnarray}
+  I(\tau=\tau_g, \mu, \phi ) &=& \epsilon(\mu) B[T(\tau_{g})]
+  + \frac{1}{\pi} \mu_0 I_0 e^{-\tau_g/\mu_{0}}
+  \rho(\mu,\phi;-\mu',\phi') \nonumber \\
+  && +\frac{1}{\pi} \int_0^{2\pi} d\phi' \int_0^1
+  \rho(\mu,\phi;-\mu',\phi')  I(\tau,-\mu', \phi') \mu' d\mu' ,
+  \label{eq:BottomBoundary}
+\end{eqnarray}
+where $T(\tau_{g})$ is the temperature of the bottom boundary, here
+the Earth's surface.
+
+In the case of a Lambertian reflecting bottom boundary with albedo
+$\rho(\mu,\phi;-\mu',\phi')=A$,
+Eq.~\ref{eq:BottomBoundary} simplifies to
+\begin{eqnarray}
+\pi I(\tau_{L}, \mu )&=& \pi\;\epsilon \;B[T(\tau_{g})]+
+\mu_{0}\;A\;I^{0}e^{-\tau_{g}/\mu_{0})} \nonumber \\
+&&+ 2\pi\; A \int_0^{2\pi}
+d\phi' \int_{0}^{1} \mu I(\tau_{L},-\mu, \phi) d\mu.
+  \label{eq:BottomBoundarySimple}
+\end{eqnarray}
+The albedo, $A$, gives the fraction of reflected light under the
+assumption that the surface reflects radiation isotropically (Lambert
+reflector). The emissivity $\epsilon = 1-A$, by Kirchhoff's law.
+In both Eqs.~\ref{eq:BottomBoundary} and
+\ref{eq:BottomBoundarySimple} the first term on the right hand side is
+the thermal radiation emitted by 
+the surface. The second term is due to reflection of the direct beam
+that has penetrated through the whole atmosphere and the last term 
+is reflection of downward diffuse radiation
+
+\subsection{Separation of the azimuthal $\Phi$-dependence, Fourier decomposition}
+For scattering processes in the atmosphere the scattering phase
+function depends only on the angle $\Theta$ between the incident and
+scattered beams. This may be used to seperate out the
+$\Phi$-dependence in Eqs.~\ref{eq:DiffuseRTE} and
+\ref{eq:pseudoDiffuseRTE} as follows. The phase function is first
+expanded as a series of Legendre polynomials
+\begin{eqnarray}
+  p(\tau,\mu, \phi;\mu', \phi') = p(\tau,\Phi) = \sum_{l=0}^{2M-1}
+  (2l+1) g_l(\tau) p_l(\cos\Phi)
+  \label{eq:PhaseFunction}
+\end{eqnarray}
+where the phase function moments $g_l$ are given by
+\begin{eqnarray}
+  g_l(\tau) = {1 \over 2} \int_{-1}^{+1} p_l(\cos\Phi)p(\tau,\Phi)d(\cos\Phi).
+  \label{eq:PhaseFunctionMoment}
+\end{eqnarray}
+The $g_1$ term is called the ``asymmetry factor'', and $g_0=1$ due to
+normalization of the phase function. Applying the addition theorem for
+spherical harmonics to Eq.~\ref{eq:PhaseFunction} gives
+\begin{eqnarray}
+p(\tau,\Phi) = \sum_{l=0}^{2M-1}  (2l+1) g_l(\tau)\left\{
+    p_l(\mu) p_l(\mu') + 2\sum_{m=1}^{l} \Lambda_l^m(\mu)
+    \Lambda_l^m(\mu') \cos m(\phi-\phi') \right\}\nonumber \\
+  \label{eq:PhaseFunctionSphericalHarmonics}
+\end{eqnarray}
+where the normalized associated Legendre polynomials are defined as
+\begin{eqnarray}
+  \Lambda_l^m(\mu) = \sqrt{\frac{(l-m)!}{(l+m)!}} P_l^m(\mu),
+  \label{eq:NormalizedAssociatedLegendrePolynomial}
+\end{eqnarray}
+and $P_l^m(\mu)$ are the standard Legendre polynomials. The cosine
+dependence of the phase function,
+Eq.~\ref{eq:PhaseFunctionSphericalHarmonics}, suggests that cosine
+expansion of the intensity may be fruitful. Expanding the intensity as
+a cosine Fourier series:
+\begin{eqnarray}
+  I(\tau,\mu,\phi) = \sum_{l=0}^{2M-1} I^m(\tau,\mu)  \cos m(\phi_0-\phi)
+  \label{eq:CosineExpansion}
+\end{eqnarray}
+and inserting into Eqs.~\ref{eq:DiffuseRTE} and
+\ref{eq:pseudoDiffuseRTE} gives $2M$ independent integro-differential
+equation (only the plane-parallel version is shown here)
+\begin{eqnarray}
+ - \mu {dI^m(\tau,\mu) \over d\tau}& =& I^m(\tau,\mu) 
+ \nonumber \\ & & -
+  {\omega(r) \over 2 } \int^{1}_{-1}d\mu'
+   \sum_{l=m}^{2M-1} (2l+1) g_l(\tau) \Lambda_l^m(\mu) \Lambda_l^m(\mu') I^m(\tau,\mu')
+ \nonumber \\ & & 
+   -\delta_{m0}(1-\omega(\tau))B[T(\tau)] 
+\nonumber \\
+& &    -\frac{\omega(\tau)I^{0}}{4\pi} (2-\delta_{m0}) 
+        \sum_{l=m}^{2M-1} (2l+1) g_l(\tau) \Lambda_l^m(\mu) \Lambda_l^m(\mu') e^{-\tau/\mu_{0}}.\nonumber\\
+  \label{eq:DiffuseRTEseparated}
+\end{eqnarray}
+where 
+\begin{displaymath}
+\delta_{m0} = \left\{ \begin{array}{ll}
+      1 & \text{if $m=0$} \\
+      0 & \text{if $m\neq 0$} 
+      \end{array} \right.
+\end{displaymath}
+
+
+
+\subsection{Calculated quantities}
+Solution of the radiative transfer equation generally yields the
+diffuse radiance
+\begin{eqnarray}
+  I(\tau, \mu, \phi)
+  \label{eq:Radiance}
+\end{eqnarray}
+and the direct radiance
+\begin{eqnarray}
+  I^{\text dir}(\tau, \mu_0, \phi_0).
+  \label{eq:DirectRadiance}
+\end{eqnarray}
+For the solvers that include polarization the vector quantities of the
+above quantities are calculated.
+From these quantities the upward, $E^{+}(\tau)$, and downward,
+$E^-(\tau)$, fluxes, or irradiances, are calculated
+\begin{eqnarray}
+E^+(\tau) &=& \int_0^{2\pi} d\phi \int_{0}^{1} \mu I(\tau,\mu, \phi) d\mu 
+  \label{eq:UpwardFlux} \\
+E^-(\tau) &=& \mu_0 I_0 e^{-\tau/\mu_0} + \int_0^{2\pi} d\phi \int_{0}^{1} \mu I(\tau,-\mu, \phi) d\mu.
+  \label{eq:DownwardFlux}
+\end{eqnarray}
+Furthermore, the mean intensity 
+\begin{eqnarray}
+  \overline{I}(\tau) &=& \frac{1}{2\pi} \left[ I_0 e^{-\tau/\mu_0} +
+ \int_0^{2\pi}d\phi \int_{0}^{1} I(\tau,-\mu, \phi) d\mu + 
+ \int_0^{2\pi}d\phi \int_{0}^{1}  I(\tau,\mu, \phi) d\mu \right],\nonumber\\
+  \label{eq:MeanIntensity} 
+\end{eqnarray}
+is related to the actinic flux
+\citep{Madronich1987b}, $F$, used for the calculation of photolysis
+(or photodissociation) rates
+\begin{eqnarray}
+  F(\tau) &=& 4 \pi \overline{I}(\tau).
+  \label{eq:ActinicFlux} 
+\end{eqnarray}
+Finally, heating rates may be calculated from either the flux
+differences or the mean intensity.
+\begin{eqnarray}
+  \frac{\partial T}{\partial t} &=& -\frac{4\pi}{c_p \rho_m}
+  \frac{\partial E}{\partial z} =  -\frac{4\pi}{c_p \rho_m}
+  (1-w)(\overline{I}-B)\frac{\partial \tau}{\partial z}.
+  \label{eq:HeatingRate} 
+\end{eqnarray}
+Note that the partial derivative of $\tau$ with respect to $z$ is needed
+since optical properties and $\overline{I}$ are calculated as functions
+of $\tau$.
+
+The various radiative transfer equation solvers included in the
+\code{uvspec} tools in the {\sl libRadtran} package, have different
+capabilities to calculate the above 
+radiative quantities. The user is referred to
+section~\ref{sec:RTEsolvers} for an overview of the different
+solvers included in the \code{uvspec} program and their respective
+capabilities. For a complete description of all solvers with options
+section~\ref{sec:uvspec_options} should be consulted. Finally, there
+is nothing to complement a thorough understanding of the problem at
+hand, the theory behind the chosen solution and a little reading of
+the code itself. 
+
+\subsection{Lidar equation}
+
+The lidar equation can be written as (see e.g.~\citet{Weitkamp2005})
+%
+\begin{equation}
+%
+\frac{{\rm d}N(r)}{{\rm d}r} =
+  \frac{E_0}{E_{\rm phot}} A_{\rm det} \eta \frac{O(r)}{4 \pi r^2}
+  p(\cos \pi) \beta^{sca}(r)
+  \exp\left(-2\int_0^r dr' \beta^{ext}(r')\right),
+%
+\label{eq:sslidar}
+\end{equation}
+%
+where $N(r)$ is the number of detected photons, $E_0$ is the energy
+per laser pulse, $E_{\rm phot}$ is the energy per photon, $A_{\rm
+  det}$ is the detector area, $\eta$ is the detector efficiency,
+$O(r)$ is the overlap function, $r$ is the range, and $p(\cos \pi)$ is
+the scattering phase function in backward direction. Note that the
+nomenclature here is consistent with the libRadtran documentation and
+differs from that in most lidar papers and books.
+
+The lidar equation is a solution of the RTE for the special problem of
+a lidar signal, and is a single scattering approximation to the real
+world. Nevertheless it is applicable for many cases of interest. For
+space-borne lidars it should not be used.
+
+Many lidarists are also interested in the lidar ratio, which is
+defined as
+%
+\begin{equation}
+%
+S(r) = \frac{4 \pi}{p(\cos \pi) \omega(r)}.
+%
+\label{eq:lidar_ratio}
+\end{equation}
+%
+
+For the special case of Lambertian surface reflection, the signal is
+%
+\begin{equation}
+%
+N_{\rm surf}(r_{\rm surf}) =
+  \frac{E_0}{E_{\rm phot}} A_{\rm det} \eta \frac{O(r_{\rm surf})}{4 \pi r_{\rm surf}^2}
+  4 a \cos \theta_{\rm refl}
+  \exp\left(-2\int_0^{r_{\rm surf}} dr' \beta^{ext}(r')\right),
+%
+\label{eq:sslidar_surf}
+\end{equation}
+%
+where $r_{\rm surf}$ is the range of the surface, $a$ is the surface
+albedo, and $\theta_{\rm refl}$ is the inclination with which the
+laser beam hits the surface.
+
+\subsection{Verification of solution methods}
+To solve the radiative transfer equation involves complex numerical
+procedures that are difficult both to develop and to implement. Great
+care must be taken during implementation to assure that the numerical
+procedure is stable for any values and combinations of 
+the input parameters, i.e. optical depth, single scattering albedo, phase
+function and boundary conditions. The testing of new solvers are
+typically done by the developers against analytical solutions which
+are available for a few special cases. Furthermore, tests and
+comparisons are made against other models and measurements. The reader
+is referred to the individual papers describing the various solvers
+for more information.
+
+The input quantities needed by the solvers are optical depth, single
+scattering albedo, phase function and boundary conditions. These are
+calculated from atmospheric profiles of molecular density, trace gas
+species, water and ice clouds and aerosols. In addition,
+the absorption and scattering properties of the various species are
+taken from measurements or model calculations. The calculation of the
+optical properties are compared against other models and measurements
+during code development.
+
+

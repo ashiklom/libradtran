@@ -1,0 +1,69 @@
+#
+# Makefile for libRadtran's examples/GUI/spectrum_terrestrial_sbdart directory
+#
+# Arve Kylling
+# arve.kylling@nilu.no
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = brightness_msg
+
+EXAMPLEFILES = brightness_msg_plot.py \
+	brightness_msg.png \
+	brightness_msg_prev.jpg brightness_msg_info.txt \
+	brightness_msg_thumb.jpg brightness_msg.INP \
+	brightness_msg.OUT
+
+DISTFILES = Makefile.in $(EXAMPLEFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: inp.inp big.jpg thumb.jpg info.txt
+
+inp.inp:
+	cp brightness_msg.INP inp.inp
+
+big.jpg: 
+	cp brightness_msg_prev.jpg big.jpg
+
+thumb.jpg:
+	cp brightness_msg_thumb.jpg thumb.jpg	
+
+info.txt:
+	cp brightness_msg_info.txt info.txt
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/examples/GUI/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/examples/GUI/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(examplesdir)/GUI/$(THISDIR)
+	$(INSTALL_DATA) $(EXAMPLEFILES) $(examplesdir)/GUI/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof
+

@@ -1,0 +1,58 @@
+#
+# Makefile for libRadtran's data/filter directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+include $(TOPDIR)/Makeconf
+
+THISDIR = filter
+
+SUBDIRS = adeos alos earthcare envisat ers goes himawari landsat modis msg parasol proba sentinel seosat spot 
+
+DISTFILES = Makefile.in
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all: 
+	for dir in $(SUBDIRS); do echo making $@ in $$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+.PHONY: all
+
+dist:
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/data/filter/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(DISTFILES) ../../`cat ../../.fname`/data/filter
+.PHONY: dist
+
+mystic-dist:
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/data/filter/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/data/filter
+.PHONY: mystic-dist
+
+install:
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: clean
+
+
+clean:
+	for dir in $(SUBDIRS); do echo making $@ in $$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+.PHONY: clean
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

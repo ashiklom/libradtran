@@ -1,0 +1,531 @@
+\subsection{Three-dimensional RTE solver \index{MYSTIC} (mystic)} 
+\label{sec:mystic}
+
+The Monte Carlo method is the most straightforward way to calculate 
+(polarized) radiative transfer. In forward tracing mode  
+individual photons are traced on their random paths through the atmosphere.
+Starting from top of the atmosphere (for solar radiation), or being thermally
+emitted by the atmosphere or surface, the photons are followed until they
+hit the surface or leave again at top of the atmosphere (TOA). For
+solar radiation, the start position is either a random location in the
+TOA plane, with the direction determined by the solar zenith and
+azimuth. Originally, the ``Monte Carlo for the physically correct tracing of
+photons in cloudy atmospheres'' MYSTIC \citep{mayer2009} has been developed as
+a forward tracing method for the calculation of irradiances and radiances in
+\ifthreedmystic{3D} plane-parallel atmospheres. Later the model has been extended to fully
+spherical geometry and a backward tracing mode \citep{emde2007}. The backward
+photon tracing option speeds up the calculation of radiances and allows very
+fast calculations in the thermal spectral range.  
+
+\ifthreedmystic{MYSTIC handles three-dimensional water and ice clouds in a
+one-dimensional background  atmosphere of molecular scatterers and
+absorbers and aerosol particles.  MYSTIC also allows topography as well as 
+inhomogeneous surface albedo and BRDF to be considered.}
+
+MYSTIC is now a full vector code: It can handle polarization and
+polarization-dependent scattering by randomly oriented particles,
+i.e. clouds droplets and particles, aerosol particles, and molecules
+\citep{emde2010}. To keep the computational time reasonable for
+accurate calculations of e.g. polarized radiances in cloudy
+atmospheres several ``tricks'' are required to speed up the
+calculations. The first is the so called ``local estimate method''
+\citep{marshak2005}. Using this method a photon contributes to the
+final result of the calculation each time it is scattered. However, in
+the presence of particles with strong forward scattering in the
+simulated scene, such as clouds and large aerosols, the local estimate
+method will produce so-called ``spikes'', these are rare photons whose
+very large contribution to the result leads to slow convergence. The spike
+problem can be resolved by using the ``Variance Reduction Optimal
+Options Method'' \citep[VROOM,][]{buras2011a}, a collection of several
+variance reduction methods which change the photon paths such that the
+spikes disappear, but without altering the result (i.e.~the variance
+reduction is ``unbiased'').
+
+A detailed introduction to the Monte Carlo technique and in particular
+to MYSTIC is given in \citet{mayer2009}. For specific questions 
+concerning the Monte Carlo technique the reader is referred to the literature  
+\citep{marchuk1980,collins1972,marshak2005,cahalan2005}.
+
+MYSTIC is switched on by the option \code{rte\_solver mystic}. If no
+other options are specified MYSTIC computes unpolarized quantities for
+a \ifthreedmystic{3D} plane-parallel
+atmosphere\ifthreedmystic{~(domain is divided into block-shaped 
+boxes)}. If \codeidx{mc\_polarisation} is specified, polarized
+quantities are computed. The option \codeidx{mc\_spherical 1D} enables
+calculations in a 1D spherical model atmosphere. All MYSTIC-specific
+options start with \code{mc\_} and
+are described in detail in section~\ref{sec:uvspec_options}.
+
+\ifthreedmystic{
+MYSTIC may be provided with various 2D and 3D input files, in addition 
+to the standard 1D input files of {\sl uvspec}. The input files may
+include the following data:
+\begin{itemize}
+\item 3D water clouds
+\item 3D ice clouds
+\item 2D surface albedo
+\item 2D elevation
+\item 2D BRDF
+%\item Lasers and detectors for lidar 
+\end{itemize}
+
+If none of these are specified, MYSTIC does basically a 1D calculation
+and should compare well with other solvers, in particular \code{disort2}.
+
+MYSTIC operates in a user-defined model-domain. Since periodic boundary 
+conditions are applied, the user has to make sure that the quantity to be 
+calculated is not affected by the boundaries. For maximum flexibility, 
+the different grids (sample, cloud, elevation, albedo or BRDF) are 
+completely independent. The only constraint is that the domain size
+is equal for all grids used. E.g., clouds may be defined in 5x5x2~km$^3$ 
+cubes while the surface albedo is defined on a 1x1~km$^2$ grid, 
+the elevation on a 0.1x0.2~km$^2$ grid, and the output might 
+be sampled on a 3x4~km$^2$ grid. The only restrictions are 
+the available memory, the processor speed, and the requirements on 
+the precision of the result (see section~\ref{sec:mc_memory}).
+
+The sampling information for MYSTIC is defined in the input file (e.g.
+with \codeidx{mc\_sample\_grid}, \codeidx{zout}, \codeidx{umu}, ...).
+After initialization MYSTIC reports how it interpreted the input parameters 
+which gives the user a chance to see if it really does what it is 
+supposed to be doing.
+
+
+\subsubsection{Three-dimensional clouds}
+
+The options \codeidx{wc\_file 3D}
+and \codeidx{ic\_file 3D} may be used to define 3D water and ice
+cloud properties respectively. The model atmosphere may contain both 3D 
+(defined in a \code{wc\_file/ic\_file 3D}) and 1D clouds (defined in a 
+\code{wc\_file/ic\_file 1D}), but for obvious reasons not in the same layer. The format
+of the files is explained in section~\ref{sec:uvspec_options}. 
+
+The conversion from microphysical to optical properties 
+is done identically for 1D and 3D clouds and is defined 
+by the options \codeidx{wc\_properties} and \codeidx{ic\_properties}. All
+possible settings for \code{wc\_properties} and \code{ic\_properties}
+have been implemented in MYSTIC (e.g., hu, mie, yang, HEY, baum ...).
+The following example shows the easiest possible 3D 
+cloud file which defines a checkerboard grid of clouds:
+\begin{Verbatim}[fontsize=\footnotesize, frame=single, samepage=true]
+  2 2 5 3
+  1.0 1.0 0 1 2 3 4 5 
+
+  1 1 2 0.1 10
+  2 2 2 0.1 10
+\end{Verbatim}
+For the layer between 1 and 2 km a 3D cloud is defined with liquid water
+content 0.1 $g/m^3$ and effective radius 10 $\mu$m for horizontal 
+boxes (1,1) and (2,2). Boxes (1,2) and (2,1) are cloudless. The result are
+cubic clouds with a volume of 1x1x1~km$^3$. The microphysical properties are
+converted to optical properties according to \code{wc\_properties}.  
+
+\subsubsection{Two-dimensional surface albedo}
+
+A 2D surface albedo may be defined using the option
+\codeidx{mc\_albedo\_file}. The format of the file is explained in
+section~\ref{sec:uvspec_options}. 
+
+\subsubsection{Topography}
+
+A 2D elevation may be defined using the option 
+\codeidx{mc\_elevation\_file}. The ASCII format is explained in
+section~\ref{sec:uvspec_options}. For the netcdf format please refer
+to \file{README.MC}. 
+
+Caution:
+\begin{itemize}
+\item To avoid confusion, do not specify an \code{altitude} different
+  from 0 in the uvspec input file.
+\item There may be problems if the 2D surface hits 0 
+  (more testing required). Use 0.001 as lowest altitude.
+\item  The elevation file MUST BE PERIODIC
+\end{itemize}
+
+Between the grid points, the surface is interpolated 
+bilinearely: 
+\begin{equation}
+  z(x,y) = a + bx + cy + dxy
+\end{equation}
+where $z$ is the altitude and the coefficients $a$, $b$, $c$, and $d$
+are determined from 
+the altitudes specified at the four corners of each pixel.
+Slant surfaces are treated as they should be; e.g., photons
+may be reflected downward at snow-covered mountain sides.
+
+\subsubsection{Bidirectional reflectance distribution function}
+MYSTIC allows different homogenous or 2D-inhomogeneous BRDFs. The 
+implementation of the different BRDFs is rather heterogeneous,   
+as were the requirements when each of them was first implemented.
+Please note that BRDFs currently do not work together with topography. The 
+very simple reason for that is in structured terrain reflection 
+polar angles larger than 90 degree are possible for which the 
+existing parameterizations do not provide data. The following  
+parameterizations are included:
+\begin{itemize}
+\item Water BRDF by \citet{cox54a,cox54b}; currently only homogeneous; switched 
+  on with \codeidx{brdf\_cam u10}, ... like in the 1D case
+\item AMBRALS (Algorithm for Modeling[MODIS] Bidirectional Reflectance
+  Anisotropies of the Land Surface; \citet{wanner97}), see also
+  \url{http://i3rc.gsfc.nasa.gov/phase3/brasil/phase3_step1_brasil.htm}.
+  AMBRALS is three-parameter BRDF fit for vegetated and non-vegetated surfaces.
+  A \codeidx{mc\_ambrals\_file} may be specified which contains the 
+  3 parameters for each surface pixel. The format is like 
+  the format of 2D surface albedo file, except that each data line 
+  contains (iso, vol, geo) instead of only one albedo value.
+  Obviously, wavelength-dependent AMBRALS BRDFs are not 
+  possible at present.
+\item RPV \citep{rahman93a}, a three parameter 
+  fit for vegetated and non-vegetated surfaces. RPV is currently the 
+  most flexible surface description in MYSTIC as it is currently 
+  the only way to define a wavelength-dependent 2D BRDF. 
+  Two different ways exist to define an RPV BRDF:
+  \begin{itemize}
+  \item 1D, using the options \codeidx{brdf\_rpv k} ... like in the 1D case
+  \item using \codeidx{mc\_rpv\_file} and \codeidx{mc\_rpv\_type}.
+    The first is a RPV
+    type for each surface pixel; type is simply a label like 
+    "Grass" or "1" or whatever. For each of these types,
+    \code{mc\_rpv\_type} must have an entry which connects the type to
+    a file which contains wavelength-dependent RPVs. Sounds
+    complicated but is a very efficient way to define a
+    wavelength-dependent 2D RPV. Label ``CaM'' is reserved for Cox and Munk 
+    and invokes the Cox and Munk ocean BRDF for the respective pixel. Thus
+    it is possible to combine land and ocean BRDFs.
+  \end{itemize}
+\item For calculations including polarization the option
+  \codeidx{bpdf\_tsang\_u10} is available which calculates polarized
+  bidirectional reflection from water surfaces. 
+\end{itemize}
+}
+
+\subsubsection{MYSTIC output}
+
+{\sl uvspec} will print its output (horizontally averaged 
+irradiance and actinic flux) usually to stdout. MYSTIC provides 
+several additional output 
+files. We have to distinguish two classes of output: 
+Monochromatic and spectral output where the latter can be recognized 
+by the extension ``.spc''. Monochromatic output files
+
+\begin{itemize}
+\item mc.flx - irradiance, actinic flux at levels
+\item mc.rad - radiance 
+\item mc.abs - absorption/emission
+\item mc.act - actinic flux, averaged over layers
+\end{itemize}  
+
+are generated only for the case of a calculation where MYSTIC is called 
+only once. That is, a monochromatic calculation without subbands introduced 
+by \code{mol\_abs\_param}. They contain ``plain'' MYSTIC output, without
+consideration of extraterrestrial irradiance, sun-earth-distance, spectral
+integration, etc. As such they are mainly interesting for MYSTIC developers
+or for users interested in artificial cases and photon statistics since 
+they are as close as possible to the photon statistics of MYSTIC: e.g. 
+the ``irradiance'' in these files is basically the number of photons arriving
+at the detector divided by the number of photons traced. In addition to the 
+average, a standard deviation of the result can be calculated online which is 
+stored in ``.std''. 
+
+For most real-world applications the user will prefer the ``.spc'' files
+
+\begin{itemize}
+ \item mc.flx.spc - spectral irradiance, actinic flux at levels
+ \item mc.rad.spc - spectral radiance at levels
+ \item ...
+\end{itemize}
+
+In contrast to the monochromatic files which are transmittances (E/E0, L/E0,
+...) the data in ".spc" is "fully calibrated" output, as for all other
+solvers. "fully calibrated" means multiplied with the extraterrestrial 
+irradiance, corrected for the Sun-Earth distance, integrated/summed
+over wavelength, etc. Please be aware that such a calculation might require
+a lot of memory because output is stored as a function of x, y, z, and
+wavelength (and possibly polarization, if you switched on \code{mc\_polarisation}).
+E.g. a comparatively harmless "mol\_abs\_param kato2" calculation with an sample grid of 100x100 pixels
+at 10 altitudes would imply about 100x100x10x148 = 14,800,000 (Nx$\cdot$Ny$\cdot$Nz$\cdot$Nlambda) grid points. Depending 
+on the output chosen (irradiance, radiance, ...) up to six floating 
+point numbers need to be stored which amounts to 360 MBytes. Depending 
+on the post-processing in {\sl uvspec}, this memory may actually be used 
+twice which then would be 720 MBytes. 
+
+\begin{description}
+\item[mc.flx / mcNN.flx] 
+  The output file \code{mc.flx} contains the irradiance
+  at the surface defined by elevation file. Note that
+  this output is {\bf not} for $z=0$, but for the actual 2D surface:
+  \begin{Verbatim}[fontsize=\footnotesize, frame=single, samepage=true]
+    500  500 0 0.325889 0 0 0.441766 0
+    500 1500 0 0.191699 0 0 0.267122 0
+    500 2500 0 0.210872 0 0 0.420268 0
+  \end{Verbatim}
+  The columns are:
+  \begin{enumerate}
+  \item  x [m] (pixel center)
+  \item  y [m] (pixel center)
+  \item  direct transmittance
+  \item  diffuse downward transmittance
+  \item  diffuse upward transmittance
+  \item  direct actinic flux transmittance
+  \item  diffuse downward actinic flux transmittance
+  \item  diffuse upward actinic flux transmittance
+  \end{enumerate}
+  The transmittance is defined as irradiance devided by the extraterrestrial irradiance.
+  It is not corrected for Sun-Earth-Distance.
+
+  Note that even for an empty atmosphere, the transmittance
+  would not be 1 but cos(SZA), due to the slant incidence of the radiation. 
+  
+  The output files \code{mcNN.flx} contain the irradiances
+  at different model levels - one for each \code{zout}. \code{NN} is the
+  number of the output level counted from the bottom (ATTENTION: Levels are
+  counted from 0 here!). The file format is the same as in \code{mc.flx}.
+
+  (If interested in surface quantities, please use the irradiance data at the
+  surface from \code{mc.flx}, not from \code{mc00.flx}; the data from 
+  \code{mc00.flx} or whatever layer coincides with the 
+  surface may be wrong for technical reasons).
+
+\item[mc.rad / mcNN.rad] 
+  The output file \code{mc.rad} contains the radiance 
+  at the surface defined by \code{elevation\_file}. Note that
+  this output is {\bf not} for $z=0$, but for the actual 2D surface:
+  \begin{Verbatim}[fontsize=\footnotesize, frame=single, samepage=true]
+    500  500 45 270 0.0239094 0 0.0623305 0.063324
+    500 1500 45 270 0.0239094 0 0.0602891 0.063156
+  \end{Verbatim}
+  The columns are:
+  \begin{enumerate}
+  \item  x [m] (pixel center)
+  \item  y [m] (pixel center)
+  \item  viewing zenith angle  [deg]
+  \item  viewing azimuth angle [deg]
+  \item  aperture solid angle [sterad]
+  \item  direct  radiance component
+  \item  diffuse radiance component
+  \item "escape" radiance 
+  \end{enumerate}
+  For almost all applications you may safely ignore the ``direct'' and
+  ``diffuse'' radiance components and use only the escape radiance. If the 
+  latter is 0 then you probably forgot to switch on \code{mc\_escape}.
+  The "escape" radiance is the radiance "measured" by an ideal
+  instrument with 0$^\circ$ opening angle. It is only calculated 
+  when \codeidx{mc\_escape} is selected and it usually converges 
+  much faster than the "cone sampled" radiance in column 7. 
+  It is recommended to always use \code{mc\_escape} for radiance
+  calculations. For the ``direct'' and ``diffuse'' radiance, photons
+  falling into the aperture are counted. This might be an option for 
+  instruments with a very large aperture only because otherwise the result
+  is noisy. 
+
+  The output files \code{mcNN.rad} contain the radiances
+  at different model levels - one for each \code{zout}. \code{NN} is the
+  number of the output level counted from the bottom (ATTENTION: Levels are
+  counted from 0 here!). The file format is the same as in \code{mc.rad}.
+  
+  (If interested in surface quantities, please use the radiance data
+  at the surface from \code{mc.rad}, not from \code{mc00.rad}; the data from 
+  \code{mc00.rad} or whatever layer coincides with the 
+  surface may be wrong for technical reasons).
+
+\item[mcNN.abs] 
+  The file \code{mcNN.abs} includes the absorption per unit area in the given layer. 
+  NN is the number of the output layer on the atmospheric 
+  grid (counted from the bottom, starting from 1). This file is generated if \code{mc\_forward\_ouput absorption} 
+  or \code{mc\_forward\_output emission} is specified.
+  
+  The columns are:
+  \begin{enumerate}
+  \item  x [m] (pixel center)
+  \item  y [m] (pixel center)
+  \item  absorption/emission/heating rate (W/m$^2$)
+  \end{enumerate} 
+  
+  If multiplied by the extraterrestrial irradiance, the column 
+  absorption in W/m$^2$ is obtained. In a 1D atmosphere, with a solar source,
+  absorption = e\_net(top) - e\_net(bottom) (this is not true for a thermal
+  source because then emission needs to be considered; see below). If
+  \code{mc\_forward\_output emission} is specified, the file contains the thermal emission of
+  the layer per unit area, that is, the Planck function times the optical
+  thickness of the layer times 4$\pi$ (angular integral of the Planck
+  radiance). If \code{mc\_forward\_output heating} is specified, the heating rate per unit area is  
+  provided instead of absorption (in the same units as absorption).
+  For a solar source, the heating rate is identical to the absorption. 
+  In the thermal, however, each emitted photon is counted as cooling 
+  and hence the heating rate may be negative. In a 1D atmosphere, with a
+  solar or thermal source, absorption = e\_net(top) - e\_net(bottom). 
+
+  For computational efficiency reasons \code{mcNN.abs} is not provided on the
+  sample grid but on the atmospheric grid. For the same reason, results are 
+  only calculated for 3D layers. In order to obtain 3D absorption for 1D
+  cloudless layer, you need to specify an optically very thin 3D cloud, e.g.
+  LWC/IWC = 10$^{-20}$ g/m$^3$ (yes, this is a dirty trick but a necessary one). 
+
+\item[mcNN.act] 
+  \code{mcNN.act} contains the 4$\pi$ actinic flux in the given layer,
+  calculated from the absorbed energy (per unit area) divided by the 
+  absorption optical thickness of the layer. In contrast to the 
+  actinic flux in \code{mcNN.flx}, this is a layer quantity the 
+  accuracy of which is generally much better than the level quantities 
+  which are calculated from radiance / cos (theta). As for the absorption
+  above, \code{mcNN.act} is not provided on the sample grid but on the
+  atmospheric grid. NN is the number of the output layer (counted from the
+  bottom, starting from 1). This file is generated if \codeidx{mc\_forward\_output actinic} is specified. 
+    
+  The columns are:
+  \begin{enumerate}
+  \item  x [m]
+  \item  y [m]
+  \item  actinic flux (W/m$^2$)
+  \end{enumerate}
+
+\end{description}  
+
+The spectral files are as follows:
+\begin{description}
+ \item[mc.flx.spc]
+   \ifthreedmystic{This is the most versatile and useful irradiance /
+     actinic flux output of MYSTIC}:
+  \begin{Verbatim}[fontsize=\footnotesize, frame=single, samepage=true]
+  400.0 0 0 0 1.0e+00 0.0e+00 1.5067e-01 1.0e+00 0.0e+00 3.5044e-01
+  401.0 0 0 0 1.0e+00 0.0e+00 1.5044e-01 1.0e+00 0.0e+00 3.5863e-01
+  402.0 0 0 0 1.0e+00 0.0e+00 1.5022e-01 1.0e+00 0.0e+00 3.4755e-01
+  \end{Verbatim}
+
+  The columns are:
+  \begin{enumerate}
+  \item  wavelength [nm]
+  \item  ix (0 ... Nx-1)
+  \item  iy (0 ... Ny-1)
+  \item  iz (0 ... Nz-1)
+  \item  direct irradiance
+  \item  diffuse downward irradiance
+  \item  diffuse upward irradiance
+  \item  direct actinic flux
+  \item  diffuse downward actinic flux
+  \item  diffuse upward actinic flux
+  \end{enumerate}
+  These numbers are created the same way as the standard {\sl uvspec} output. That
+  is, they are multiplied with the extraterrestrial irradiance, corrected for
+  Sun-Earth-distance, integrated over wavelength, converted to reflectivity or 
+  brightness temperature, etc. 
+
+ \item[mc.rad.spc]
+   \ifthreedmystic{This is the most versatile and useful radiance output of
+   MYSTIC}:
+  \begin{Verbatim}[fontsize=\footnotesize, frame=single, samepage=true]
+  400.0 0 0 0 0.0398276
+  401.0 0 0 0 0.0396459
+  402.0 0 0 0 0.0398005
+  \end{Verbatim}
+
+  The columns are:
+  \begin{enumerate}
+  \item  wavelength [nm]
+  \item  ix (0 ... Nx-1)
+  \item  iy (0 ... Ny-1)
+  \item  iz (0 ... Nz-1)
+  \item  radiance 
+  \end{enumerate}
+  These numbers are created the same way as the standard {\sl uvspec}
+  output. That is, they are multiplied with the extraterrestrial irradiance,
+  corrected for Sun-Earth-distance, integrated over wavelength, converted to
+  reflectivity or brightness temperature, etc. 
+
+  If the {\bf polarized} mystic is used (\code{mc\_polarisation}) then the four
+  components of the Stokes vector (I,Q,U,V) are output for each wavelength and
+  grid point, in four separate lines. 
+
+\ifthreedmystic{
+ \item[mc.abs.spc]
+  \code{mc.abs.spc} contains the absorption per unit area for all layers. This
+  file is generated if \code{mc\_forward\_output absorption} or \code{mc\_forward\_output emission} is specified.
+  
+  The columns are:
+  \begin{enumerate}
+  \item  wavelength [nm]
+  \item  ix (0 ... Nx-1)
+  \item  iy (0 ... Ny-1)
+  \item  iz (0 ... Nz-1)
+  \item  absorption/emission/heating rate
+  \end{enumerate} 
+  
+  These numbers are created the same way as the standard {\sl uvspec} output. That
+  is, they are multiplied with the extraterrestrial irradiance, corrected for
+  Sun-Earth-distance, integrated over wavelength, converted to reflectivity or 
+  brightness temperature, etc.  The unit is determined by an extra option to 
+  \code{mc\_forward\_output absorption} or \code{mc\_forward\_output emission}. 
+
+  For computational efficiency reasons \code{mc.abs.spc} is not provided on the
+  sample grid but on the atmospheric grid. For the same reason, results are 
+  only calculated for 3D layers. In order to obtain 3D absorption for 1D
+  cloudless layer, you need to specify an optically very thin 3D cloud, e.g.
+  LWC/IWC = 10$^{-20}$ g/m$^3$ (yes, this is a dirty trick but a necessary one). 
+
+ \item[mc.act.spc]
+  \code{mcNN.act} contains the 4$\pi$ actinic flux in the given layer,
+  calculated from the absorbed energy (per unit area) divided by the 
+  absorption optical thickness of the layer. In contrast to the 
+  actinic flux in \code{mc.act.flx}, this is a layer quantity the 
+  accuracy of which is generally much better than the level quantities 
+  which are calculated from radiance / cos (theta). As for the absorption
+  above, \code{mcNN.act} is not provided on the sample grid but on the
+  atmospheric grid. NN is the number of the output layer (counted from the
+  bottom, starting from 1). This file is generated if \codeidx{mc\_forward\_output actinic} is specified. 
+    
+  The columns are:
+  \begin{enumerate}
+  \item  wavelength [nm]
+  \item  ix (0 ... Nx-1)
+  \item  iy (0 ... Ny-1)
+  \item  iz (0 ... Nz-1)
+  \item  actinic flux
+  \end{enumerate}
+}
+\end{description}
+
+\ifthreedmystic{
+\subsubsection{Memory requirements and computational speed}
+\label{sec:mc_memory}
+
+\begin{enumerate}
+\item  3D clouds are defined on a 3D grid and the amount of 
+  memory required by MYSTIC is usually determined by 
+  the 3D cloud grid. Several variables need to be stored 
+  for each grid cell, including the optical properties of 
+  the cell, the grid cell absorption, etc. Umpteen (20-100) 
+  bytes are typically required for each grid cell. 
+  Computational time is to a large degree determined by 
+  the total optical thickness of the cloud because higher 
+  extinction means more scattering events and a longer 
+  photon path. To a lesser degree, the computational time 
+  is influenced by the number of cells but this may become 
+  important if the radiance is calculated using 
+  local estimates.
+
+\item 2D albedo requires some memory but usually less than 
+  clouds because it is defined on a 2D grid compared to the 
+  3D cloud grid. Only one double (8 bytes on a 32 bit machine) 
+  is stored per pixel. A high resolution has no influence 
+  on computational time.
+
+\item 2D elevation requires somewhat more memory than a 2D albedo 
+  because 5 doubles are stored per pixel. Higher resolution 
+  will lead to higher computational times. 
+
+\item The sample grid by itself has only little influence on 
+  computational time because for a given number of photons, 
+  the computational time does not depend on the number of 
+  grid cells. The precision of the result, however depends 
+  strongly on the number of grid cells Nx $\cdot$ Ny, as it 
+  decreases with sqrt(Nx$\cdot$Ny). The number of altitude 
+  levels has only little influence on the computational 
+  time but of course a large influence on the memory 
+  requirements. The calculation of radiances has a large 
+  impact on computational time if local estimates are used.
+  % CE: In current version it is only possible to compute 1 direction at a time
+  %In the worst case, the computational time may 
+  %scale directly with the number of directions for which the 
+  %radiance is to be calculated.
+\end{enumerate}
+}  

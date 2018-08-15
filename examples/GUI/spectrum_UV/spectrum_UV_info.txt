@@ -1,0 +1,2 @@
+Title: UV irradiance
+This example calculates the UV downwelling global irradiance at the surface for an aerosol loaded atmosphere. It reproduces the model results presented in Fig. 8 of the Mayer and Kylling (2005) paper. A detailed description of the example is found in the paper.

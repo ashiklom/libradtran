@@ -1,0 +1,57 @@
+#
+# Makefile for libRadtran's data/filter/adeos directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = adeos
+
+DATAFILES = adeos1_polder_443NP adeos1_polder_443P1 adeos1_polder_443P2 adeos1_polder_443P3 \
+            adeos1_polder_490NP adeos1_polder_565NP adeos1_polder_670P1 adeos1_polder_670P2 \
+            adeos1_polder_670P3 adeos1_polder_763NP adeos1_polder_765NP adeos1_polder_865P1 \
+            adeos1_polder_865P2 adeos1_polder_865P3 adeos1_polder_910NP adeos2_polder_443 \
+            adeos2_polder_443P adeos2_polder_490 adeos2_polder_565 adeos2_polder_670P \
+            adeos2_polder_763 adeos2_polder_765 adeos2_polder_865P adeos2_polder_910
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

@@ -1,0 +1,62 @@
+#
+# Makefile for libRadtran's data/altitude directory
+#
+# Arve Kylling
+# arve.kylling@nilu.no
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = altitude
+
+DATAFILES = ELEVATION_GTOPO_10min.cdf
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+SUBDIRS = 
+
+all: 
+	for dir in $(SUBDIRS); do echo making $@ in $$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+.PHONY: all
+
+
+dist: all
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/data/albedo/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(DISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/data/albedo/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/altitude
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/altitude
+.PHONY: install
+
+clean:
+	for dir in $(SUBDIRS); do echo making $@ in $$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+.PHONY: clean
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof
+

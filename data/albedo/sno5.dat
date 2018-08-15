@@ -1,0 +1,20 @@
+# Albedo data of snow 5 cm
+# From Uwe Feister and Rolf Grewe, Spectral albedo measurements in the 
+# UV and visible region over different types of surfaces, Photochemistry 
+# and Photobiology, 62, 736-744, 1995. 
+#
+# WL   SNO5 
+290  0.755
+300  0.764
+310  0.765
+320  0.769
+330  0.775
+340  0.785
+350  0.791
+360  0.796
+370  0.802
+380  0.807
+390  0.810
+400  0.818
+410  0.825
+420  0.826

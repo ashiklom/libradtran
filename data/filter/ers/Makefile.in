@@ -1,0 +1,54 @@
+#
+# Makefile for libRadtran's data/filter/ers directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = ers
+
+DATAFILES = ers1_atsr_ir11 ers1_atsr_ir12 ers1_atsr_ir37 ers1_atsr_v16 \
+            ers2_atsr_ir11 ers2_atsr_ir12 ers2_atsr_ir37 ers2_atsr_v16 \
+            ers2_atsr_v555  ers2_atsr_v659  ers2_atsr_v870
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

@@ -1,0 +1,25 @@
+uvspec is part of the libRadtran package which is available from
+
+    http://www.libradtran.org
+
+To unpack libRadtran issue the following commands on a unix system:
+
+    gzip -d libRadtran-latest-version-number.tar.gz
+    tar -xvf libRadtran-latest-version-number.tar
+
+Next 
+
+    cd libRadtran-latest-version-number
+
+and follow the instructions in the README and INSTALL files.
+
+Documentation is found in the doc directory.
+
+uvspec uses both C and Fortran code. Hence, to compile and link uvspec
+a Fortran compiler that is compatible with C is needed. The configure 
+script will find out whether your system's Fortran and C compilers are
+compatible.
+
+After a succesful build the uvspec executable is found in the bin 
+directory. libRadtran is currently being developed on both Linux and
+Max OSX systems.

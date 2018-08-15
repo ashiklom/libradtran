@@ -1,0 +1,6 @@
+Title: GOME Earth shine spectrum
+Simulates a GOME spectrum using the GOME measured solar flux as the
+solar source. Hence instrumental response is included.
+
+To include rotational Raman scattering invoke Raman flag in solver
+group.

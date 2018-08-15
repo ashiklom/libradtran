@@ -1,0 +1,5 @@
+Title: FLEX Earth shine spectrum
+Simulates a FLEX spectrum in the O2 B band including a fluorescence source
+
+To include rotational Raman scattering invoke Raman flag in solver
+group.

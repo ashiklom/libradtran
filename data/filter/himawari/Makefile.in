@@ -1,0 +1,59 @@
+#
+# Makefile for libRadtran's data/filter/himawari directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = himawari
+
+DATAFILES = himawari8_b01 himawari8_b02 himawari8_b03 himawari8_b04 \
+            himawari8_b05 himawari8_b06 himawari8_b07 himawari8_b08 \
+            himawari8_b09 himawari8_b10 himawari8_b11 himawari8_b12 \
+            himawari8_b13 himawari8_b14 himawari8_b15 himawari8_b16 \
+            himawari9_b01 himawari9_b02 himawari9_b03 himawari9_b04 \
+            himawari9_b05 himawari9_b06 himawari9_b07 himawari9_b08 \
+            himawari9_b09 himawari9_b10 himawari9_b11 himawari9_b12 \
+            himawari9_b13 himawari9_b14 himawari9_b15 himawari9_b16
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

@@ -1,0 +1,18 @@
+# aerosol species defined by the OPAC aerosol data base
+# reference:
+# Optical Properties of Aerosols and Clouds: The software package OPAC,
+# Hess. M., Koepke. P., and Schult, I.,
+# Bulletin of the American Meteorological Society
+# Vol. 79, No. 5, May 1998, page 831 - 844
+
+inso  # insoluble
+waso  # water_soluble
+soot  # soot
+ssam  # sea_salt_accumulation_mode
+sscm  # sea_salt_coarse_mode
+minm  # mineral_nucleation_mode
+miam  # mineral_accumulation_mode
+micm  # mineral_coarse_mode
+mitr  # mineral_transported
+suso  # sulfate_droplets
+ 

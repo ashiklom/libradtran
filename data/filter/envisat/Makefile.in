@@ -1,0 +1,57 @@
+#
+# Makefile for libRadtran's data/filter/envisat directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = envisat
+
+DATAFILES = envisat_aatsr_ir11 envisat_aatsr_ir12 envisat_aatsr_ir37 envisat_aatsr_v16 \
+            envisat_aatsr_v555 envisat_aatsr_v659 envisat_aatsr_v870 envisat_meris_ch01 \
+            envisat_meris_ch02 envisat_meris_ch03 envisat_meris_ch04 envisat_meris_ch05 \
+            envisat_meris_ch06 envisat_meris_ch07 envisat_meris_ch08 envisat_meris_ch09 \
+            envisat_meris_ch10 envisat_meris_ch11 envisat_meris_ch12 envisat_meris_ch13 \
+            envisat_meris_ch14 envisat_meris_ch15
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

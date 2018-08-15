@@ -1,0 +1,70 @@
+#
+# Makefile for libRadtran's data/crs directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = crs
+
+DATAFILES = crs_bro_cox.dat crs_hcho_cantrell.dat crs_oclo.dat \
+            crs_o3_dau.dat crs_o3_Molina.dat crs_o3_pab.dat crs_o3_all.dat \
+            crs_o3_dau_cf.dat crs_o3_mol_cf.dat crs_o3_pab_cf.dat qy_o3_talu.dat \
+	    crs_O3_UBremen_cf.dat \
+	    crs_no2_gom.dat crs_no2_012.dat crs_bro_wahner_228.dat crs_no2_davidson.dat\
+	    crs_NO2_UBremen_cf.dat \
+	    qy_no2_004.dat crs_hno2_007.dat \
+            qy_hno2.dat \
+	    crs_SO2_UBremen_cf.dat \
+            crs_o2.dat crs_co2_lew_cf.dat \
+            crs_o2_yoshino1988.dat \
+            Minschwaner_O2_fitcoef_cold.txt \
+            Minschwaner_O2_fitcoef_mid.txt \
+            Minschwaner_O2_fitcoef_hot.txt \
+            crs_o2_yoshino2005.dat \
+            crs_o2_ogawa1975.dat \
+            crs_o2_lewis1983.dat \
+            crs_co2_yoshino96_295K.dat \
+	    crs_o4_greenblatt.dat crs_o4_greenblatt.py
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/crs
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/crs
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

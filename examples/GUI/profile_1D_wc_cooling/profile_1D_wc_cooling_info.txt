@@ -1,0 +1,2 @@
+Title: 1D cooling rate in a cloudy atmosphere
+The instantaneous thermal cooling rate is calculated as a function of the altitude using the correlated-k distribution from Fu and Liou (1992). The atmosphere includes both aerosols and a cloud between 2 and 4 km. The figure includes heating rates from the 1D heating rate in a cloudy atmosphere example. 

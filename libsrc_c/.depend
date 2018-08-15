@@ -1,0 +1,78 @@
+ascii.o: ascii.c ../libsrc_c/ascii.h
+cnv.o: cnv.c numeric.h equation.h function.h spl.h locate.h linear.h \
+ cnv.h regress.h integrat.h table.h ascii.h
+equation.o: equation.c numeric.h equation.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h table.h ascii.h
+fortran_and_c.o: fortran_and_c.c fortran_and_c.h ascii.h
+function.o: function.c numeric.h equation.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h table.h ascii.h
+getopt.o: getopt.c
+integrat.o: integrat.c numeric.h equation.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h table.h ascii.h
+linear.o: linear.c numeric.h equation.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h table.h ascii.h
+regress.o: regress.c numeric.h equation.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h table.h ascii.h
+spl.o: spl.c numeric.h equation.h function.h spl.h locate.h linear.h \
+ cnv.h regress.h integrat.h table.h ascii.h
+locate.o: locate.c
+sun.o: sun.c sun.h
+errors.o: errors.c errors.h
+table.o: table.c table.h numeric.h equation.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h ascii.h
+wavelength.o: wavelength.c numeric.h equation.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h table.h ascii.h wavelength.h
+uvspecrandom.o: uvspecrandom.c
+snow.o: snow.c ../libsrc_c/getopt.h ascii.h numeric.h equation.h \
+ function.h spl.h locate.h linear.h cnv.h regress.h integrat.h table.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_f/solver.h ../libsrc_f/f77-uscore.h
+wcloud3d.o: wcloud3d.c ascii.h wcloud3d.h mystic.h phasetable.h cdisort.h \
+ ocean.h ../libsrc_f/f77-uscore.h ambralsfor.h
+specrend_uvspec.o: specrend_uvspec.c ascii.h linear.h numeric.h \
+ equation.h function.h spl.h locate.h cnv.h regress.h integrat.h table.h \
+ specrend_uvspec.h
+miecalc.o: miecalc.c ../libsrc_f/f77-uscore.h fortran_and_c.h ascii.h \
+ numeric.h equation.h function.h spl.h locate.h linear.h cnv.h regress.h \
+ integrat.h table.h miecalc.h
+phasetable.o: phasetable.c phasetable.h numeric.h equation.h function.h \
+ spl.h locate.h linear.h cnv.h regress.h integrat.h table.h ascii.h \
+ miecalc.h mystic.h cdisort.h ocean.h ../libsrc_f/f77-uscore.h \
+ ambralsfor.h errors.h
+raytracing.o: raytracing.c mystic.h phasetable.h cdisort.h ocean.h \
+ ../libsrc_f/f77-uscore.h ambralsfor.h uvspecrandom.h fortran_and_c.h \
+ ascii.h miecalc.h ascii.h
+rodents.o: rodents.c ../libsrc_f/solver.h ../libsrc_f/f77-uscore.h \
+ rodents.h ascii.h bandec.h
+sslidar.o: sslidar.c sslidar.h locate.h
+twostrebe.o: twostrebe.c equation.h numeric.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h table.h ascii.h twostrebe.h \
+ ../libsrc_f/solver.h ../libsrc_f/f77-uscore.h
+twomaxrnd.o: twomaxrnd.c equation.h numeric.h function.h spl.h locate.h \
+ linear.h cnv.h regress.h integrat.h table.h ascii.h twomaxrnd.h \
+ ../libsrc_f/solver.h ../libsrc_f/f77-uscore.h
+bandec.o: bandec.c bandec.h
+sunpos.o: sunpos.c sunpos.h
+sofi.o: sofi.c ascii.h sofi.h mystic.h phasetable.h cdisort.h ocean.h \
+ ../libsrc_f/f77-uscore.h ambralsfor.h uvspecrandom.h
+netCDF_functions.o: netCDF_functions.c netCDF_functions.h
+rayleigh.o: rayleigh.c
+cdisort.o: cdisort.c cdisort.h ocean.h ../libsrc_f/f77-uscore.h \
+ ambralsfor.h locate.h
+c_tzs.o: c_tzs.c ../libsrc_c/ascii.h ../libsrc_c/cdisort.h \
+ ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h \
+ ../libsrc_c/c_tzs.h locate.h
+mystic.o: mystic.c uvspecrandom.h wcloud3d.h mystic.h phasetable.h \
+ cdisort.h ocean.h ../libsrc_f/f77-uscore.h ambralsfor.h alis.h yang56.h \
+ sofi.h errors.h ascii.h miecalc.h numeric.h equation.h function.h spl.h \
+ locate.h linear.h cnv.h regress.h integrat.h table.h \
+ ../libsrc_f/solver.h ../libsrc_f/f77-uscore.h rayleigh.h vroom.h \
+ raytracing.h
+alis.o: alis.c alis.h mystic.h phasetable.h cdisort.h ocean.h \
+ ../libsrc_f/f77-uscore.h ambralsfor.h
+sos.o: sos.c ascii.h ../libsrc_f/f77-uscore.h fortran_and_c.h
+yang56.o: yang56.c yang56.h ascii.h
+vroom.o: vroom.c mystic.h phasetable.h cdisort.h ocean.h \
+ ../libsrc_f/f77-uscore.h ambralsfor.h vroom.h uvspecrandom.h errors.h
+ambralsfor.o: ambralsfor.c ambralsfor.h ../libsrc_f/f77-uscore.h
+ocean.o: ocean.c ocean.h ../libsrc_f/f77-uscore.h uvspecrandom.h \
+ fortran_and_c.h ascii.h

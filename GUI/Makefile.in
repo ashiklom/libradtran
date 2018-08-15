@@ -1,0 +1,70 @@
+#
+# Makefile for libRadtran's GUI directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ..
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+include $(TOPDIR)/Makeconf
+
+SUBDIRS = resources
+
+GUIFILES = GUI.py FloatSpin.py create.py widgets.py \
+	   subprocess_fix.py app_setup.py config_setup.py \
+	   exe_setup.py linux_setup.py \
+	   variables.py Plot.py MakeExampleDialog.py wxmpl.py
+
+DISTFILES = Makefile.in README INSTALL $(GUIFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all: 
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: all
+
+check: all
+.PHONY: check
+
+install: all
+	$(MKPATH) $(bindir)
+	$(INSTALL) $(GUIFILES) $(bindir)
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: install
+
+uninstall:
+	for f in $(GUIFILES); do \
+	  fbase=`basename $$f`; \
+	  $(RM) $(bindir)/$$fbase; \
+	done
+.PHONY: uninstall
+
+clean:
+.PHONY: clean
+
+mostlyclean:
+.PHONY: mostlyclean
+
+distclean: clean
+	rm -f Makefile
+.PHONY: distclean
+
+realclean: distclean
+	rm -f tags TAGS
+.PHONY: realclean
+
+dist:
+	for dir in $(SUBDIRS); do mkdir ../`cat ../.fname`/GUI/$$dir; $(MAKE) -C $$dir $@ || exit $$?; done
+	ln $(DISTFILES) ../`cat ../.fname`/GUI
+.PHONY: dist
+
+mystic-dist:
+	for dir in $(SUBDIRS); do mkdir ../`cat ../.fname`/GUI/$$dir; $(MAKE) -C $$dir $@ || exit $$?; done
+	ln $(MYSTICDISTFILES) ../`cat ../.fname`/GUI
+.PHONY: mystic-dist
+
+Makefile: Makefile.in ../config.status
+	cd ..; sh config.status

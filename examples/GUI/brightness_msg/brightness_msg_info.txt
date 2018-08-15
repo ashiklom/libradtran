@@ -1,0 +1,2 @@
+Title: Satellite channel (thermal)
+Brightness temperature of MSG1 channel at 9.7 micrometers for a cloudless sky as a function of viewing nadir angle. The representative wavelengths parameterization is utilized. The parameterization data need to be installed.

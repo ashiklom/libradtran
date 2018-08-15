@@ -1,0 +1,17 @@
+#
+# This example reproduces Fig 8. in Mayer and Kylling (2005). 
+# "Technical note: the libRadtran software package for radiative 
+# transfer calculation-description and examples of use", ACP, 5, 1855-1877, 2005.
+# Available from http://www.atmos-chem-phys.net/5/1855/2005/acp-5-1855-2005.html
+#
+# See that paper for a complete description.
+#
+
+
+The spectrum_UV* files were used to simulate the measured spectrum in Fig.8.
+To run the input file from the command line issue the following command:
+
+       uvspec < spectrum_UV.inp > your_output_file
+
+The included spectrum_UV.OUT is a sample output files calculated by
+Arve Kylling on an iMac 20100201.

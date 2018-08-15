@@ -1,0 +1,180 @@
+Open jobs for finishing Radtran's libRadtran_c and libRadtran_f:
+----------------------------------------------------------------
+Status: June 10, 2008
+Approved by the complete development team :-)
+
+If you have time and talent to take over any of the jobs below please
+contact the developers
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Complete checking of input variables to uvspec
+
+* Better error handling. In uvspec.h have a list of appropriate 
+  error codes. But, be careful, this must agree with error codes 
+  in ascii.h etc. It would be nice to have standard error messages 
+  for each error code.
+
+* Return of the error flags from FORTRAN code to main program, instead
+  of producing segmentation faults.
+
+* pass 'quiet' to ALL parts of libRadtran including FORTRAN parts
+
+* More configuration options for aerosols.
+  - wavelength dependent aerosol_gg_file, aerosol_tau_file, aerosol_ssa_file
+    (matrix input format like densfile_sza)
+
+* More complete testing for developing purposes
+
+* easy adding of new absorbing gases   
+  - more flexible input of atmospheric constituents in atmosphere file
+  - read profile of the new gas
+  - absorption cross-sections in an external file
+
+* interface to an line-by-line model and absorption data base (HITRAN)
+
+* consistent treatment of N2 + O2 + ... = 1
+
+* mixing ratio of N2! Required for sbdart!
+  (sbdart includes US standard atmosphere mixing ratio profiles
+      block data trcblk_bd 
+      data n2/ 7.81E+05, ...
+   these profiles are scaled with the xn2, xo2, ...
+   values if these are > 0. Currently xn2 is set to -1 -
+   therefore the standard value 0.781 is used. This is even 
+   true "on Mars": The mixing ratio might be set to 1 for 
+   CO2 by libRadtran but sbdart adds additional 0.781 N2 
+   plus all other gases ... -> >10mbar instead of 6
+   altitude is probably treated correctly! altitude is 
+   subtracted from zd[] in redistribute.c which comes after
+   crs_ck where taugas() is called. 
+
+* same is true for other absorbers: CO, SO2, NH3, NO, HNO3;
+  default profiles are defined within taugas for those and 
+  nothing is known about them outside sbtaugas; should
+  be homogenized: all trace gases should be setup in 
+  atmosphere.c etc.
+  
+* more consistent treatment of scaling with mixing ratios,
+  columns, and dens_files
+  - using e.g. mixing_ratio 50% will scale up a minor constituent 
+    unexpectedly to 30% = 0.5/(1.0+0.5)=30% instead of 50%
+    -> reduce all other constituents accordingly
+  - take care of difference 
+       specific humidity = mass_wv / (mass_air_dry + mass_wv) and 
+       mixing ratio      = mass_wv / (mass_air_dry          )
+  - readjust height scale ????
+
+* fully spherical solver, to calculate radiance at low viewing angles
+
+* possibility to add more than one dens file 
+  (different gas measurements on different vertical grids)
+
+* Include more radiative transfer equation solvers in libRadtran.
+  Of special interest are
+    - shdom, the 3D code of Frank Evans, and
+    - codes that account for changes in the refractive index, i.e.
+      at the atmosphere ocean boundary.
+    - ps2str from TUV?
+    - qdisort (to include Raman scattering)
+    - very fast twostream approximation
+
+* Include standard clouds; 
+  e.g. it would be nice to simply select a 'wc_type stratocumulus'
+
+* Better o3 cross sections for the Chappuis band?
+
+* Default extraterrestrial spectrum which covers the "complete" 
+  wavelength range
+ 
+* Create a global header file, libRadtran.h which
+  includes everything needed for libRadtran_c.a and libRadtran_f.a.
+
+* Tool to create custom-made correlated-k tables and add support
+  for a generic correlated-k approximation
+
+More information is available on request.
+
+
+Specific things:
+
+(1) Improve the dewpoint function in libsrc_f/wvapor.f
+    as this function does only cover -35 ... +35 degree C 
+
+(2) Better checking for tau550 option: with e.g. correlated_k KATO, tau550
+    does not produce an error message if the lower wavelength is larger 
+    than 550nm; instead the optical thickness is set to 0; need to 
+    consider wvn_upper and wvn_lower here!
+
+(3) Saturate water vapor in MYSTIC water and ice clouds
+
+(4) oceabrdf() returns values for arbitrary wavelengths; if the
+    wavelength is larger than 4 micron, it is replaced by 4 micron;
+    should either stop and return an error or provide a routine 
+    that calculates useful numbers in the IR. In general, there should 
+    be a warning e.g. if the albedo is larger than 0.1 in a thermal 
+    calculation.
+
+(5) Clean up ck.c etc: scattering optical thickness is obviously correctly 
+    passed to the sbdart routines; hence need to clean up comments
+
+(6) Rayleigh scattering is calculated from the air density column, except when 
+    correlated_k FU is specified (then the pressure is used). It should be 
+    checked in libRadtran if air density, temperature, and pressure are 
+    consistent because a user may want to specify his own pressure profile 
+    and might forget to scale air density accordingly. Doing that, a new 
+    input, pressure_profile should be defined also.
+
+(7) Introduce checks for particle size in ic_fu96() and ic_fu98() to
+    prevent abuse (that is, to prevent that the parameterization is 
+    applied to size ranges for which is hasn't been created).
+
+(8) Handle scaling by Fu and Liou, Yang et al. etc consistently. That is,
+    if a user defines a tau550 or a tau, he wants to define the actual
+    optical thickness, not the scaled quantity. Possible solution: 
+    Introduce two fields of tau, omega, g (scaled and unscaled) and 
+    carry them through libradtran. Which is of course only possible 
+    if the scaling factor f is provided by the parameterization 
+    which is at least the case for Fu and Liou.
+
+(9) Make IPA consistent again (e.g. work with MYSTIC input files; water and
+    ice clouds, ...)
+
+
+Visions
+
+(0)  get radiative output for input:
+     place here
+     time  now
+
+(1)  complete implementation of polarisation
+      - Rayleigh, aerosols, clouds, surface 
+
+(2)  solvers for active instruments:a
+     Lidar simulator, including
+      - high-spectral-resolution lidar
+      - take care of phase shift (speckles)
+      - wind lidar simulator
+        (beat (Schwebung) of 2 wavelength)
+     Radar simulator, including
+      - optical properties in (sub-)millimeter range
+
+(3)  libRadtran goes to space
+     - radiative transfer for Mars, Venus, Jacob ...
+     - input option "planet Mars" etc
+     - clean up every assumption, which assume
+       earth environment, especially atmosphere 
+       (e.g. 78% N2; Rayleigh scattering by "air")
+
+(4)  libRadtran in the submarine region
+     underwater radiative transfer
+
+(5)  move wavelength loop as "far out" as possible to
+     require only optical properties for one wavelength 
+     in memory at one time
+
+(6)  Switch to Fortran 90 which allows dynamic memory allocation?
+     Change the solver in libsrc_f accordingly, in order to get 
+     rid of DISORT.MXD and the recompilations, and also to speed up
+     calculations
+

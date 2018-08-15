@@ -1,0 +1,2 @@
+Title: Transmittance (REPTRAN)
+Atmospheric transmittance in the solar spectral range for a cloudless sky. The representative wavelengths parameterization is utilized. The parameterization data need to be installed. 

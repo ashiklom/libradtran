@@ -1,0 +1,52 @@
+#
+# Makefile for libRadtran's data/wc/isccp directory
+#
+# Bernhard Mayer
+# bernhard.mayer@dlr.de
+
+TOPDIR = ../../../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = isccp
+
+DATAFILES = # wc_reflectivity.dat wc_reflectivity.cdf
+
+DISTFILES = Makefile.in # dat2cdf.sh dat2cdf.awk $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/wc/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/wc/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+#	$(MKPATH) $(datafiledir)/wc/isccp
+#	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/wc/isccp
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

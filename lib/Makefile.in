@@ -1,0 +1,54 @@
+#
+# Makefile for libRadtran's lib directory
+#
+# Arve Kylling
+# arve.kylling@nilu.no
+
+TOPDIR = ..
+
+include $(TOPDIR)/Makeconf
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+DISTFILES = Makefile.in
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all:
+.PHONY: all
+
+install: all
+.PHONY: install
+
+uninstall:
+.PHONY: uninstall
+
+spell: $(SPELL)
+.PHONY: spell
+
+clean:
+.PHONY: clean
+
+mostlyclean:
+.PHONY: mostlyclean
+
+distclean: clean
+	rm -f Makefile
+.PHONY: distclean
+
+realclean: distclean
+	rm -f tags TAGS
+.PHONY: realclean
+
+dist: all
+	ln $(DISTFILES) ../`cat ../.fname`/lib
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../`cat ../.fname`/lib
+.PHONY: mystic-dist
+
+Makefile: Makefile.in ../config.status
+	cd ..; sh config.status
+

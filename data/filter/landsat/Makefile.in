@@ -1,0 +1,62 @@
+#
+# Makefile for libRadtran's data/filter/landsat directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = landsat
+
+DATAFILES = landsat1_mss_b1 landsat1_mss_b2 landsat1_mss_b3 landsat1_mss_b4 \
+            landsat2_mss_b1 landsat2_mss_b2 landsat2_mss_b3 landsat2_mss_b4 \
+            landsat3_mss_b1 landsat3_mss_b2 landsat3_mss_b3 landsat3_mss_b4 \
+            landsat4_mss_b1 landsat4_mss_b2 landsat4_mss_b3 landsat4_mss_b4 \
+            landsat4_tm_b1 landsat4_tm_b2 landsat4_tm_b3 landsat4_tm_b4 \
+            landsat4_tm_b5 landsat4_tm_b6 landsat4_tm_b7 landsat5_mss_b1 \
+            landsat5_mss_b2 landsat5_mss_b3 landsat5_mss_b4 landsat5_tm_b1 \
+            landsat5_tm_b2 landsat5_tm_b3 landsat5_tm_b4 landsat5_tm_b5 \
+            landsat5_tm_b6 landsat5_tm_b7 landsat7_etm_b1 landsat7_etm_b2 \
+            landsat7_etm_b3 landsat7_etm_b4 landsat7_etm_b5 landsat7_etm_b6 \
+            landsat7_etm_b7 landsat7_etm_b8
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

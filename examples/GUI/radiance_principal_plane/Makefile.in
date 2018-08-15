@@ -1,0 +1,70 @@
+#
+# Makefile for libRadtran's examples/GUI/radiance_principal_plane directory
+#
+# Arve Kylling
+# arve.kylling@nilu.no
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = radiance_principal_plane
+
+EXAMPLEFILES =  radiance_principal_plane_onelayer.dat \
+	radiance_principal_plane.OUT \
+	radiance_principal_plane_plot.py \
+	radiance_principal_plane.png radiance_principal_plane_cloud.dat \
+	radiance_principal_plane_prev.jpg radiance_principal_plane_info.txt \
+	radiance_principal_plane_thumb.jpg radiance_principal_plane.INP 
+
+DISTFILES = Makefile.in $(EXAMPLEFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: inp.inp big.jpg thumb.jpg info.txt
+
+inp.inp:
+	cp radiance_principal_plane.INP inp.inp
+
+big.jpg: 
+	cp radiance_principal_plane_prev.jpg big.jpg
+
+thumb.jpg:
+	cp radiance_principal_plane_thumb.jpg thumb.jpg	
+
+info.txt:
+	cp radiance_principal_plane_info.txt info.txt
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/examples/GUI/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/examples/GUI/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(examplesdir)/GUI/$(THISDIR)
+	$(INSTALL_DATA) $(EXAMPLEFILES) $(examplesdir)/GUI/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof
+

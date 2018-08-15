@@ -1,0 +1,66 @@
+# Makefile for GNU makeinfo.  -*- Indented-Text -*-
+# Copyright (C) 1993 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+TOPDIR = ../../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+include $(TOPDIR)/Makeconf
+
+SUBDIRS = input
+
+DISTFILES = Makefile.in cloudprp2cdf.awk cloudprp2cdf.sh makeinp.sh README
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all: 
+	for dir in $(SUBDIRS); do echo making $@ in $$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+.PHONY: all
+
+dist:
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/data/cloudprp/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(DISTFILES) ../../`cat ../../.fname`/data/cloudprp
+.PHONY: dist
+
+mystic-dist:
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/data/cloudprp/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/data/cloudprp
+.PHONY: mystic-dist
+
+clean:
+	for dir in $(SUBDIRS); do echo making $@ in $$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+.PHONY: clean
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+install:
+.PHONY: clean
+
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

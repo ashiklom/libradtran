@@ -1,0 +1,43 @@
+README file for the uvspec Graphical User Interface.
+
+**** How to invoke the GUI on various platforms with python:
+
+* Installation
+ To run the GUI you need python version 2.5 or 2.6, older versions might work.
+ wxPython version 2.8 or newer need to be installed.
+ A version of Numpy and Matplotlib for plotting.
+ * Linux
+  The easiest way to install python and wxPython on linux is by using your favourite packetmanager.
+  If you prefer to install from source or binaries you can follow the instructions for Microsoft Window$.
+ * Mac OS X
+   On Mac OS X it is recommended to use macports, http://www.macports.org/.
+   If you prefer to install from source or binaries you can follow the instructions for Microsoft Window$.
+ * Microsoft Window$
+   Installers for Python and wxPython can be found on http://www.python.org/ and http://www.wxpython.org/
+
+* Running
+
+When running the GUI from the command line use GUI.py. Type "python GUI.py".
+The directory of the uvspec executable needs to be included in the PATH environment variable.
+
+**** How to invoke the GUI on various platforms using the executables:
+
+Double click on the binary for your platform.
+
+**** Want to contribute?
+
+Please change and modify the GUI as you like. The main file is
+GUI.py. It should be reasonably well documented and understandable for
+anyone with some knowledge of python and GUI programming. And please
+share your developments with the rest of the community by letting us
+learn about your extensions and improvements. You find us at
+www.libradtran.org. 
+
+
+**** Mystic3D options
+To turn on mystic3D options in the GUI set the variable threedmystic_in_GUI to True in the file variables.py.
+
+**** Problems or comments
+
+The GUI is developed under Mac OSX using wxpython. Please address any
+questions about the GUI to developers@libradtran.org.

@@ -1,0 +1,141 @@
+#!/usr/bin/perl
+use FileHandle;
+use Getopt::Long;
+use Carp;
+
+$quiet = 0;
+$limit = 0;
+$maxdiff = 0;
+$ncol  = 0;
+$nox   = 0;
+$sub   = 0;
+
+$ret = GetOptions(
+		  "--quiet",\$quiet,
+		  "--help",\&usage,
+		  "--nox",\$nox,
+		  "--sub",\$sub,
+		  "--ncol=i",\$ncol,
+		  "--limit=f",\$limit,
+		  "--maxdiff=f",\$maxdiff);
+if ($ret==0) {
+    exit;
+}
+
+$file0 = shift @ARGV;
+$file1 = shift @ARGV;
+
+$fh0 = new FileHandle $file0 || croak "Couldn't find file: $file0";
+$fh1 = new FileHandle $file1 || croak "Couldn't find file: $file1";
+
+@lines0 = <$fh0>;
+@lines1 = <$fh1>;
+@lines0 = grep !/^#/, @lines0;  # rm comment lines
+@lines1 = grep !/^#/, @lines1;  # rm comment lines
+
+$fh0->close;
+$fh1->close;
+
+$nlines0 = $#lines0;
+$nlines1 = $#lines1;
+if ( $nlines0 != $nlines1) {
+    printf STDERR "Different number of lines in files\n  %s %12d\n  %s %12d\nAborting\n",
+    $file0, $nlines0, $file1, $nlines1;
+    croak;
+}
+
+$ndiffs = 0;
+my $maximum = -1.E+12;
+my $absval0  = 0;
+my $absval1  = 0;
+foreach $i (0...$nlines0) {
+    $line0 = @lines0[$i];
+    chop $line0;
+    $line0 =~ s/^[ ]*//;
+    @parts0 = split(/[ ]+/,$line0);
+    $line1 = @lines1[$i];
+    chop $line1;
+    $line1 =~ s/^[ ]*//;
+    @parts1 = split(/[ ]+/,$line1);
+    $nparts0 = $#parts0;
+    $nparts1 = $#parts1;
+    if ( $nparts0 != $nparts1) {
+	printf STDERR "Different number of items on line\n %s :%12d\n %s :%12d\nAborting\n",
+	$line0, $nparts0, $line1, $nparts1;
+	croak;
+    }
+
+    $x0 = $parts0[0];
+    $x1 = $parts1[0];
+    if ( $x0 != $x1 && !$nox) {
+	printf STDERR  "Different x-values on line\n %s :%f\n %s :%f\nAborting\n",
+	$line0, $x0, $line1, $x1;
+	croak;
+    }
+    if ( $quiet == 0 && !$nox) { printf STDOUT "%12.6f", $x0; }
+    my $start = 1;
+    if ($nox) {$start = 0;}
+    foreach $j ($start...$nparts0) {
+      if ( $parts1[$j] eq "nan" || $parts0[$j] eq "nan" ) {
+	printf STDERR  "Part $j is nan\n%s\n%s\nAborting\n",	$line0, $line1;
+	croak;
+      }
+        if ( $sub ) {
+	    $ratio = $parts1[$j]-$parts0[$j]; 
+	}
+	else {
+	    if ($parts0[$j] == 0.0) { $ratio=0.0;}
+	    else { $ratio = $parts1[$j]/$parts0[$j]; }
+	    if (abs($parts0[$j])>$limit) {
+		if (abs(1.-$ratio) > $maximum)  {
+		    $maximum = abs(1.-$ratio);
+		    $absval0  = $parts0[$j];
+		    $absval1  = $parts1[$j];
+		}
+	    }
+	    if ( abs(1.-$ratio)>abs($maxdiff) && abs($parts0[$j])>$limit) {
+		$ndiffs++;
+	    } 	
+	}
+	if ($ncol > 0 ) {
+	    if ($quiet == 0 && $j%$ncol == 0) {   printf "  %12.6f", $ratio; }
+	} 
+	else {
+	    if ($quiet == 0) {   printf "  %12.6f", $ratio; }
+	}
+    }
+    if ($quiet == 0) {   printf "\n"; }
+} 
+if (abs($limit) > 0.0 ) { 
+    printf "%d %.2e %12.6e %12.6e\n", $ndiffs, $maximum, $absval0, $absval1;
+}
+
+sub usage {
+    printf STDERR "\n";
+    printf STDERR "ndiff calculates the relative difference between two files\n";
+    printf STDERR "containing columns of numbers (file1/file0). The first column is\n";
+    printf STDERR "not included. The calculated differences are output to stdout.\n";
+    printf STDERR "If limit is different from 0.0, the number of differences greater\n";
+    printf STDERR "than abs(maxdiff) are printed to stdout.\n";
+    printf STDERR "\n";
+    printf STDERR "Usage: ndiff [options] file0 file1\n";
+    printf STDERR "\n";
+    printf STDERR "ndiff understands the following options:\n";
+    printf STDERR "\n";
+    printf STDERR "--limit <value>          : The minimum value in file0 considered when\n";
+    printf STDERR "                           counting the number of differences between file0\n";
+    printf STDERR "                           and file1. Default is 0.0.\n";
+    printf STDERR "--maxdiff <value>        : The maximum relative difference allowed between\n";
+    printf STDERR "                           file0 and file1. Defaut is 0.0.\n";
+    printf STDERR "--sub                    : Subtract file1 - file0 instead of division\n";
+    printf STDERR "--nox                    : First column is included\n";
+    printf STDERR "--quiet                  : The differences are not output, but the number of\n";
+    printf STDERR "                           differences are still printed.\n";
+    printf STDERR "--help                   : Prints this message.\n";
+    printf STDERR "\n";
+    exit;
+}
+
+# Local Variables:
+# mode: Perl
+# End:

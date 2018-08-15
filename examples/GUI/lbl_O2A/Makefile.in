@@ -1,0 +1,68 @@
+#
+# Makefile for libRadtran's examples/GUI/lbl_O2A directory
+#
+# Arve Kylling
+# arve.kylling@nilu.no
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = lbl_O2A
+
+EXAMPLEFILES =  big2.jpg           lbl_O2A_info.txt   lbl_O2A.png \
+	lbl_O2A.INP        lbl_O2A_prev.jpg  \
+	lbl_O2A.OUT        lbl_O2A_prev.png   \
+	lbl_O2A_plot.py    lbl_O2A_thumb.jpg  
+
+DISTFILES = Makefile.in $(EXAMPLEFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: inp.inp big.jpg thumb.jpg info.txt
+
+inp.inp:
+	cp lbl_O2A.INP inp.inp
+
+big.jpg: 
+	cp lbl_O2A_prev.jpg big.jpg
+
+thumb.jpg:
+	cp lbl_O2A_thumb.jpg thumb.jpg	
+
+info.txt:
+	cp lbl_O2A_info.txt info.txt
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/examples/GUI/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/examples/GUI/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(examplesdir)/GUI/$(THISDIR)
+	$(INSTALL_DATA) $(EXAMPLEFILES) $(examplesdir)/GUI/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof
+

@@ -1,0 +1,62 @@
+#
+# Makefile for libRadtran's data/filter/sentinel directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = sentinel
+
+DATAFILES = sentinel2a_msi_b01 sentinel2a_msi_b02 sentinel2a_msi_b03 sentinel2a_msi_b04 \
+            sentinel2a_msi_b05 sentinel2a_msi_b06 sentinel2a_msi_b07 sentinel2a_msi_b08 \
+            sentinel2a_msi_b08a sentinel2a_msi_b09 sentinel2a_msi_b10 sentinel2a_msi_b11 \
+            sentinel3_olci_b01 sentinel3_olci_b02 sentinel3_olci_b03 sentinel3_olci_b04 \
+            sentinel3_olci_b05 sentinel3_olci_b06 sentinel3_olci_b07 sentinel3_olci_b08 \
+            sentinel3_olci_b09 sentinel3_olci_b10 sentinel3_olci_b11 sentinel3_olci_b12 \
+            sentinel3_olci_b13 sentinel3_olci_b14 sentinel3_olci_b15 sentinel3_olci_b16 \
+            sentinel3_olci_b17 sentinel3_olci_b18 sentinel3_olci_b19 sentinel3_olci_b20 \
+            sentinel3_olci_b21 sentinel3_slstr_b1 sentinel3_slstr_b2 sentinel3_slstr_b3 \
+            sentinel3_slstr_b4 sentinel3_slstr_b5 sentinel3_slstr_b6 sentinel3_slstr_b7 \
+            sentinel3_slstr_b8 sentinel3_slstr_b9
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

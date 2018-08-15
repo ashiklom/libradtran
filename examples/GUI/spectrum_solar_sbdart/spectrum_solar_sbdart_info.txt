@@ -1,0 +1,2 @@
+Title: Solar spectrum
+The downward solar irradiance at the Earth's surface for a cloudless sky. The SBDART molecular absorption parameterization is utilized.

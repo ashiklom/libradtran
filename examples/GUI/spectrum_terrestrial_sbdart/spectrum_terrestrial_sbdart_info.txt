@@ -1,0 +1,2 @@
+Title: Terrestrial spectrum from SBDART
+The downward terrestrial irradiance at the Earth's surface for a cloudless sky. The SBDART molecular absorption parameterization is utilized.

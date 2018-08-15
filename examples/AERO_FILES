@@ -1,0 +1,21 @@
+# A sample input file, to be used with "aerosol_files".
+# In the real world a different optical properties file 
+# would be specified for each layer. Note the "NULL.LAYER" 
+# on top which is required to mark the top of the uppermost 
+# aerosol-loaded layer, if (as in this example) the aerosol
+# is not defined all the way to the top of the atmosphere. 
+# Here, the uppermost layer extends from 10km to 30km.
+
+     30.000  ../examples/NULL.LAYER
+     10.000  ../examples/AERO_085.LAYER
+      9.000  ../examples/AERO_085.LAYER
+      8.000  ../examples/AERO_085.LAYER
+      7.000  ../examples/AERO_085.LAYER
+      6.000  ../examples/AERO_085.LAYER
+      5.000  ../examples/AERO_085.LAYER
+      4.000  ../examples/AERO_050.LAYER
+      3.000  ../examples/AERO_050.LAYER
+      2.000  ../examples/AERO_050.LAYER
+      1.200  ../examples/AERO_050.LAYER
+      1.000  ../examples/AERO_085.LAYER
+      0.000  ../examples/AERO_085.LAYER

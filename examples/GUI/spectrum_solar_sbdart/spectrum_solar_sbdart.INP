@@ -1,0 +1,12 @@
+sza 32.000
+atmosphere_file ../data/atmmod/afglss.dat
+wavelength 200.000 4000.000
+pressure 1010.0
+rte_solver disort
+output_user lambda eglo edir eup
+source solar ../data/solar_flux/kurudz_1.0nm.dat
+mol_modify O3 300.00 DU
+mol_abs_param SBDART
+number_of_streams 6
+quiet 
+albedo 0.3

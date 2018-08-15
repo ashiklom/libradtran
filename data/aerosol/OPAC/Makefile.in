@@ -1,0 +1,59 @@
+#
+# Makefile for libRadtran's data/aerosol/OPAC directory
+#
+# Adopted from ../shettle/Makefile.in by Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../../../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = OPAC
+
+SUBDIRS = optprop refractive_indices standard_aerosol_files
+
+DATAFILES = size_distr.cfg
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: all
+
+dist: 
+	for dir in $(SUBDIRS); do mkdir ../../../`cat ../../../.fname`/data/aerosol/OPAC/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/aerosol/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: 
+	for dir in $(SUBDIRS); do mkdir ../../../`cat ../../../.fname`/data/aerosol/OPAC/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/aerosol/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/aerosol/OPAC
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/aerosol/OPAC
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

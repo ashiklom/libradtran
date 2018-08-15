@@ -1,0 +1,2 @@
+Title: SCIAMACHY simulation 
+Nadir radiance for a SCIAMACHY-like instrument with spectral resolution of 0.44nm and sampling distance 0.22nm. The fine structure is caused by NO2 absorption and is used to retrieve NO2.

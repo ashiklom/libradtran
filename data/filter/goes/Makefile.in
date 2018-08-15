@@ -1,0 +1,67 @@
+#
+# Makefile for libRadtran's data/filter/goes directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = goes
+
+DATAFILES = goes-r_abi_ch01 goes-r_abi_ch02 goes-r_abi_ch03 goes-r_abi_ch04 \
+            goes-r_abi_ch05 goes-r_abi_ch06 goes-r_abi_ch07 goes-r_abi_ch08 \
+            goes-r_abi_ch09 goes-r_abi_ch10 goes-r_abi_ch11 goes-r_abi_ch12 \
+            goes-r_abi_ch13 goes-r_abi_ch14 goes-r_abi_ch15 goes-r_abi_ch16 \
+            goes-s_abi_ch01 goes-s_abi_ch02 goes-s_abi_ch03 goes-s_abi_ch04 \
+            goes-s_abi_ch05 goes-s_abi_ch06 goes-s_abi_ch07 goes-s_abi_ch08 \
+            goes-s_abi_ch09 goes-s_abi_ch10 goes-s_abi_ch11 goes-s_abi_ch12 \
+            goes-s_abi_ch13 goes-s_abi_ch14 goes-s_abi_ch15 goes-s_abi_ch16 \
+            goes-t_abi_ch01 goes-t_abi_ch02 goes-t_abi_ch03 goes-t_abi_ch04 \
+            goes-t_abi_ch05 goes-t_abi_ch06 goes-t_abi_ch07 goes-t_abi_ch08 \
+            goes-t_abi_ch09 goes-t_abi_ch10 goes-t_abi_ch11 goes-t_abi_ch12 \
+            goes-t_abi_ch13 goes-t_abi_ch14 goes-t_abi_ch15 goes-t_abi_ch16 \
+            goes-u_abi_ch01 goes-u_abi_ch02 goes-u_abi_ch03 goes-u_abi_ch04 \
+            goes-u_abi_ch05 goes-u_abi_ch06 goes-u_abi_ch07 goes-u_abi_ch08 \
+            goes-u_abi_ch09 goes-u_abi_ch10 goes-u_abi_ch11 goes-u_abi_ch12 \
+            goes-u_abi_ch13 goes-u_abi_ch14 goes-u_abi_ch15 goes-u_abi_ch16
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

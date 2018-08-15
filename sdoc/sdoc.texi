@@ -1,0 +1,674 @@
+\input texinfo  @c -*-texinfo-*-
+@c %**start of header
+@setfilename sdoc.info
+@settitle   
+@c %**end of header
+
+
+@c @setchapternewpage odd
+
+@ifinfo
+
+
+Copyright @copyright{}     Bernhard Mayer                                                 
+@end ifinfo
+
+
+@titlepage
+@title 
+@author    Bernhard Mayer                                                 
+
+
+@c  The following two commands
+@c  start the copyright page.
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{}     Bernhard Mayer                                                 
+
+@end titlepage
+
+@ifinfo
+@node Top, Copying, (dir), (dir)
+@top sdoc
+@end ifinfo
+
+@menu
+* Copying::          Your rights and freedoms.
+* Overview::         Overview of the library.
+* Definitions::      Type and macro definitions.
+* Functions::        Function definitions.
+* Functions index::  Index of functions
+@end menu
+
+@node Copying, Overview, Top, Top
+@chapter Copying
+
+ Copyright (C) 1997 Bernhard Mayer                                
+                                                                      
+ This program is free software; you can redistribute it and/or modify 
+ it under the terms of the GNU General Public License as published by 
+ the Free Software Foundation; either version 1, or (at your option)  
+ any later version.                                                   
+                                                                      
+ This program is distributed in the hope that it will be useful,      
+ but WITHOUT ANY WARRANTY; without even the implied warranty of       
+ MERCHANTABILITY of FITNESS FOR A PARTICULAR PURPOSE. See the         
+ GNU General Public License for more details.                         
+                                                                      
+ To obtain a copy of the GNU General Public License write to the      
+ Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139,   
+ USA.                                                             
+
+@node Overview, Definitions, Copying, Top
+@chapter Overview
+
+ @strong{sdoc} is a tool for automatic documentation of source code.      
+ It may be used for documentation of C, Fortran and AWK code
+ if the comments follow some simple rules. Extension to other
+ languages should be straightforward. The generated documentation
+ is written in texinfo. Comments which are to be included into
+ the documentation may therefore contain any valid texinfo 
+ command. An example for a sdoc generated file is the document which
+ you are currently reading. 
+
+ sdoc is a awk script which was tested with GNU awk 3.0.0
+ (version 2.15 will @strong{NOT} work!).
+
+ @strong{Usage:}
+ @example
+ gawk -f sdoc.awk -vcnf="filename" <source file> > <texinfo file> 
+ @end example
+
+ A configuration file, specified in the variable cnf on the command line
+ may be used for some settings. Example:
+ @example
+  
+ @end example
+
+       "lang" is either "c", "fortran", or "awk", 
+
+       "lev"  is either "document", "chapter", "section", or "subsection" 
+
+       "topname" is the name of the chapter, section or subsection 
+
+       "out"  is either "latex" or "texinfo" 
+
+       "num"  is either "on" or "off"  
+
+       "page" is either "on" or "off"
+
+ "lang" defaults to "c", "lev" to "document", "topname" to the filename
+ without extension, "out" to "texinfo", "num" to "on", and "page" to "off" 
+
+ @strong{level:} "document" means that a complete document will be created
+ while "chapter", "section", or "subsection" will create only 
+ part of a document.
+
+ @strong{output:} if latex is chosen, the output of sdoc.awk has
+ to be piped through 'gawk -f texinfo2latex.awk'
+
+ @strong{numbering:} "on"   numbered sections,
+                     "off"  unnumbered sections
+
+ @strong{pagebreak:} "on"   pagebreak after each section,
+                     "off"  no pagebreak after each section
+
+ There are two ways of including more than one source files
+ in a documentation:
+ @enumerate
+ @item 
+ @example
+ gawk -f sdoc.awk -vlevel="section" -vtopname="allfuncs" 
+                  source1.c source2.c ... > source.texi
+ @end example
+ will create @strong{one} section "allfuncs" containing the documentation 
+ for all files.
+
+ @item 
+ @example
+ gawk -f sdoc.awk source1.c  >  source1.texi
+ gawk -f sdoc.awk source2.c  >  source2.texi
+ ...
+ @end example
+ will create separate sections for all source files, named "source1", "source2", ...
+ which must be included separately.
+ @end enumerate
+
+ For more examples have a look at the "makefile" which is
+ included in the distribution. 
+
+ The documentation is generated according to the following rules:        
+
+ @enumerate
+ @item The generated texinfo file has four chapters: 
+   @enumerate
+   @item Copying     (copying conditions)
+   @item Overview    (overview over the source package)
+   @item Definitions (definitions of variables, macros, ...)
+   @item Functions   (definitions of functions)
+   @end enumerate
+
+ Empty chapters will not be printed.
+
+ @item sdoc commands are generally written as @@xy@@ where x and 
+   y are ASCII characters.
+
+ @item If xy is the command for 'begin something', 
+   yx is the command for 'end something'.
+
+ @item Comment inclusion starts with the comment where a 
+   xy = 'oc', 'dc', or 'fc' was found and end with the comment
+   where a xy = 'co', 'cd', or 'cf' was found. Commands may
+   be placed anywhere within a comment. Comments are NOT 
+   restricted to single lines!
+
+ @item Source inclusion starts with the first line after 
+   the comment where a xy = 'os', 'ds', or 'fs' was found 
+   and ends with the last line before the comment
+   where a xy = 'so', 'sd', or 'sf' was found.
+
+ @item Command names:
+   @table @asis
+   @item x='c'  
+           'Copying' section
+
+   @item x='o'  
+           'Overview' section
+
+   @item x='d'
+           'Definitions' section
+
+   @item x='f':  
+           'Functions' section
+   @item x='[0-9][0-9]':  
+           User-defined section
+   @item x='[0-9][0-9]_[0-9][0-9]':  
+           User-defined subsection
+   @end table
+
+   @table @asis
+   @item y='c'
+           Comment inclusion 
+           (exception: in the 'Copying' section 'i' is used instead)
+
+   @item y='s'
+           Source inclusion
+    
+   @item y='i' 
+           Inclusion of a function 
+           (only available in the 'functions' and user-defined chapters/sections).
+   @end table 
+
+ @item Special commands: 
+   @table @asis
+   @item xy = 'ti'   
+           Document title
+   @item xy = 'au'   
+           Author name
+   @item xy = 'ad'   
+           Author address
+   @item xy = 'yr'
+           Year of copyright notice
+   @item xy = 'nl'
+           Newline character
+   @end table
+
+ @item Inclusion of parts of other files:
+ Parts of other files may be included using @@lf@@ filename identifier @@fl@@ .
+ The file filename will be parsed for text included between @@begin identifier@@
+ and @@end identifier@@ . @@lf@@ ... @@fl@@ will be replaced by the found text. 
+  
+ @end enumerate
+
+ @strong{Examples} (example files are included in the package)
+ @itemize @bullet
+ @item C source:
+   @example
+   gawk -f sdoc.awk ascii.h ascii.c > ascii.texi 
+   @end example
+ @item C source, more complicated:
+   @example
+   make uvbtexinfo
+   @end example
+ will create a texinfo documentation for the uvb package which 
+ consists of two libraries, ASCII and NUMERIC.
+   @example
+   make uvblatex
+   @end example 
+ will create a LaTeX file with the same contents.
+
+ @item Fortran:
+   @example
+   gawk -f sdoc.awk -vlanguage="fortran" absdep.f > absdep.texi 
+   @end example
+ @item awk:
+   @example
+   gawk -f sdoc.awk -vlanguage="awk" sdoc.awk > sdoc.texi 
+   @end example
+ or
+   @example
+   make sdoc 
+   @end example
+ will create the documentation which you are currently reading.
+ @end itemize
+ 
+
+@node Functions, Functions index, Definitions, Top
+@chapter Functions
+
+  @section Function 
+
+  @deftypefun function cleanup(string)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Remove all command strings from a comment   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_header(filename, infoname, year, author, address, title)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print a header for the texinfo output  
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_latex_header(filename, infoname, year, author, address, title)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print a header for the latex output  
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_node(nodename, title)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print node and section   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_copying(string)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print the texinfo 'Copying' chapter   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_overview(string)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print the texinfo 'Overview' chapter   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_definitions(string)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print the texinfo 'Definitions' chapter   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_functions(string)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print the texinfo 'Functions' chapter   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_userchapter(chapter_name, chapter_text)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print a texinfo user defined chapter   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_usersection(section_name, section_text)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print a texinfo user defined section   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_latex_userchapter(chapter_name, chapter_text)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print a latex user defined chapter   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_latex_usersection(section_name, section_text)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print a latex user defined section   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_submenu()
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ print a submenu (only if level=="section" or "subsection")  
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_texinfo_end()
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print the end of the texinfo output (table of contents, index of functions, ...)  
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function print_latex_end()
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Print the end of the latex output  
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function lookupfile(string, rs_save, line_save, found, filename, start_identifier, end_identifier, replace,temp,tempnum,i)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Replace @@lf@@ filename identifier @@fl@@ with text between             
+ @@identifier@@ and @@end identifier@@  from a different file filename   
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+  @section Function 
+
+  @deftypefun function read_config(cnf, line, linecounter, comment)
+
+@end deftypefun
+  @table @asis
+  @item Description:
+
+ Read configuration file     
+  @item Parameters:
+  @table @code
+  @end table
+  @item Return value:
+
+  @item Example:
+
+  @item Files:
+none
+  @item Known bugs:
+none
+  @item Author:
+   Bernhard Mayer                                                 
+  @end table
+
+
+@node Functions index, , Functions, Top
+@unnumbered Index of functions
+@printindex fn
+@contents
+
+@bye

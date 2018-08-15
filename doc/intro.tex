@@ -1,0 +1,113 @@
+\chapter{Preface}
+\label{sec:intro}
+
+%\section{A brief overview of libRadtran}
+
+{\sl libRadtran} is a library of radiative transfer routines and
+programs.  The central program of the {\sl libRadtran} package is the
+radiative transfer tool {\sl uvspec}.  {\sl uvspec} was originally
+designed to calculate spectral irradiance and actinic flux in the
+ultraviolet and visible parts of the spectrum \citep{kylling92a} where
+the name stems from. Over the years, {\sl uvspec} has undergone
+numerous extensions and improvements. {\sl uvspec} now includes the
+full solar and thermal spectrum, currently from 120~nm to
+100~$\mu$m. It has been designed as a user-friendly and versatile tool
+which provides a variety of options to setup and modify an atmosphere
+with molecules, aerosol particles, water and ice clouds, and a surface
+as lower boundary. One of the unique features of {\sl uvspec} is that
+it includes not only one but a selection of about ten different
+radiative transfer equation solvers, fully transparent to the user,
+including the widely-used DISORT code by \citet{Stamnes1988c} and its
+C-code version \citep{buras2011b}, a fast two-stream code
+\citep{Kylling1995}, a polarization-dependent code polRadtran
+\citep{Evans1991}, and the fully three-dimensional Monte
+Carlo code for the physically correct tracing of photons in cloudy
+atmospheres, MYSTIC \citep{mayer2009, emde2007, emde2010, buras2011a,
+emde2011}. MYSTIC optionally allows to consider polarization and fully
+spherical geometry. Please note that the public release includes only a
+1D version of MYSTIC.
+
+{\sl libRadtran} also provides related utilities, like e.g. a Mie program 
+({\sl mie}), some utilities for the calculation of the position of the 
+sun ({\sl zenith}, {\sl noon}, {\sl sza2time}), a few tools for 
+interpolation, convolution, and integration ({\sl spline}, {\sl conv}, 
+{\sl integrate}), and several other small tools for setting up
+{\sl uvspec} input and postprocessing {\sl uvspec} output. 
+
+Further general information about {\sl libRadtran} including examples
+of use may be found in the
+reference publication \citep{mayer2005}. 
+
+It is expected that the reader is familiar with radiative transfer
+terminology. In addition, a variety of techniques and
+parameterizations from various sources are used. For more information
+about the usefulness and applicability of these methods in a specific
+context, the user is referred to the referenced literature.
+
+{\sl Please note that this document is by no means complete. It is
+under rapid development and major changes will take place.} 
+
+
+\section*{Acknowledgements}
+
+Many people have already contributed to {\sl libRadtran}'s
+development. In addition to Bernhard Mayer (\email{bernhard.mayer (at)
+  dlr.de}), Arve Kylling (\email{arve.kylling (at) gmail.com}), Claudia Emde
+(\email{claudia.emde (at) lmu.de}), Robert Buras
+(\email{robert.buras (at) lmu.de}), Josef Gasteiger
+(\email{josef.gasteiger (at) lmu.de}), Bettina Richter
+(\email{bettina.richter (at) lmu.de}) and Ulrich 
+Hamann (\email{hamann (at) knmi.nl}) the following people have
+contributed to {\sl libRadtran} or helped out in various other ways
+(the list is almost certainly incomplete -- please let us know if we
+forgot somebody):
+
+\begin{itemize}
+\item The \code{disort} solver was developed by Knut Stamnes, Warren Wiscombe, 
+  S.C.~Tsay, and K.~Jayaweera
+\item The translation from the FORTRAN version of the DISORT solver to C-code was performed by Timothy E.~Dowling
+\item Warren Wiscombe provided the Mie code \code{MIEV0}, and the routines to calculate
+  the refractive indices of water and ice, \code{REFWAT} and \code{ICEWAT}.
+\item Seiji Kato (\email{kato (at) aerosol.larc.nasa.gov}) provided the 
+  correlated-k tables described in Kato et al. (1999).
+\item Tom Charlock (\email{t.p.charlock (at) larc.nasa.gov}), Quiang Fu 
+  (\email{qfu (at) atm.dal.ca}), 
+  and Fred Rose (\email{f.g.rose (at) larc.nasa.gov}) provided the most recent version 
+  of the Fu and Liou code.
+\item David Kratz (\email{kratz (at) aquila.larc.nasa.gov}) provided the routines 
+  for the simulation of the AVHRR channels described in 
+  Kratz (1995).
+\item Frank Evans (\email{evans (at) nit.colorado.edu}) provided the
+  \code{polradtran} solver.
+\item Ola Engelsen provided data and support for different ozone 
+absorption cross sections.
+\item Albano Gonzales (\email{aglezf (at) ull.es}) included the Yang et
+  al. (2000), Key et al. (2002) ice crystal parameterization. 
+\item Tables for the radiative properties of ice clouds for different
+  particle ``habits'' were obtained from Jeff Key and Ping Yang,
+  Yang et al. (2000), Key et al. (2002). In addition, Ping Yang and 
+  Heli Wei kindly provided a comprehensive database of particle 
+  single scattering properties which we used to derive a consistent 
+  set of ice cloud optical properties for the spectral range 0.2 - 100 micron 
+  following the detailed description in Key et al. (2002).
+  A comprehensive dataset including the full phase matrices has been 
+  generated and provided by Hong Gang. 
+\item Paul Ricchiazzi (\email{paul (at) icess.ucsb.edu}) and colleagues
+  allowed us to include the complete gas absorption parameterization 
+  of their model SBDART into {\sl uvspec}.
+\item Luca Bugliaro (\email{luca.bugliaro (at) dlr.de}) wrote the analytical 
+  TZS solver (thermal, zero scattering).
+\item Sina Lohmann (\email{sina.lohmann (at) dlr.de}) reduced the ``overhead time''
+  for reading the Kato et al. tables dramatically which resulted in 
+  a speedup of a factor of 2 in a twostr solar irradiance calculation.
+\item Detailed ice cloud properties were provided by Bryan Baum
+  (\email{bryan.baum (at) ssec.wisc.edu}). 
+\item Yongxiang Hu (\email{yongxiang.hu-1 (at) nasa.gov}) provided the delta-fit 
+  program used to calculate the Legendre coefficients for \code{ic\_properties baum\_hufit}.
+\item UCAR/Unidata for providing the \emph{netCDF} library.
+\item Many unnamed users helped to improve the code by identifying 
+  or fixing bugs in the code. 
+\end{itemize}
+
+
+

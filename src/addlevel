@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+# addlevel
+# - add a level to an uvspec atmosphere_file or mol_file at the given altitude 
+# - usage: addlevel.sh < atmosphere_file | mol_file > < z[km] >
+
+if test -z "$2"; then
+    echo Usage: addlevel \<atmosphere_file\|mol_file\> \<z1[km]\> \<z2[km]\> \<...\>
+    exit
+fi
+
+# counting number of columns in first line not starting with '#'
+n_columns=`gawk '!/^ *#/' $1 | head -n 1 | cut -d "#" -f 1 | gawk '{print NF}'`
+
+# write command line arguments to temporary file
+echo "$@" > tmp00005.dat
+
+#echo ... saving header
+gawk '/^ *#/' $1 > tmp00000.dat
+
+#echo ... sorting file
+gawk '!/^ *#/' $1 | cut -d "#" -f 1 | gawk '{printf("%8.3f",$1);for (i=2;i<=NF;i++) printf(" %.6e",$i); printf("\n")}' | sort -n > tmp00001.dat
+
+#echo ... generating new altitudes
+gawk '!/^ *#/{print $1}' $1 > tmp00002.dat
+gawk '{for (i=2;i<=NF;i++) print $i}' tmp00005.dat >> tmp00002.dat
+cat tmp00002.dat | gawk '{n[$1+0]++};END{for (i in n) printf "%8.3f\n", i}' | sort -nr > tmp00003.dat
+
+#echo ... interpolating $1 to new altitudes
+../bin/spline -x tmp00003.dat -l -q tmp00001.dat | gawk '{printf("%8.3f",$1);for (i=2;i<=NF;i++) printf(" %.6e",$i); printf("\n")}' > tmp00004.dat
+
+cat tmp00000.dat tmp00004.dat
+
+# echo ... clean up
+rm -f tmp00000.dat tmp00001.dat tmp00002.dat tmp00003.dat tmp00004.dat tmp00005.dat 

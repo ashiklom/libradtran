@@ -1,0 +1,54 @@
+#
+# Makefile for libRadtran's data/atmmod directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = atmmod
+
+DATAFILES =  afglms.dat afglmw.dat afglss.dat afglsw.dat afglt.dat \
+             afglus.dat mcclams.dat mcclamw.dat afglus_no2.dat \
+	     afglus_ch4_vmr.dat afglus_co_vmr.dat afglus_n2_vmr.dat afglus_n2o_vmr.dat
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

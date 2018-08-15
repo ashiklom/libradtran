@@ -1,0 +1,132 @@
+#
+# Makefile for libRadtran's libsrc_f directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ..
+
+include $(TOPDIR)/Makeconf
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+INCLUDES = consts.inc extinc.f prfinc.f DISORT.MXD POLRADTRAN.MXD \
+	   $(AVHRR_INCLUDES) \
+           IGBP_spectral_albedo.inc
+SPECIAL = solver.h f77-uscore.h r1mach.f d1mach.f # gen-d1mach.c gen-r1mach.c 
+SPECIAL_OBJ = d1mach.o r1mach.o 
+DISORT_SOURCES = disort.f
+DISORT1.3_SOURCES = DISORT.f ErrPack.f DISORTblas.f DISORTlapack.f dcheck.f
+DISORT2_SOURCES = DISORT2.f  ErrPack2.f LINPAK.f BDREF.f oceabrdf.f # searf1.f
+SDISORT_SOURCES = dpsdisort.f dpmisc.f
+SPSDISORT_SOURCES = spsdisort.f spsmisc.f 
+TWOSTR_SOURCES = twostr.f tcheck.f
+MISC_SOURCES   = xstopx.f cplkavg.f qgaust.f
+POLRADTRAN_SOURCES = radintg3.f radmat.f radscat3.f radtran3.f radutil3.f rt3.f 
+SSS_SOURCES = sss.f
+TZS_SOURCES = tzs.f
+IGBP_ALBEDO_SOURCES = IGBP_spectral_albedo.f
+WVSOURCES = wvapour.f
+
+DISORT1_SOURCES = 
+SOURCES =  aeropt.f aerprof.f aerwvn.f cozena.f \
+           eval.f inter.f linpol.f newton_co.f \
+	   read_array.f setout.f \
+           wcloud.f zspl3.f dcsevl.f dei.f de1.f initds.f \
+	   xermsg.f xerprn.f j4save.f xersve.f xerhlt.f \
+	   xercnt.f xgetua.f fdump.f i1mach.f swde.f ocean.shadow.f\
+	   MIEV0.f REFICE.f REFWAT.f wrefice.f wrefwat.f bhmie.f \
+           $(DISORT1.3_SOURCES) $(DISORT2_SOURCES) $(SDISORT_SOURCES) \
+	   $(TWOSTR_SOURCES) $(TZS_SOURCES) $(SSS_SOURCES) \
+           $(MISC_SOURCES) $(SPSDISORT_SOURCES) \
+	   $(POLRADTRAN_SOURCES) \
+           $(AVHRR_SOURCES) $(SSSI_SOURCES) \
+           $(IGBP_ALBEDO_SOURCES) \
+           $(WVSOURCES) 
+#           psdno.f sphers.f
+#           xersav.f s88fmt.f 
+
+OBJECTS =  $(patsubst %.f, %.o, $(SOURCES))
+
+RADTRAN_F_LIB =  ../lib/libRadtran_f.a
+
+DISTFILES = Makefile.in DISORT.doc DISORT2.doc MIEV.doc\
+	$(INCLUDES) $(SOURCES) $(SPECIAL) 
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all:  $(OBJECTS) $(SPECIAL_OBJ) $(RADTRAN_F_LIB)
+.PHONY: all
+
+$(RADTRAN_F_LIB): $(OBJECTS) $(SPECIAL_OBJ)
+	$(RM) -f $(RADTRAN_F_LIB)
+	$(AR) $(ARFLAGS) $(RADTRAN_F_LIB) $(OBJECTS) $(SPECIAL_OBJ) 
+	$(RANLIB) $(RADTRAN_F_LIB)
+
+$(OBJECTS): $(INCLUDES) 
+
+d1mach.o: d1mach.f
+#d1mach.f: gen-d1mach
+#	./gen-d1mach > d1mach.f
+
+r1mach.o: r1mach.f
+#r1mach.f: gen-r1mach
+#	./gen-r1mach > r1mach.f
+
+# Don't optimize, to avoid gcc-2.3.3 problem.
+
+XCC = $(subst -O, , $(CC))
+
+#gen-d1mach: $(srcdir)/gen-d1mach.c
+#	$(XCC) -DDP -o gen-d1mach $(srcdir)/gen-d1mach.c -lm
+
+#gen-r1mach: $(srcdir)/gen-r1mach.c
+#	$(XCC) -DSP -o gen-r1mach $(srcdir)/gen-r1mach.c -lm
+
+install: all
+	$(MKPATH) $(libdir)
+	$(RM) -f $(libdir)/libRadtran_f.a
+	$(INSTALL_DATA) $(RADTRAN_F_LIB) $(libdir)/libRadtran_f.a
+	$(RANLIB) $(libdir)/libRadtran_f.a
+	$(MKPATH) $(includedir)/libRadtran
+	$(INSTALL) -m 644 f77-uscore.h $(includedir)/libRadtran
+.PHONY: install
+
+uninstall:
+	$(RM) -f $(libdir)/libRadtran_f.a
+	$(RM) -f $(includedir)/libRadtran/f77-uscore.h
+	$(RM) -rf $(includedir)/libRadtran
+.PHONY: uninstall
+
+clean:
+	$(RM) -f *.a *.o # r1mach.f d1mach.f gen-r1mach gen-d1mach
+.PHONY: clean
+
+mostlyclean:
+	$(RM) -f *.o
+.PHONY: mostlyclean
+
+distclean: clean
+	$(RM) -f Makefile Radtran .fname *.d
+.PHONY: distclean
+
+realclean: distclean
+	$(RM) -f *.o
+.PHONY: realclean
+
+dist:
+	ln $(DISTFILES) ../`cat ../.fname`/libsrc_f
+.PHONY: dist
+
+mystic-dist:
+	ln $(MYSTICDISTFILES) ../`cat ../.fname`/libsrc_f
+.PHONY: mystic-dist
+
+Makefile: Makefile.in ../config.status
+	cd ..; sh config.status
+
+
+# re-compile if Makeconf has changed; this is needed because in Makeconf 
+# compiler options are defined as well as Macros etc
+$(OBJECTS): ../Makeconf

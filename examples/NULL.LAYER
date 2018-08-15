@@ -1,0 +1,9 @@
+# An empty layer, containing no aerosol. Required in each profile
+# which does not reach top of the atmosphere
+#
+# Wavelength  Optical     Single      Phase
+#             depth       scattering  function 
+#             of layer    albedo      moments
+# [nm]        [km-1]                  
+1.000000e+02 0.0000000000 1.0000000   1.0  
+1.000000e+05 0.0000000000 1.0000000   1.0  

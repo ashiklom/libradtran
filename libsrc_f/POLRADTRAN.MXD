@@ -1,0 +1,19 @@
+c  LOCAL SYMBOLIC DIMENSIONS used by the solver polradtran (radtran3.f)
+c
+c  Adjusting the ary sizes have a large effect on storage requirements 
+c  and on computational time
+c
+c  For more documentation see radtran3.f
+c
+c  MXUMU  = Max no. of zenith angles for radiance calculations
+c  MXLAY  = Max no. of output layers
+c  MAXLEG = Max no. of Legendre polynomials /streams
+
+      PARAMETER (MAXSTOKES=4, 
+     &	MAXUMU=50,
+     &	MAXLAY=100,
+     &	MAXLEG=256,
+     &  MAXAZI=20	)
+	
+	
+

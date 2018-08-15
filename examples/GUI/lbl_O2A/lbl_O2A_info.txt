@@ -1,0 +1,2 @@
+Title: Line-by-line O2A-band
+This example calculates the direct transmittance for the O2A band using absorption cross section from genln2. The simulation reproduces the model results presented in Fig. 3 of the Mayer and Kylling (2005) paper. A detailed description of the example is found in that paper. In order to run the example the file UVSPEC.O2A.afglms.cdf must be present in the directory libRadtran-version/data/lbl.

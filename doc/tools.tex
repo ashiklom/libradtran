@@ -1,0 +1,189 @@
+\chapter{Further tools}
+\label{sec:tools}
+
+Besides {\sl uvspec} and {\sl mie} {\sl libRadtran} provides several
+small tools related to radiative transfer in the atmosphere. These
+tools can be found in the \file{bin} directory. 
+Some of the tools are described in this chapter.
+ 
+Help for all tools can be obtained on the command line using the
+option \code{-h}. 
+
+\section{General tools}
+
+\subsection{Integration - \code{integrate}}
+\index{integrate}
+
+\code{integrate} calculates the integral between limits
+$x_\mathrm{min}$ and $x_\mathrm{max}$ 
+by interpolating the data points (x[i], y[i]) with natural cubic
+splines or linear interpolation. $x_\mathrm{min}$ and $x_\mathrm{max}$ are the minimum
+and maximum values of the first column in the input file. The 
+x-values in the first column must be in ascending order.
+
+The different options to \code{integrate} are displayed when executing:
+
+\begin{verbatim}
+integrate -h
+\end{verbatim}
+
+\subsection{Interpolation - \code{spline}}
+\index{spline}
+\index{Interpolation}
+
+\code{spline} interpolates discrete data points using natural cubic
+splines or linear interpolation. The x-values in the first column must 
+be in ascending order. 
+
+The different options to \code{spline} are displayed when executing:
+
+\begin{verbatim}
+spline -h
+\end{verbatim}
+
+\index{conv}
+\subsection{Convolution - \code{conv}}
+                  
+\code{conv} convolutes a spectrum with a given filter function.
+
+The different options to \code{conv} are displayed when executing:
+
+\begin{verbatim}
+conv -h
+\end{verbatim}
+
+
+\index{addlevel}
+\subsection{Add level to profile - \code{addlevel}}
+
+\code{addlevel} is a simple shell script to add a level to 
+an atmosphere\_file or mol\_file. It is located in the \code{src} directory.
+
+The different options to \code{addlevel} are displayed 
+when executing:
+
+\begin{verbatim}
+addlevel -h
+\end{verbatim}
+
+\subsection{Numerical difference between two files -\codeidx{ndiff}}
+The Perl script \code{ndiff} calculates the relative difference between two files
+containing columns of numbers (file1/file0). The first column is
+not included. The calculated differences are output to stdout.
+If limit is different from 0.0, the number of differences greater
+than abs(maxdiff) are printed to stdout. The \code{ndiff} script is
+extensively used by the \file{test/test.pl} script invoked by \code{make check}.
+
+The \code{ndiff} script is invoked by
+  \begin{Verbatim}[fontsize=\footnotesize]
+      ndiff [options] file0 file1
+  \end{Verbatim}
+The script understands the following options
+\begin{description}
+   \item[--limit $<$value$>$]     The minimum value in file0 considered when
+                                  counting the number of differences between file0
+                                  and file1. Default is 0.0.
+   \item[--maxdiff $<$value$>$]   The maximum relative difference allowed between
+                                  file0 and file1. Defaut is 0.0.
+   \item[--sub]                   Subtract file1 - file0 instead of division
+   \item[--nox]                   First column is included
+   \item[--quiet]                 The differences are not output, but the number of
+                                  differences are still printed.
+   \item[--help]                  Print help message.
+\end{description}
+
+
+\section{Tools to generate input data to and analyse output data from \code{uvspec}}
+
+% The snowalbedo tool
+\input{snowalbedo}
+
+
+\index{cldprp}
+\subsection{Calculate cloud properties - \code{cldprp}}
+
+\code{cldprp} calculates wavelength-dependent cloud properties 
+using one of several parameterizations.
+
+The different options to \code{cldprp} are displayed when executing:
+
+\begin{verbatim}
+cldprp -h
+\end{verbatim}
+
+% CE: Commented cldgen since it is not clear whether it is working or not !!!
+
+% \index{cldgen}
+% \subsection{Generate model clouds - \code{cldgen}}
+
+% \code{cldgen} generates 1D, 2D, and 3D model clouds to be used as 
+% input to libRadtran / MYSTIC.
+
+% \begin{verbatim}
+% cldgen < input_file > output_file
+% \end{verbatim}
+
+% format of the input and output files are described
+% below. Several realistic examples of input files are subsequently 
+% given.
+
+% \strong{Warning:} Please note the error checking on input variables 
+% is very scarce at the moment. Hence, if you provide erroneous input, 
+% the outcome is unpredictable.
+   
+
+% \subsubsection{The \code{cldgen} input file}
+
+% The cldgen input file consists of single line entries, each making
+% up a complete input to the cldgen program. First on the line comes
+% the parameter name, followed by one or more parameter values. The 
+% parameter name and the parameter values are seperated by white space.
+
+% Filenames are entered without any surrounding single or double quotes.
+
+% Comments are introduced by a \code{\#}. Blank lines are ignored.
+
+% The various input parameters are described in detail below.
+
+% \FIXME{the following should be extracted from cldgen\_lex.l}
+
+
+% \subsubsection{The \code{cldgen} output}
+
+% \subsubsection{Example}
+
+% An example of a complete input file is
+
+% \efile{../examples/CLDGEN.INP}
+
+% The zenith tool
+\input{zenith}
+
+% The noon tool
+\input{noon}
+
+% The angres tool
+\input{angres}
+
+% The make_angresfunc tool
+\input{make_angresfunc}
+
+% The make_slitfunction tool
+\input{make_slitfunction}
+
+% Calculate phase function
+\input{phase}
+
+% Legendre decomposition
+\input{pmom}
+
+% automated independent pixel calculation
+% \input{worldloop}
+
+\section{Other useful tools}
+
+\input{ssradar}
+
+\input{read_Stamnes_tab}
+
+  

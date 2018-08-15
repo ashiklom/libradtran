@@ -1,0 +1,18 @@
+Title: Polarisation with  MYSTIC 
+This example calculates the normalised reflectance for the I,Q and U
+components of the Stokes vector using the MYSTIC solver. The figure
+includes calculations from both a Rayleigh only atmosphere (blue
+curves) and an aerosol loaded atmosphere (red curves). The input file
+in this example does not contain aerosol information. To include
+aerosols the OPAC mie files must be installed and the following input
+parameters set: 
+
+aerosol_default          # switch on aerosol
+
+                         # specify aerosol mixture file
+aerosol_species_file     continental_average
+
+You may also want to change mc_basename.
+
+Please note that the GUI is not yet capable of plotting allt the
+output produced by MYSTIC. That includes the output from this example.

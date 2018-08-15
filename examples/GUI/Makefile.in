@@ -1,0 +1,64 @@
+#
+# Makefile for libRadtran's example/GUI directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = GUI
+
+SUBDIRS = lbl_O2A mc_clear profile_1D_wc profile_1D_wc_cooling \
+	single_scattering_lidar \
+	spectrum_terrestrial_sbdart profile_1D_wc_heating \
+	spectrum_UV radiance_principal_plane spectrum_sciamachy \
+	spectrum_solar_sbdart spectrum_GOME spectrum_flex \
+	brightness_msg transmittance_reptran spectrum_terrestrial_reptran \
+	radiance_sentinel radiance_sentinel_sunglint
+
+EXAMPLEFILES =  README make_example.py
+
+DISTFILES = Makefile.in $(EXAMPLEFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: all
+
+dist: all
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/examples/GUI/$$dir; $(MAKE) -C $$dir $@ || exit $$?; done
+	ln $(DISTFILES) ../../`cat ../../.fname`/examples/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/examples//GUI/$$dir; $(MAKE) -C $$dir $@ || exit $$?; done
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/examples/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(examplesdir)/$(THISDIR)
+	$(INSTALL_DATA) $(EXAMPLEFILES) $(examplesdir)/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

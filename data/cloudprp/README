@@ -1,0 +1,23 @@
+Mie calculations to be used with uvspec "wc_properties <filename>"
+
+Required: Frank Evans' cloudprp (part of SHDOM)
+ Slightly modified source code in ./cloudprp 
+ (increased number of moments); call 'make' to generate
+
+(1) Adjust # of effective radii (n_reff), effective 
+ radius range (reff_min, reff_max), and phase (water/ice)
+ in makeinp.awk 
+
+(2) Generate input with makeinp.sh; makeinp.sh expects three-column 
+ files in ./input/ which define the wavelength bands for which the Mie
+ calculations are to be made. The extension has to be .wvl and the  
+ three columns are:
+  (i)   center wavelength (ignored)
+  (ii)  start wavelength  [micron]
+  (iii) end wavelength    [micron]
+ makeinp.sh generates input files (*.inp) and shell scripts (*.sh) to
+ automatize the Mie calculations. 
+
+(3) Finally, call the master shell script doall.sh created by
+ makeinp.sh; output is provided in ASCII (*.mie) and netcdf (*.cdf) format
+

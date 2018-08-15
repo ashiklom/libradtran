@@ -1,0 +1,246 @@
+#
+# Common configuration rules for all of Radtran's Makefiles.
+#
+# Arve Kylling
+# arve.kylling@itek.norut.no
+#
+
+SHELL = /bin/sh
+
+#### Start of system configuration section. ####
+
+# If started with 'make VERBOSE=1', the compiler commands
+# are printed to stderr in full detail; otherwise this is
+# suppressed and a "compiling ..." is shown instead. This 
+# should be less confusing for the average user.
+
+ifdef VERBOSE
+ccommand=
+gcommand=
+lcommand=
+verbose=
+else
+ccommand=@echo \ \ \ compiling $<
+gcommand=@echo \ \ \ creating  $@
+lcommand=@echo \ \ \ linking   $@
+verbose=@
+endif
+
+# The top of the directory tree where the sources live.
+#cakym root_srcdir = @root_srcdir@
+srcdir = @srcdir@
+
+# The version number.  TOPDIR is something like `.' or `..' or `../..'
+# and gets us back up to the top level of the source tree.
+#version = `$(getversion) $(srcdir)/$(TOPDIR)/libsrc_c/version.h`
+#
+# the release version number
+version = 2.0.2
+# the mystic release version number
+mystic-version = 2.0.2-MYSTIC
+# the svn version number
+#svnversion = `cat $(srcdir)/$(TOPDIR)/.version`
+#
+# The version number for cdisort
+#
+cdisort-version = 2.1.4
+
+# The version number output by the command "uvspec -v"
+#VERSION = -DLRTVERSION="$(svnversion)"
+VERSION = -DLRTVERSION="$(mystic-version)"
+
+
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+
+MKPATH = @MKPATH@
+
+AWK = @AWK@
+PERL = @PERL@
+PYTHON = @PYTHON@
+
+AR = $(verbose)@AR@
+RM = rm
+ARFLAGS = @ARFLAGS@
+
+RANLIB = $(verbose)@RANLIB@
+
+LEX  = @LEX@
+LEXLIB = @LEXLIB@
+
+# Fortran to C translator and associated flags.
+
+FC = $(verbose)@FC@
+F2C = @F2C@
+F2CFLAGS = @F2CFLAGS@
+FLIBS = @FLIBS@
+LDF77 = @LDF77@
+NANFLAG = @NANFLAG@
+
+# Fortran compiler flags.
+
+FFLAGS = @FFLAGS@
+ALL_FFLAGS = $(FFLAGS)
+FORTRAN_MAIN_FLAG = @FORTRAN_MAIN_FLAG@
+
+# cc and associated flags.
+
+INCFLAGS = -I$(TOPDIR)/libsrc_c -I$(TOPDIR)/libsrc_f @LIBNETCDF_INCLUDE@
+
+LIBFLAGS = -L$(TOPDIR)
+
+DEFS = @DEFS@
+
+CC = $(verbose)@CC@
+CCC = $(verbose)@CONDOR_COMPILE@ @CC@
+CFLAGS = @CFLAGS@
+CPP = @CPP@
+GCC_IEEE_FP_FLAG = @GCC_IEEE_FP_FLAG@
+HAVE_LIBNETCDF=@HAVE_LIBNETCDF@
+LIBNETCDF=@LIBNETCDF@
+HAVE_MYSTIC=@HAVE_MYSTIC@
+HAVE_MYSTIC3D=@HAVE_MYSTIC3D@
+HAVE_ALIS=@HAVE_ALIS@
+HAVE_VROOM=@HAVE_VROOM@
+HAVE_BRDF=@HAVE_BRDF@
+HAVE_LIDAR=@HAVE_LIDAR@
+HAVE_SOS=@HAVE_SOS@
+HAVE_TIPA=@HAVE_TIPA@
+COMPILING_CONDOR_AT_MIM=@COMPILING_CONDOR_AT_MIM@
+CONDOR_SOURCES=@CONDOR_SOURCES@
+MYSTIC_SOURCES=@MYSTIC_SOURCES@ @ALIS_SOURCES@
+MYSTIC3D_SOURCES=@MYSTIC3D_SOURCES@ @GLMYSTIC_SOURCES@ 
+TIPA_SOURCES=@TIPA_SOURCES@
+LIDAR_SOURCES=@LIDAR_SOURCES@
+ARLEM_SOURCES=@ARLEM_SOURCES@
+VROOM_SOURCES=@VROOM_SOURCES@ 
+BRDF_SOURCES=@BRDF_SOURCES@ 
+WORLDLOOP_TARGETS=@WORLDLOOP_TARGETS@
+WORLDLOOP_C_FOR_SDOC=@WORLDLOOP_C_FOR_SDOC@
+CDF2C_SOURCES=@CDF2C_SOURCES@
+SOS_SOURCES=@SOS_SOURCES@ 
+HAVE_POLRADTRAN =@HAVE_POLRADTRAN@
+POLRADTRAN_SOURCES =@POLRADTRAN_SOURCES@
+AVHRR_SOURCES =@AVHRR_SOURCES@
+AVHRR_INCLUDES =@AVHRR_INCLUDES@
+HAVE_AVHRR=@HAVE_AVHRR@
+SSSI_SOURCES =@SSSI_SOURCES@
+HAVE_SSSI=@HAVE_SSSI@
+FULIOU_FSOURCES =@FULIOU_FSOURCES@
+FULIOU_CSOURCES =@FULIOU_CSOURCES@
+FULIOU_INCLUDES =@FULIOU_INCLUDES@
+HAVE_FULIOU =@HAVE_FULIOU@ 
+LOWTRAN_FSOURCES =@LOWTRAN_FSOURCES@
+LOWTRAN_PARAM    =@LOWTRAN_PARAM@
+LOWTRAN_FINCLUDE =@LOWTRAN_FINCLUDE@
+LOWTRAN_CINCLUDE =@LOWTRAN_CINCLUDE@
+HAVE_LOWTRAN =@HAVE_LOWTRAN@ 
+KEY56_CSOURCES =@KEY56_CSOURCES@
+HAVE_YANG =@HAVE_YANG@ 
+HAVE_BAUM =@HAVE_BAUM@
+HAVE_BAUM_V36 =@HAVE_BAUM_V36@
+HAVE_HEY=@HAVE_HEY@
+LIBOPENGL =@LIBOPENGL@ 
+HAVE_OPENGL =@HAVE_OPENGL@ 
+HAVE_LIBGSL =@HAVE_LIBGSL@ 
+LIBGSL=@LIBGSL@
+HAVE_CLDGEN     =@HAVE_CLDGEN@
+CLDGEN_CSOURCES =@CLDGEN_CSOURCES@
+CLDGEN_TSOURCES =@CLDGEN_TSOURCES@
+CLDGEN_LSOURCES =@CLDGEN_LSOURCES@
+CLDGEN_TOOL =@CLDGEN_TOOL@
+ARLEM_TOOL =@ARLEM_TOOL@
+HAVE_LIBGMP =@HAVE_LIBGMP@ 
+LIBGMP =@LIBGMP@
+
+# If we want to use tenstream lib, we need some external libraries -- foremost petsc and mpi...
+ifeq (@FOUND_LIBTENSTREAM@,yes)
+include ${PETSC_DIR}/${PETSC_ARCH}/lib/petsc/conf/petscvariables
+
+CFLAGS   := $(CFLAGS)
+INCFLAGS := $(INCFLAGS) $(PETSC_CC_INCLUDES)
+
+LIBTENSTREAM=@LD_TENSTREAM@ $(PETSC_LIB) $(PETSC_WITH_EXTERNAL_LIB)
+HAVE_LIBTENSTREAM=@HAVE_LIBTENSTREAM@
+endif
+
+ALL_CFLAGS = $(INCFLAGS) $(DEFS) $(GCC_IEEE_FP_FLAG) $(CFLAGS)\
+	   $(NANFLAG) $(HAVE_POLRADTRAN) $(HAVE_LIBNETCDF)\
+           $(HAVE_MYSTIC) $(HAVE_ALIS) $(HAVE_MYSTIC3D) $(HAVE_TIPA) $(HAVE_VROOM) $(HAVE_BRDF) $(HAVE_LIDAR)\
+           $(HAVE_LIBTENSTREAM) \
+           $(HAVE_AVHRR) $(HAVE_FULIOU) $(HAVE_LOWTRAN) \
+           $(HAVE_YANG) $(HAVE_BAUM) $(HAVE_BAUM_V36) $(HAVE_HEY) $(COMPILING_CONDOR_AT_MIM) \
+	   $(HAVE_SSSI) $(HAVE_OPENGL) $(HAVE_SOS)\
+	   $(HAVE_LIBGSL) $(HAVE_QDISORT) $(VERSION)
+
+LDFLAGS = @LDFLAGS@   # -lccmalloc -ldl -L /export/home/pa2h/develop/ccmalloc-0.4.0/lib/
+LD_STATIC_FLAG   = @LD_STATIC_FLAG@
+ALL_LDFLAGS = $(LIBFLAGS) $(FORTRAN_MAIN_FLAG)  $(LDFLAGS)\
+	     $(LD_STATIC_FLAG)
+
+# A shell command to extract the version number from version.h.
+getversion = sed -e '/version_string/!d' -e 's/[^0-9.]*\([0-9a-z.]*\).*/\1/' -e q 
+
+# Common prefix for installation directories.
+# NOTE: This directory must exist when you start installation.
+prefix = @prefix@
+
+# Directory in which to put host dependent programs and libraries
+exec_prefix = @exec_prefix@
+
+# Where to install the executables.
+bindir = @bindir@
+
+# Where to put libraries
+libdir = @libdir@
+
+# Where to put extra data files, system-wide startup files, etc.
+datadir = @datadir@
+
+# Subdirs of datadir
+datasubdirs = atmmod solar
+
+# Where to put extra data files
+datafiledir = @datafiledir@
+
+# Where to put installed include files.
+includedir = @includedir@
+
+# Where to put example files
+examplesdir = @examplesdir@
+
+# Where to put documentation
+docdir = @docdir@
+
+# Where to put 'info' files
+infodir = @infodir@
+
+# The type of computer we are running on.
+target_host_type = @target_host_type@
+
+# The following pattern rules and the substitution functions require
+# GNU make.  If you don't have it, get it!
+
+# Rules for making C source from Fortran source (if necessary).
+#
+# If we are using f2c there will be a command for the `%.c : %.f'
+# pattern and no command for the `%.o : %.f' pattern, so that make
+# will not invoke the fortran compiler by mistake.
+#
+# If we are not using f2c, it should be ok to have an empty rule for
+# the pattern `%.c : %.f', but we don't want to replace make's default
+# rule for making object from Fortran source files, so there should be
+# no pattern or command for that.
+
+
+%.c : %.f
+
+%.o : %.f Makefile ../Makeconf
+	$(ccommand)
+	$(FC) -c $(ALL_FFLAGS) $<
+
+# How to make .o files from .c files:
+%.o: %.c %.h Makefile ../Makeconf
+	$(ccommand)
+	$(CC) -c $(CPPFLAGS) $(ALL_CFLAGS) $<

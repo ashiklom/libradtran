@@ -1,0 +1,19 @@
+      double precision pzero, tzero, re, pmo, grav, alosch 
+      double precision one, zero, zip
+
+      parameter (pzero = 1013.25) 
+      parameter (tzero = 273.15)
+      parameter (re = 6371.2)
+      parameter (pmo = 2.6568E-23)
+      parameter (grav = 9.80665)
+      parameter (alosch = 2.6868E19)
+      parameter (one = 1.0)
+      parameter (zero = 0.0) 
+      parameter (zip=-1.D0)         
+
+      integer kr, mz, mxkd
+      parameter (kr = 8)
+      parameter (mz = 33)     
+      parameter (mxkd = 20)
+
+      integer mxly, nta, mxq

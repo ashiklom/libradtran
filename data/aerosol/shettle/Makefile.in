@@ -1,0 +1,52 @@
+#
+# Makefile for libRadtran's data/aerosol/shettle directory
+#
+# Bernhard Mayer
+# bernhard.mayer@dlr.de
+
+TOPDIR = ../../../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = shettle
+
+DATAFILES =  tau550.1.1 tau550.1.2 tau550.2.1 tau550.2.2 tau550.3.1 tau550.3.2 tau550.4.1 tau550.4.2
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/aerosol/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/aerosol/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/aerosol/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/aerosol/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

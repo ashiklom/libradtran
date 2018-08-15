@@ -1,0 +1,33 @@
+# Wavelength bands for the David Kratz correlated k-technique
+#
+# Columns:
+#  1  band number
+#  2  center wavelength [um]
+#  3  start wavelength  [um]
+#  4  end wavelength    [um]
+ 
+# channel 1 (band 5 actually contributes to channel 1 and 2)
+ 1  0.569917  0.561798  0.578035    # avhrr15.f 
+ 2  0.590222  0.578035  0.602410    # avhrr14.f 
+ 3  0.613705  0.602410  0.625000    # avhrr13.f 
+ 4  0.657328  0.625000  0.689655    # avhrr12.f 
+ 5  0.720768  0.689655  0.751880    # avhrr11.f 
+
+# channel 2
+ 6  0.763537  0.751880  0.775194    # avhrr24.f 
+ 7  0.842143  0.775194  0.909091    # avhrr23.f 
+ 8  0.944741  0.909091  0.980392    # avhrr22.f 
+ 9  1.011030  0.980392  1.041667    # avhrr21.f 
+
+# channel 3
+10  3.55005  3.496503  3.603604    # avhrr35.f 
+11  3.65023  3.603604  3.696858    # avhrr34.f 
+12  3.74957  3.696858  3.802281    # avhrr33.f 
+13  3.85427  3.802281  3.906250    # avhrr32.f 
+14  3.96116  3.906250  4.016064    # avhrr31.f 
+
+# channel 4
+15 10.8365  10.309278 11.363636    # avhrr41.f 
+
+# channel 5
+16 11.9318  11.363636 12.500000    # avhrr51.f 

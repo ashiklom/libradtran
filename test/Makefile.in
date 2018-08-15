@@ -1,0 +1,77 @@
+#
+# Makefile for libRadtran's test directory
+#
+# Arve Kylling
+# arve.kylling@nilu.no
+
+TOPDIR = ..
+
+include $(TOPDIR)/Makeconf
+
+DISTFILES = Makefile.in \
+            test.pl.in
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all: test.pl
+	$(PERL) test.pl
+.PHONY: all
+
+check: all
+.PHONY: check
+
+answers: 
+	$(PERL) test.pl --answers
+.PHONY: answers
+
+verbosecheck: 
+	$(PERL) test.pl --maximum
+.PHONY: verbosecheck
+
+valgrind: 
+	$(PERL) test.pl --vaLgrind
+.PHONY: answers
+
+globalcheck: 
+	$(PERL) test.pl --maximum --global
+.PHONY: globalcheck
+
+everything:
+	$(PERL) test.pl --test=everything
+.PHONY: everything
+
+install: 
+.PHONY: install
+
+uninstall:
+.PHONY: uninstall
+
+clean:
+	rm -f *.a *.o
+.PHONY: clean
+
+mostlyclean:
+	rm -f *.o
+.PHONY: mostlyclean
+
+distclean: clean
+	rm -f Makefile
+.PHONY: distclean
+
+realclean: distclean
+	rm -f Makefile
+.PHONY: realclean
+
+dist:
+	ln $(DISTFILES) ../`cat ../.fname`/test
+.PHONY: dist
+
+mystic-dist:
+	ln $(MYSTICDISTFILES) ../`cat ../.fname`/test
+.PHONY: mystic-dist
+
+Makefile: Makefile.in ../config.status
+	cd ..; sh config.status
+
+test.pl: test.pl.in
+	cd ..; sh config.status

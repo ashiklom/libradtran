@@ -1,0 +1,54 @@
+#
+# Makefile for libRadtran's data/aerosol/OPAC/refractive_indices directory
+#
+# arve.kylling@gmail.com
+
+TOPDIR = ../../../../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = refractive_indices
+
+SUBDIRS = 
+
+DATAFILES = $(wildcard *_refr.dat)
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../../`cat ../../../../.fname`/data/aerosol/OPAC/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../../`cat ../../../../.fname`/data/aerosol/OPAC/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/aerosol/OPAC/refractive_indices
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/aerosol/OPAC/refractive_indices
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../../config.status
+	cd ../../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

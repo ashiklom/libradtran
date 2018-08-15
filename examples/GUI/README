@@ -1,0 +1,18 @@
+The examples in this directory are those that are included in the GUI
+at startup time. The GUI will automagically list all examples that
+have the following files present in this directory:
+
+   example_name.INP
+   example_name_thumb.jpg   
+   example_name_prev.jpg   
+
+For many examples a example_name_plot.py is also included. This python
+script was used to create the thumb and prev plots.
+
+The thumb and prev plots are most easily made by first saving the plot
+in some format (for example png). Executing the command
+   
+   python make_example.py example_name.png
+
+will create the correct-sized thumb and prev jpg-files.
+

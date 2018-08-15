@@ -1,0 +1,98 @@
+\chapter{Calculation of optical properties - \code{mie}}
+\label{sec:optprop}
+
+\index{Mie}
+
+{\sl libRadtran} includes the tool \code{mie} to calculate optical
+properties of spherical particles. Two different efficient and well
+tested Mie codes are implemented: The
+one by \citet{wiscombe80a} and the one by \citet{bohren1998}. Scattering phase matrices and
+corresponding Legendre polynomials can currently only be calculated
+using the code by \citet{wiscombe80a}.
+
+\section{Basic usage}
+
+\subsection{Running \code{mie}}
+
+Mie scattering calculations are performed for a specified
+wavelength interval. The \code{mie} program reads input from standard input, 
+and outputs to standard output or to a file. If
+\code{output\_user netcdf} is specified \code{mie} generates a file
+that can be used for radiative transfer calculations with
+\code{uvspec}.
+
+The \code{mie} tool is normally invoked in the following
+way: 
+
+\begin{Verbatim}[fontsize=\footnotesize]   
+  mie < input_file > output_file 
+\end{Verbatim}
+
+\strong{Warning:} Please note the error checking on input variables 
+is very scarce at the moment. Hence, if you provide erroneous input, 
+the outcome is unpredictable.
+
+\subsection{The \code{mie} input file}
+
+The \code{mie} input file consists of single line entries, each making
+up a complete input to the mie program. First on the line comes
+the parameter name, followed by one or more parameter values. The 
+parameter name and the parameter values are seperated by white space.
+
+Filenames are entered without any surrounding single or double quotes.
+
+Comments are introduced by a \code{\#}. Blank lines are ignored.
+
+\subsection{Model output}
+
+The standard output (stdout) of the mie program is one line for each 
+wavelength and each effective radius.
+The format of the output line is
+\begin{Verbatim}[fontsize=\footnotesize, frame=single, samepage=true]   
+  lambda refrac_real refrac_imag qext omega gg spike pmom
+\end{Verbatim}
+The keywords here are the same as in input option
+\code{output\_user}. The Legendre polynomials \code{pmom} are only
+caclulated if the option \code{nmom} is specified.
+
+If \code{output\_user netcdf} is specified the output is written to a
+netcdf file in the format that is required by \code{uvspec}.
+
+\section{Examples}
+
+\subsection{Calculation for one particle}
+
+The following example shows a Mie calculation for a single spherical
+particel with a radius of 200~$\mu$m. The refractive index is
+specified by the user. The calculation is performed for wavelengths
+from 280 to 5000~nm in 5~nm steps.
+\efile{../examples/MIE_1.INP}
+
+\subsection{Calculation for a size distribution}
+
+Not all cloud droplets are of one specific size. The cloud droplet
+size spectrum may be represented for instance by a gamma
+distribution. Gamma distributions can easily be specified using the
+option \codeidx{distribution} \code{gamma} as
+demonstrated in the following example:
+\efile{../examples/MIE_2.INP}
+The refractive index of water is taken for this calculation. In order
+to generate input for \code{uvspec} Legendre polynomials and from
+those the phase matrices need to be calculated. The option
+\codeidx{nmom} specifies how many Legendre polynomials shall be
+computed. If the selected number is too small for an accurate
+representation of the phase matrix, a warning is given. If
+\code{output\_user netcdf} is specified the corresponding phase
+matrices are calculated from the Legendre moments. The scattering
+angle grid is optimized so that the phase matrix is sampled as
+accurate as possible. The option \code{nthetamax} can be used to set
+an upper limit of scattering angle grid points to be used. 
+This example generates a netcdf file which can directly be used in
+\code{uvspec} with the options \codeidx{wc\_properties} or
+\codeidx{ic\_properties}.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

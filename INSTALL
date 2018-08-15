@@ -1,0 +1,145 @@
+How to Build and Install the Radtran C and Fortran Libraries and Associated Tools
+================================================================================= 
+
+   Building of libRadtran is relatively simple. Prior to
+building you may want to download additional software to build a
+libRadtran with all options envoked. Usually libRadtran also requires
+several GNU tools to be installed already. What you need and how to
+get it is specified below. 
+
+   To unpack, configure and build libRadtran is a simple three step
+process:
+
+   1. To unpack either do (power users)
+
+        tar -xzvf libRadtran-version_number.tar.gz
+
+      or struggle with poor man's tar
+
+        gzip -d libRadtran-version_number.tar.gz
+        tar -xvf  libRadtran-version_number.tar
+
+   2. Configure libRadtran for your system (if you want to install
+      the package in a place different from `/usr/local` use the 
+      --prefix=PATH option to configure).   
+
+        cd libRadtran-version_number
+        ./configure
+
+   3. Compile and link the thing
+
+        make
+
+After a succesful build you may want to test some of the tools coming
+with libRadtran. Try
+
+        make check
+
+To install the executables, data files and documentation type
+       
+        make install
+
+This will install the package's file in 
+`/usr/local/bin`                      # uvspec and other tools
+`/usr/local/include/libRadtran`       # include files
+`/usr/local/lib`                      # libRadtran_c and libRadtran_f
+`/usr/local/share/libRadtran/doc`     # all libRadtran documentation
+`/usr/local/share/libRadtran/examples # all libRadtran example input and output files
+`/usr/local/share/libRadtran/data`    # all libRadtran data files
+
+You can specify an installation prefix other than `/usr/local' by
+giving `configure' the option `--prefix=PATH'. 
+
+In order to have uvspec recognize the whereabouts of the libRadtran
+datafiles you have to specify the location of the datafiles using the
+environment variable LIBRADTRAN_DATA_FILES. For the Bourne again shell
+(bash) this is done by the following command:
+
+        export LIBRADTRAN_DATA_FILES=/usr/local/share/libRadtran/data/
+
+if you install in the standard location /usr/local. If you use any
+other location you have to specify the location accordingly.
+
+To uninstall try:
+   
+         make uninstall
+
+
+
+
+Additional stuff to get a complete libRadtran
+=============================================
+
+   LibRadtran will build and the tools will run nicely without the
+below software. However, some of us have special needs and must have
+these options included as well. If you do not recognize what we are
+talking about below, you probably do not need it and may happily
+ignore it. 
+
+   * To include the correlated-k stuff of Kato et al. libnetcdf is
+     needed. Two options exist to include it.
+      -You have a nice sysadm who has already put it on your
+       system. If so it will be detected during the configuration
+       process and automagically included.
+      -You have to get it yourself from
+       http://www.unidata.ucar.edu/packages/netcdf/index.html
+       and build it yourself. To tell configure where you put
+       libnetcdf invoke configure as 
+         ./configure --with-libnetcdf=/home/yourname/location 
+       The ck-stuff will be included.
+
+   * For some applications, the GNU Scientific Library (GSL) is needed. 
+
+Recommended Tools to Install libRadtran
+=======================================
+
+   We recommend installing the following GNU tools before attempting to
+build libRadtran
+
+   * `make' 3.75
+
+     You need the latest version of GNU `make'.  Modifying libRadtran 
+     to work with other `make' programs would be  so hard that we
+     recommend you port GNU `make' instead.  *Really.* 
+     We recommend version GNU `make' version 3.75 or later.
+
+   * GCC 2.7.2.1 and g77 or f2c
+
+     LibRadtran is known to compile and link without problems on
+     system with gcc and either g77 or f2c. We recommend GCC version
+     2.7.2 or later. 
+
+   In addition Perl version 5.004 or later is needed to run the tests
+   and some of the tools.
+
+   The GNU tools are available from http://www.gnu.org and perl from
+   http://www.perl.org. 
+
+Reporting Bugs
+==============
+
+   There are probably bugs in the Radtran C and Fortran libraries.
+There are certainly errors and omissions in the manual.  If you report
+them, they will get fixed.  If you don't, no one will ever know about
+them and they will remain unfixed for all eternity, if not longer.
+
+   To report a bug, first you must find it.  Hopefully, this will be the
+hard part.  Once you've found a bug, make sure it's really a bug. Once
+you're sure you've found a bug, try to narrow it down to the smallest
+test case that reproduces the problem.   
+
+   The final step when you have a simple test case is to report the bug.
+When reporting a bug, send your test case, the results you got, the
+results you expected, what you think the problem might be (if you've
+thought of anything), your system type, and the version of libRadtran
+you are using.  
+
+   Send bug reports to the Internet address
+bugs@libradtran.org'.  If you have other problems with
+installation or use, please report those as well. 
+
+   If you are not sure how a function should behave, and the manual
+doesn't tell you, that's a bug in the manual.  Report that too!  If the
+function's behavior disagrees with the manual, then either the libRadtran
+or the manual has a bug, so report the disagreement. 
+

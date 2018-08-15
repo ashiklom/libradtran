@@ -1,0 +1,55 @@
+#
+# Makefile for libRadtran's data/solar_flux directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = solar_flux
+
+DATAFILES = apm_0_5nm apm_1nm atlas2 atlas3 atlas_plus_modtran \
+	atlas_plus_modtran_ph kato fu kratz kratz.org kratz.new \
+        kurudz_0.1nm.dat kurudz_1.0nm.dat \
+        Thekaekara.dat NewGuey2003.dat rgb rgb_bands
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: mystic-dist
+
+dist: all
+	ln $(DISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: dist
+
+install: all
+	$(MKPATH) $(datafiledir)/solar_flux
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/solar_flux
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

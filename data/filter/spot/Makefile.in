@@ -1,0 +1,59 @@
+#
+# Makefile for libRadtran's data/filter/spot directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = spot
+
+DATAFILES = spot1_hrv_b1 spot1_hrv_b2 spot1_hrv_b3 spot1_hrv_pan \
+            spot2_hrv_b1 spot2_hrv_b2 spot2_hrv_b3 spot2_hrv_pan \
+            spot3_hrv_b1 spot3_hrv_b2 spot3_hrv_b3 spot3_hrv_pan \
+            spot4_hrvir_b1 spot4_hrvir_b2 spot4_hrvir_b3 spot4_hrvir_b4 \
+            spot4_hrvir_mono spot4_vegetation1_b0 spot4_vegetation1_b2 spot4_vegetation1_b3 \
+            spot4_vegetation1_b4 spot5_hrg_b1 spot5_hrg_b2 spot5_hrg_b3 \
+            spot5_hrg_b4 spot5_hrg_pan spot5_vegetation2_b0 spot5_vegetation2_b2 \
+            spot5_vegetation2_b3 spot5_vegetation2_b4
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

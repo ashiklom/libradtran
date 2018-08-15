@@ -1,0 +1,17 @@
+# Simulate GOME spectrum over the Sahara
+
+umu 0.995055569961
+#raman 
+phi 103.34
+rte_solver disort
+pseudospherical 
+output_user lambda edir eup uu
+sza 18.73
+quiet 
+zout toa
+source solar ../examples/GUI/spectrum_GOME/solar_file
+phi0 116.80
+wavelength 340.0707 399.9294
+atmosphere_file US-standard
+albedo 0.03
+altitude 0.17

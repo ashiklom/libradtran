@@ -1,0 +1,54 @@
+#
+# Makefile for libRadtran's sdoc directory
+#
+# Arve Kylling
+# arve.kylling@itek.norut.no
+
+TOPDIR = ..
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+include $(TOPDIR)/Makeconf
+
+DISTFILES = Makefile.in sdoc.awk sdoc.texi texinfo2latex.awk \
+	README sdoc.cnf
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all: 
+.PHONY: all
+
+check: all
+.PHONY: check
+
+install: all
+.PHONY: install
+
+uninstall:
+.PHONY: uninstall
+
+clean:
+.PHONY: clean
+
+mostlyclean:
+.PHONY: mostlyclean
+
+distclean: clean
+	rm -f Makefile
+.PHONY: distclean
+
+realclean: distclean
+	rm -f tags TAGS
+.PHONY: realclean
+
+dist:
+	ln $(DISTFILES) ../`cat ../.fname`/sdoc
+.PHONY: dist
+
+mystic-dist:
+	ln $(MYSTICDISTFILES) ../`cat ../.fname`/sdoc
+.PHONY: mystic-dist
+
+Makefile: Makefile.in ../config.status
+	cd ..; sh config.status

@@ -1,0 +1,19 @@
+Note: All *.OUT files where produced on a Pentium MMX running
+      linux.
+
+Files: 
+
+UVSPEC_CLEAR.INP     : Clear sky uvspec input file
+UVSPEC_CLEAR.OUT     : Corresponding uvspec output file
+
+UVSPEC_AEROSOL.INP   : Aerosol part of uvspec input file, may
+                       be combined with UVSPEC_CLEAR.INP to
+                       give a complete uvspec input file.
+UVSPEC_AEROSOL.OUT   : Corresponding uvspec output file
+
+UVSPEC_RADIANCES.INP : What to include if radiances are wanted.
+                       Combined with UVSPEC_CLEAR.INP and
+                       UVSPEC_AEROSOL.INP it produces the
+                       following output file.
+UVSPEC_RADIANCES.OUT : Corresponding uvspec output file
+

@@ -1,0 +1,2 @@
+Title: Single scattering lidar
+Signal from a lidar, without multiple scattering contribution.

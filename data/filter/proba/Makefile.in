@@ -1,0 +1,94 @@
+#
+# Makefile for libRadtran's data/filter/proba directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = proba
+
+DATAFILES = proba_chris_a01 proba_chris_a02 proba_chris_a03 proba_chris_a04 \
+            proba_chris_a05 proba_chris_a06 proba_chris_a07 proba_chris_a08 \
+            proba_chris_a09 proba_chris_a10 proba_chris_a11 proba_chris_a12 \
+            proba_chris_a13 proba_chris_a14 proba_chris_a15 proba_chris_a16 \
+            proba_chris_a17 proba_chris_a18 proba_chris_a19 proba_chris_a20 \
+            proba_chris_a21 proba_chris_a22 proba_chris_a23 proba_chris_a24 \
+            proba_chris_a25 proba_chris_a26 proba_chris_a27 proba_chris_a28 \
+            proba_chris_a29 proba_chris_a30 proba_chris_a31 proba_chris_a32 \
+            proba_chris_a33 proba_chris_a34 proba_chris_a35 proba_chris_a36 \
+            proba_chris_a37 proba_chris_a38 proba_chris_a39 proba_chris_a40 \
+            proba_chris_a41 proba_chris_a42 proba_chris_a43 proba_chris_a44 \
+            proba_chris_a45 proba_chris_a46 proba_chris_a47 proba_chris_a48 \
+            proba_chris_a49 proba_chris_a50 proba_chris_a51 proba_chris_a52 \
+            proba_chris_a53 proba_chris_a54 proba_chris_a55 proba_chris_a56 \
+            proba_chris_a57 proba_chris_a58 proba_chris_a59 proba_chris_a60 \
+            proba_chris_a61 proba_chris_a62 proba_chris_c01 proba_chris_c02 \
+            proba_chris_c03 proba_chris_c04 proba_chris_c05 proba_chris_c06 \
+            proba_chris_c07 proba_chris_c08 proba_chris_c09 proba_chris_c10 \
+            proba_chris_c11 proba_chris_c12 proba_chris_c13 proba_chris_c14 \
+            proba_chris_c15 proba_chris_c16 proba_chris_c17 proba_chris_c18 \
+            proba_chris_h01 proba_chris_h02 proba_chris_h03 proba_chris_h04 \
+            proba_chris_h05 proba_chris_h06 proba_chris_h07 proba_chris_h08 \
+            proba_chris_h09 proba_chris_h10 proba_chris_h11 proba_chris_h12 \
+            proba_chris_h13 proba_chris_h14 proba_chris_h15 proba_chris_h16 \
+            proba_chris_h17 proba_chris_h18 proba_chris_h19 proba_chris_h20 \
+            proba_chris_h21 proba_chris_h22 proba_chris_h23 proba_chris_h24 \
+            proba_chris_h25 proba_chris_h26 proba_chris_h27 proba_chris_h28 \
+            proba_chris_h29 proba_chris_h30 proba_chris_h31 proba_chris_h32 \
+            proba_chris_h33 proba_chris_h34 proba_chris_h35 proba_chris_h36 \
+            proba_chris_h37 proba_chris_l01 proba_chris_l01a proba_chris_l02 \
+            proba_chris_l02a proba_chris_l03 proba_chris_l03a proba_chris_l04 \
+            proba_chris_l04a proba_chris_l05 proba_chris_l05a proba_chris_l06 \
+            proba_chris_l06a proba_chris_l07 proba_chris_l07a proba_chris_l08 \
+            proba_chris_l08a proba_chris_l09 proba_chris_l09a proba_chris_l10 \
+            proba_chris_l10a proba_chris_l11 proba_chris_l11a proba_chris_l12 \
+            proba_chris_l12a proba_chris_l13 proba_chris_l13a proba_chris_l14 \
+            proba_chris_l14a proba_chris_l15 proba_chris_l15a proba_chris_l16 \
+            proba_chris_l16a proba_chris_l17 proba_chris_l17a proba_chris_l18 \
+            proba_chris_l18a proba_chris_w01 proba_chris_w02 proba_chris_w03 \
+            proba_chris_w04 proba_chris_w05 proba_chris_w06 proba_chris_w07 \
+            proba_chris_w08 proba_chris_w09 proba_chris_w10 proba_chris_w11 \
+            proba_chris_w12 proba_chris_w13 proba_chris_w14 proba_chris_w15 \
+            proba_chris_w16 proba_chris_w17 proba_chris_w18 README
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

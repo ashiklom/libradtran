@@ -1,0 +1,1348 @@
+dnl configure.in
+dnl
+dnl Process this file with autoconf to produce a configure script.
+dnl Requires GNU autoconf 2.9 or later.
+dnl
+dnl Copyright (C) 1997-2002 Arve Kylling
+### 
+### This file is part of libRadtran.
+### 
+### libRadtran is free software; you can redistribute it and/or modify it
+### under the terms of the GNU General Public License as published by the
+### Free Software Foundation; either version 2, or (at your option) any
+### later version.
+### 
+### libRadtran is distributed in the hope that it will be useful, but WITHOUT
+### ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+### FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+### for more details.
+### 
+### You should have received a copy of the GNU General Public License
+### along with libRadtran; see the file COPYING.  If not, write to the Free
+### Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+
+# disable caching
+define([AC_CACHE_LOAD], )dnl
+define([AC_CACHE_SAVE], )dnl
+
+AC_PREREQ(2.9)
+AC_INIT
+
+AC_CANONICAL_HOST
+if test -z "$host"; then
+  host=unknown
+fi
+target_host_type=$host
+canonical_host_type=$host
+if test "$host" = unknown; then
+  AC_MSG_WARN([configuring libRadtran for unknown system type
+])
+fi
+AC_SUBST(target_host_type)
+
+AC_PREFIX_DEFAULT(/usr/local)
+
+### some defaults
+
+exec_prefix='$(prefix)'
+bindir='$(exec_prefix)/bin'
+datadir='$(prefix)/share/libRadtran'
+libdir='$(exec_prefix)/lib'
+includedir='$(prefix)/include'
+datafiledir='$(datadir)/data'
+infodir='$(datadir)/info'
+docdir='$(datadir)/doc'
+examplesdir='$(datadir)/examples/'
+AC_MSG_RESULT([defining prefix to be $prefix])
+AC_MSG_RESULT([defining exec_prefix to be $exec_prefix])
+AC_MSG_RESULT([defining bindir to be $bindir])
+AC_MSG_RESULT([defining datadir to be $datadir])
+AC_MSG_RESULT([defining datafiledir to be $datafiledir])
+AC_MSG_RESULT([defining examplesdir to be $examplesdir])
+AC_MSG_RESULT([defining libdir to be $libdir])
+AC_SUBST(prefix)
+AC_SUBST(exec_prefix)
+AC_SUBST(bindir)
+AC_SUBST(datadir)
+AC_SUBST(libdir)
+AC_SUBST(includedir)
+AC_SUBST(datafiledir)
+AC_SUBST(examplesdir)
+AC_SUBST(infodir)
+AC_SUBST(docdir)
+
+### Make configure args available for other uses.
+
+config_opts=$ac_configure_args
+AC_SUBST(config_opts)
+
+### Allow the user to specify the whereabouts of tenstream
+AC_ARG_WITH(download-tenstream,
+  [  --with-download-tenstream    Download tenstream library from svn.physik.uni-muenchen.de ==> you need an account and LS-Mayer credentials ],
+  [DOWNLOAD_TENSTREAM="$withval"],
+  [DOWNLOAD_TENSTREAM="no"] )
+
+AS_IF([test "x$DOWNLOAD_TENSTREAM" != "xno"], [
+  if test ! -d tenstream ; then
+     AC_MSG_RESULT([*********************************************************************************************************************]);
+     AC_MSG_RESULT([****************************** DOWNLOADING TENSTREAM to ./tenstream     *********************************************]);
+     AC_MSG_RESULT([****************************** Follow installation instructions in      *********************************************]);
+     AC_MSG_RESULT([****************************** ./tenstream/README and ./configure again *********************************************]);
+     AC_MSG_RESULT([*********************************************************************************************************************]);
+     git clone https://github.com/tenstream/tenstream.git;
+     sleep 5;
+   fi;
+])
+
+AC_ARG_WITH(tenstream,
+  [  --with-tenstream=location    Specify location of tenstream library i.e. PATH where cmake was executed ],
+  [LIBTENSTREAM_PATH="$withval"],
+  LIBTENSTREAM_PATH="tenstream/build/")
+
+### Allow the user to specify the whereabouts of netcdf
+
+AC_ARG_WITH(libnetcdf,
+  [  --with-libnetcdf=location    Specify location of netcdf library ],
+  [LIBNETCDF_LIBRARY="-L$withval -L$withval/lib";LIBNETCDF_INCLUDE="-I$withval -I$withval/include"],
+  LIBNETCDF="")
+
+AC_ARG_WITH(libnetcdff,
+  [  --with-libnetcdff=location    Specify location of fortran netcdf library ],
+  [LIBNETCDFF_LIBRARY="-L$withval -L$withval/lib";LIBNETCDFF_INCLUDE="-I$withval -I$withval/include"],
+  LIBNETCDFF="")
+
+### Allow the user to include worldloop
+
+AC_ARG_WITH(worldloop,
+  [  --with-worldloop                worldloop included in compilation ],
+  [compile_with_worldloop=true],
+  compile_with_worldloop=false)
+
+### Allow the user to specify condor version of code
+
+AC_ARG_WITH(condor,
+  [  --with-condor                Compilation to be done for condor queueing ],
+  [compile_with_condor=true],
+  compile_with_condor=false)
+
+AC_ARG_WITH(condormim,
+  [  --with-condormim             Compilation to be done for condor queueing ],
+  [compile_with_condor_at_mim=true],
+  compile_with_condor_at_mim=false)
+
+### Allow the user to force us to use f2c.
+
+AC_ARG_WITH(f2c,
+  [  --with-f2c              use f2c even if Fortran compiler is available],
+  [if test $withval = no; then use_f2c=false; else use_f2c=true; fi],
+  use_f2c=false)
+
+### Allow the user to force us to use g77.
+
+AC_ARG_WITH(g77,
+  [  --with-g77              use g77 to compile Fortran subroutines],
+  [if test $withval = no; then use_g77=false; else use_g77=true; fi],
+  use_g77=false)
+
+if $use_f2c && $use_g77; then
+  AC_MSG_WARN([--with-f2c and --with-g77 both specified!  Using g77...])
+  use_f2c=false
+fi
+
+### See which C compiler to use (we expect to find gcc).
+
+EXTERN_CFLAGS="$CFLAGS"
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_GCC_TRADITIONAL
+
+### Do special things for gcc.
+
+ADD_CC_WALL=false
+gcc_version=`$CC -v 2>&1 | grep "^.*gcc version" | \
+  sed -e 's/^.*g.. version *//' -e 's/cygnus-//'| sed -e 's/egcs-//'`
+case "$gcc_version" in
+  2.* | 3.* | 4.* | 5.* | 6.* | 7.* | 8.* | 9.*)
+    if test -z "$EXTERN_CFLAGS"; then
+      ADD_CC_WALL=true
+    fi
+    if test -z "$LDFLAGS"; then
+      LDFLAGS="-g"
+      AC_MSG_RESULT([defining LDFLAGS to be $LDFLAGS])
+    fi
+  ;;
+  1.*)
+    AC_MSG_WARN([gcc version $gcc_version is likely to cause problems])
+  ;;
+  *)
+    AC_MSG_WARN([libRadtran has only been tested with gcc, and I can't find it])
+  ;;
+esac
+
+CC_VERSION=
+if test -n "$gcc_version"; then
+  CC_VERSION="$gcc_version"
+fi
+AC_SUBST(CC_VERSION)
+
+### On Intel systems with gcc, we need to compile with -mieee-fp to
+### get full support for IEEE floating point.
+###
+### On Alpha/OSF systems, wee need -mieee-with-inexact, but that also
+### requires gcc 2.8.x or later.
+
+case "$canonical_host_type" in
+changequote(,)dnl
+  i[3456789]86-*-*)
+changequote([,])dnl
+### This does not work on my intel....
+###    GCC_IEEE_FP_FLAG="-mieee-fp"
+    AC_MSG_RESULT([defining GCC_IEEE_FP_FLAG to be $GCC_IEEE_FP_FLAG])
+  ;;
+  alpha-dec-osf*)
+    case "$gcc_version" in
+changequote(,)dnl
+      1.* | 2.[01234567].*)
+changequote([,])dnl
+      ;;
+      *)
+###        GCC_IEEE_FP_FLAG="-mieee-with-inexact"
+        AC_MSG_RESULT([defining GCC_IEEE_FP_FLAG to be $GCC_IEEE_FP_FLAG])
+      ;;
+    esac
+  ;;
+esac
+AC_SUBST(GCC_IEEE_FP_FLAG)
+
+### Use -static if compiling on Alpha OSF/1 1.3 systems.
+
+case "$canonical_host_type" in
+  alpha-dec-osf1.3)
+    LD_STATIC_FLAG=-static
+  ;;
+esac
+if test -n "$LD_STATIC_FLAG"; then
+  AC_MSG_RESULT([defining LD_STATIC_FLAG to be $LD_STATIC_FLAG])
+fi
+AC_SUBST(LD_STATIC_FLAG)
+
+### special checks for odd OS specific things.
+###
+### I am told that on some SCO systems, the only place to find some
+### functions like gethostname and gettimeofday is in libsocket.
+
+###AC_AIX
+###AC_MINIX
+###AC_ISC_POSIX
+
+### Does the C compiler handle alloca() and const correctly?
+
+AC_ALLOCA
+AC_C_CONST
+
+### Does the C compiler handle inline?
+
+AC_C_INLINE
+AC_SUBST(inline)
+
+### We need these before trying to find libf2c.
+
+if test -z "$AR"; then
+  AR=ar
+fi
+AC_SUBST(AR)
+
+if test -z "$ARFLAGS"; then
+  ARFLAGS="rc"
+fi
+AC_SUBST(ARFLAGS)
+
+AC_PROG_AWK
+AC_PROG_RANLIB
+
+AC_PATH_PROG(PERL, perl)
+AC_PATH_PROG(PYTHON, python)
+AC_PATH_PROG(NCCMP, nccmp)
+
+if test -z "$NCCMP"; then
+  FOUND_NCCMP="no"
+else
+  FOUND_NCCMP="yes"
+fi
+AC_SUBST(FOUND_NCCMP)
+
+## the F77 variable, if set, overrides AC_PROG_F77 automatically
+AC_PROG_F77([gfortran g77 xlf f77 frt pgf77 cf77 fort77 fl32 af77 xlf90 f90 pgf90 pghpf epcf90 g95 xlf95 f95 fort ifort ifc efc pgfortran pgf95 lf95 ftn nagfor])
+AC_F77_LIBRARY_LDFLAGS
+AC_F77_DUMMY_MAIN
+AC_F77_WRAPPERS
+
+F77_TOLOWER=true
+F77_APPEND_UNDERSCORE=true
+F77_APPEND_EXTRA_UNDERSCORE=true
+
+case "$ac_cv_f77_mangling" in
+  "upper case") F77_TOLOWER=false ;;
+esac
+case "$ac_cv_f77_mangling" in
+  "no underscore") F77_APPEND_UNDERSCORE=false ;;
+esac
+case "$ac_cv_f77_mangling" in
+  "no extra underscore") F77_APPEND_EXTRA_UNDERSCORE=false ;;
+esac
+
+case "$canonical_host_type" in
+  i[[3456789]]86-*-*)
+    if test "$ac_cv_f77_compiler_gnu" = yes; then
+###      if test -z "$FFLAGS"; then
+###
+### No optimalization for the fortran stuff, otherwise problems with
+### common blocks used in some routines, ak 12.02.2009
+###
+        FFLAGS="-O"
+###      fi
+###      OCTAVE_F77_FLAG(-mieee-fp)
+###      OCTAVE_F77_FLAG(-ffloat-store)
+    fi
+  ;;
+  alpha*-*-*)
+    if test "$ac_cv_f77_compiler_gnu" = yes; then
+      FFLAGS="-mieee $FFLAGS"
+###      OCTAVE_F77_FLAG(-mieee)
+    else
+      FFLAGS="-ieee $FFLAGS"
+      FFLAGS="-fpel $FFLAGS"
+###      OCTAVE_F77_FLAG(-ieee)
+###      OCTAVE_F77_FLAG(-fpe1)
+    fi
+  ;;
+  powerpc-apple-machten*)
+    FFLAGS=
+  ;;
+esac
+
+if test -n "$FFLAGS"; then
+  AC_MSG_NOTICE([defining FFLAGS to be $FFLAGS])
+fi
+
+AC_SUBST(F77_TOLOWER)
+AC_SUBST(F77_APPEND_UNDERSCORE)
+AC_SUBST(F77_APPEND_EXTRA_UNDERSCORE)
+
+if test -z "$F77"; then
+  AC_MSG_WARN([in order to build libRadtran, you must have a compatible])
+  AC_MSG_WARN([Fortran compiler or wrapper script for f2c that functions])
+  AC_MSG_WARN([as a Fortran compiler installed and in your path.])
+  AC_MSG_ERROR([See the file INSTALL for more information.])
+fi
+
+
+FC=$F77
+AC_SUBST(FC)
+AC_SUBST(F77)
+AC_SUBST(LDF77)
+AC_SUBST(FFLAGS)
+AC_SUBST(FLIBS)
+AC_SUBST(F2C)
+AC_SUBST(F2CFLAGS)
+AC_SUBST(FORTRAN_MAIN_FLAG)
+
+### Checks for header files.
+
+AC_HEADER_STDC
+AC_HEADER_DIRENT
+
+AC_CHECK_HEADERS(float.h stdlib.h string.h )
+
+### I am tired of NAN problems the following should
+### fix it forever (though it is not very elegant:-)
+### BM, August 2003: We need to check at least if NAN is
+###                  already defined
+AC_CHECK_DECL(NAN, NANFLAG=, NANFLAG="-DNAN=\(0.0/0.0\)", [#include <math.h>])
+AC_SUBST(NANFLAG)
+
+AC_MSG_RESULT([defining NANFLAG to be $NANFLAG])
+
+XCFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS $GCC_IEEE_FP_FLAG"
+
+### Checks for other programs used for building, testing, installing,
+### and running libRadtran.
+###
+### For now, don't define LEXLIB to be -lfl -- we don't use anything in
+### it, and it might not be installed.
+###
+### Also make sure that we generate an interactive scanner if we are
+### using flex.
+
+AC_PROG_LEX
+LEXLIB=
+AC_SUBST(LEXLIB_SCRIPT)
+
+AC_PROG_LN_S
+
+AC_PROG_INSTALL
+INSTALL_SCRIPT='${INSTALL}'
+AC_SUBST(INSTALL_SCRIPT)
+
+# to create directories in the installation path, use '$(MKPATH) dirname':
+MKPATH='mkdir -p'
+AC_SUBST(MKPATH)
+
+### Maybe add -Wall to compiler flags now that we're done feature
+### testing. 
+###
+### To get gcc to be really picky, try these adding these
+### options to CFLAGS and CXXFLAGS along with -Wall:
+###
+###   -ansi
+###   -pedantic
+###   -Wwrite-strings
+###   -Wid-clash-31
+###   -Wpointer-arith
+###   -Wcast-qual
+###   -Wenum-clash
+###   -Wcast-align
+###   -Wtraditional
+###   -Wstrict-prototypes
+###   -Wmissing-prototypes
+###   -Wnested-externs
+###   -Woverloaded-virtual
+###   -Winline
+###   -felide-constructors
+###   -fnonnull-objects
+
+if $ADD_CC_WALL; then
+  CFLAGS="$CFLAGS -Wall"
+  AC_MSG_RESULT([adding -Wall to CFLAGS])
+fi
+
+### Check for text formatting programs
+
+AC_PROGRAMS_CHECK(DVIPS, dvips)
+if test -n "$DVIPS"; then
+  export DVIPS
+else
+  AC_MSG_WARN([Unable to find dvips. You will not be able to])
+  AC_MSG_WARN([build postscript files for the doumentation.])
+fi
+
+
+# AC_CPP_FUNC
+# ------------------ #
+# Checks to see if ANSI C99 CPP variable __func__ works.
+# If not, perhaps __FUNCTION__ works instead. 
+# If not, we'll just define __func__ to "". 
+AC_DEFUN([AC_CPP_FUNC],
+[AC_REQUIRE([AC_PROG_CC_STDC])dnl
+AC_CACHE_CHECK([for an ANSI C99-conforming __func__], ac_cv_cpp_func,
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+[[char *foo = __func__;]])],
+  [ac_cv_cpp_func=yes], 
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([],
+[[char *foo = __FUNCTION__;]])],
+  [ac_cv_cpp_func=__FUNCTION__], 
+  [ac_cv_cpp_func=no])])])
+if test $ac_cv_cpp_func = __FUNCTION__; then
+  AC_DEFINE(__func__,__FUNCTION__,
+            [Define to __FUNCTION__ or "" if `__func__' does not conform to 
+ANSI C.])
+elif test $ac_cv_cpp_func = no; then
+  AC_DEFINE(__func__,"",
+            [Define to __FUNCTION__ or "" if `__func__' does not conform to 
+ANSI C.])
+fi
+])# AC_CPP_FUNC
+
+AC_CPP_FUNC
+
+
+### Check if we have netcdf
+### If LIBNETCDF_LIBRARY does not have zero length it is specified by the user
+### If it has zero length, we search for netcdf 
+
+# we need -lnsl on some machines (e.g. SUN)
+AC_CHECK_LIB(nsl, yp_bind, LIBNSL=-lnsl, LIBNSL=,)
+
+HAVE_LIBNETCDF="-DHAVE_LIBNETCDF=0"
+LIBNETCDF=""
+FOUND_LIBNETCDF="no"
+if test -z "$LIBNETCDF_LIBRARY"; then
+  AC_CHECK_LIB(netcdf,nc_open,[LIBNETCDF="-lnetcdf $LIBNSL"; HAVE_LIBNETCDF="-DHAVE_LIBNETCDF=1"; FOUND_LIBNETCDF="yes"],,[$LIBNSL])
+  if test -z "$LIBNETCDF"; then
+     AC_MSG_RESULT([Could not find NetCDF version 3 or higher])
+     AC_MSG_RESULT([Uvspec will be built without it])
+     AC_MSG_RESULT([and the Kato et al. correlated-k parameterization.])
+  fi
+else 
+  AC_MSG_RESULT([$LIBNETCDF_LIBRARY])
+  AC_CHECK_LIB(netcdf,nc_open,[LIBNETCDF="-lnetcdf $LIBNSL $LIBNETCDF_LIBRARY";HAVE_LIBNETCDF="-DHAVE_LIBNETCDF=1";FOUND_LIBNETCDF="yes"],,[$LIBNSL $LIBNETCDF_LIBRARY])
+  if test -z "$LIBNETCDF"; then
+    AC_MSG_RESULT([%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%])
+    AC_MSG_RESULT([% YOUR SYSTEM IS MISSING SOFTWARE NEEDED TO BUILD LIBRADTRAN %])
+    AC_MSG_RESULT([%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%])
+    AC_MSG_RESULT([Could not find NetCDF version 3 or higher at the specified location])
+    AC_MSG_RESULT([Please install and run configure again.])
+    AC_MSG_ERROR([Did not find NetCDF.])	
+  fi
+fi
+AC_SUBST(FOUND_LIBNETCDF)
+AC_SUBST(HAVE_LIBNETCDF)
+AC_SUBST(LIBNETCDF)
+AC_SUBST(LIBNETCDF_INCLUDE)
+
+AC_MSG_RESULT([Defining LIBNETCDF to be $LIBNETCDF])
+AC_MSG_RESULT([Looking for netcdf.h in $LIBNETCDF_INCLUDE])
+
+# Check for FORTRAN NETCDF Libs -- needed for tenstream solver to write and load Lookuptables
+HAVE_LIBNETCDFF="-DHAVE_LIBNETCDFF=0"
+
+LIBNETCDFF=""
+FOUND_LIBNETCDFF="no"
+
+AC_CHECK_PROG([HAVE_NF_CONFIG],[nf-config],["yes"])
+
+if test $HAVE_NF_CONFIG = "yes"; then
+    AC_MSG_RESULT([ Found nf-config --- will use that to determine compiler flags ])
+    LIBNETCDFF=$(nf-config --flibs)
+    HAVE_LIBNETCDFF="-DHAVE_LIBNETCDFF=1"
+    FOUND_LIBNETCDFF="yes"
+    AC_MSG_RESULT([ Found nf-config --- libnetcdff=$LIBNETCDFF ])
+else
+    if test -z "$LIBNETCDFF_LIBRARY"; then
+        AC_CHECK_LIB(netcdff,__netcdf_MOD_nf90_open,[LIBNETCDFF="-lnetcdff $LIBNSL"; HAVE_LIBNETCDFF="-DHAVE_LIBNETCDFF=1"; FOUND_LIBNETCDFF="yes"],,[$LIBNSL])
+        if test -z "$LIBNETCDFF"; then
+            AC_MSG_RESULT([Could not find fortran NetCDF version 3 or higher])
+            AC_MSG_RESULT([Tenstream solver needs it to load Lookuptables])
+        fi
+    else 
+        AC_MSG_RESULT([$LIBNETCDFF_LIBRARY])
+        AC_CHECK_LIB(netcdff,__netcdf_MOD_nf90_open,[LIBNETCDFF="-lnetcdff $LIBNSL $LIBNETCDFF_LIBRARY";HAVE_LIBNETCDFF="-DHAVE_LIBNETCDFF=1";FOUND_LIBNETCDFF="yes"],,[$LIBNSL $LIBNETCDFF_LIBRARY])
+        if test -z "$LIBNETCDFF"; then
+            AC_MSG_RESULT([Could not find Fortran NetCDF version 3 or higher at the specified location])
+            AC_MSG_RESULT([Tenstream solver needs it to load Lookuptables])
+        fi
+    fi
+fi
+AC_SUBST(FOUND_LIBNETCDFF)
+AC_SUBST(HAVE_LIBNETCDFF)
+AC_SUBST(LIBNETCDFF)
+AC_SUBST(LIBNETCDFF_INCLUDE)
+
+AC_MSG_RESULT([Defining LIBNETCDFF to be $LIBNETCDFF])
+AC_MSG_RESULT([Looking for netcdff.h in $LIBNETCDFF_INCLUDE])
+
+### Check if we have tenstream
+if test -f "$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/petscvariables" ; then
+  HAVE_PETSC="yes" 
+else 
+  HAVE_PETSC="no"
+fi
+AC_MSG_RESULT([ Found PETSC? :: $HAVE_PETSC])
+
+AC_CHECK_PROG([HAVE_MPI],[mpicc],["yes"])
+AC_MSG_RESULT([ Found MPI? :: $HAVE_MPI])
+
+AC_MSG_RESULT([ Checking for libtenstream :: "$LIBTENSTREAM_PATH/lib/libtenstream.a"])
+
+if test -d "$LIBTENSTREAM_PATH/lib" -a $HAVE_PETSC = "yes" -a $HAVE_MPI = "yes" -a $FOUND_LIBNETCDFF = "yes" ; then
+  TENSTREAM_FULL_PATH=$(readlink -f $LIBTENSTREAM_PATH )
+  LD_TENSTREAM="-L$TENSTREAM_FULL_PATH/lib -L$TENSTREAM_FULL_PATH/ -ltenstream $LIBNETCDFF $LIBNETCDF "
+  FOUND_LIBTENSTREAM="yes"
+  HAVE_LIBTENSTREAM="-DHAVE_LIBTENSTREAM=1"
+else
+  FOUND_LIBTENSTREAM="no"
+  HAVE_LIBTENSTREAM="-DHAVE_LIBTENSTREAM=0"
+fi
+AC_SUBST(TENSTREAM_FULL_PATH)
+AC_SUBST(FOUND_LIBTENSTREAM)
+AC_SUBST(HAVE_LIBTENSTREAM)
+AC_SUBST(LD_TENSTREAM)
+
+### Check if we have MYSTIC
+HAVE_MYSTIC="-DHAVE_MYSTIC=0"
+MYSTIC_SOURCES=""
+MYSTIC_DOC="false"
+FOUND_MYSTIC="no"
+if test -f "libsrc_c/mystic.c" && test -f "libsrc_c/mystic.h"; then
+  HAVE_MYSTIC="-DHAVE_MYSTIC=1"
+  MYSTIC_SOURCES="mystic.c"
+  MYSTIC_DOC="true"
+  FOUND_MYSTIC="yes"
+  AC_MSG_RESULT([Found the one-dimensional MYSTIC model])
+  MYSTICLINE="MYSTIC:               yes"
+else
+  MYSTICLINE=""
+fi
+AC_SUBST(FOUND_MYSTIC)
+AC_SUBST(HAVE_MYSTIC)
+AC_SUBST(MYSTIC_SOURCES)
+AC_SUBST(MYSTIC_DOC)
+
+### Check if we have 3D MYSTIC
+HAVE_MYSTIC3D="-DHAVE_MYSTIC3D=0"
+MYSTIC3D_SOURCES=""
+MYSTIC3D_DOC="false"
+FOUND_MYSTIC3D="no"
+if test -f "libsrc_c/mystic_3d.c" && test -f "libsrc_c/mystic_3d.h"; then
+  HAVE_MYSTIC3D="-DHAVE_MYSTIC3D=1"
+  MYSTIC3D_SOURCES="mystic_3d.c"
+  MYSTIC3D_DOC="true"
+  FOUND_MYSTIC3D="yes"
+  AC_MSG_RESULT([Found the three-dimensional MYSTIC model])
+  MYSTIC3DLINE="MYSTIC3D:             yes"
+else
+  MYSTIC3DLINE=""
+fi
+AC_SUBST(FOUND_MYSTIC3D)
+AC_SUBST(HAVE_MYSTIC3D)
+AC_SUBST(MYSTIC3D_SOURCES)
+AC_SUBST(MYSTIC3D_DOC)
+
+### Check if we have ALIS
+HAVE_ALIS="-DHAVE_ALIS=0"
+ALIS_SOURCES=""
+FOUND_ALIS="no"
+if test -f "libsrc_c/alis.c" && test -f "libsrc_c/alis.h"; then
+  HAVE_ALIS="-DHAVE_ALIS=1"
+  ALIS_SOURCES="alis.c"
+  FOUND_ALIS="yes"
+  AC_MSG_RESULT([Found ALIS spectral importance sampling])
+  ALISLINE="ALIS:                 yes"
+else
+  ALISLINE=""
+fi
+AC_SUBST(FOUND_ALIS)
+AC_SUBST(HAVE_ALIS)
+AC_SUBST(ALIS_SOURCES)
+
+### Check if we have TIPA,
+### CE 21-12-17 Included condition MYSTIC3D, because TIPA should not be included in
+###             public release
+HAVE_TIPA="-DHAVE_TIPA=0"
+TIPA_SOURCES=""
+TIPA_SDOC=""
+FOUND_TIPA="no"
+if test $FOUND_MYSTIC3D = "yes" && test -f "src/tipa.c" && test -f "src/tipa.h"; then
+  HAVE_TIPA="-DHAVE_TIPA=1"
+  TIPA_SOURCES="tipa.c"
+  TIPA_SDOC="@set tipa"
+  FOUND_TIPA="yes"
+  AC_MSG_RESULT([Found the three-dimensional TIPA model])
+  TIPALINE="TIPA:                 yes"
+else
+  TIPALINE=""
+fi
+AC_SUBST(FOUND_TIPA)
+AC_SUBST(HAVE_TIPA)
+AC_SUBST(TIPA_SOURCES)
+AC_SUBST(TIPA_SDOC)
+
+### Check if we have VROOM
+HAVE_VROOM="-DHAVE_VROOM=0"
+VROOM_SOURCES=""
+FOUND_VROOM="no"
+VROOMLINE=""
+if test $FOUND_MYSTIC = "yes"; then
+  if test -f "libsrc_c/vroom.c" && test -f "libsrc_c/vroom.h"; then
+    HAVE_VROOM="-DHAVE_VROOM=1"
+    VROOM_SOURCES="vroom.c"
+    FOUND_VROOM="yes"
+    AC_MSG_RESULT([Found the MYSTIC VROOM supplement])
+    VROOMLINE="VROOM:                yes"
+  fi
+fi
+AC_SUBST(FOUND_VROOM)
+AC_SUBST(HAVE_VROOM)
+AC_SUBST(VROOM_SOURCES)
+
+### Check if we have LIDAR
+HAVE_LIDAR="-DHAVE_LIDAR=0"
+LIDAR_SOURCES=""
+LIDAR_DOC="false"
+ARLEM_SOURCES=""
+ARLEM_TOOL=""
+FOUND_LIDAR="no"
+FOUND_ARLEM="no"
+LIDARLINE=""
+ARLEMLINE=""
+if test $FOUND_MYSTIC = "yes"; then
+  if test $FOUND_VROOM = "yes"; then
+    if test -f "libsrc_c/lidar.c" && test -f "libsrc_c/lidar.h"; then
+      HAVE_LIDAR="-DHAVE_LIDAR=1"
+      FOUND_LIDAR="yes"
+      LIDAR_DOC="true"
+      LIDARLINE="LIDAR:                yes"
+      AC_MSG_RESULT([Found the MYSTIC LIDAR supplement])
+      if test -f "libsrc_c/matrix_operations.c" && test -f "libsrc_c/matrix_operations.h" && test -f "src/arlem.c"; then
+        LIDAR_SOURCES="lidar.c matrix_operations.c"
+        ARLEM_SOURCES="arlem.c"
+        ARLEM_TOOL="../bin/arlem"
+        FOUND_ARLEM="yes"
+        ARLEMLINE="ARLEM:                yes"
+        AC_MSG_RESULT([Found the MYSTIC ARLEM supplement])
+      fi
+    fi
+  fi
+fi
+AC_SUBST(FOUND_LIDAR)
+AC_SUBST(FOUND_ARLEM)
+AC_SUBST(HAVE_LIDAR)
+AC_SUBST(LIDAR_DOC)
+AC_SUBST(LIDAR_SOURCES)
+AC_SUBST(ARLEM_SOURCES)
+AC_SUBST(ARLEM_TOOL)
+
+
+### Check if we have WorldLoop
+WORLDLOOP_TARGETS=""
+if test $compile_with_worldloop = true; then
+   FOUND_WORLDLOOP="no"
+   WORLDLOOP_C_FOR_SDOC=""
+   CDF2C_SOURCES=""
+   if test -f "src/worldloop.c" && test -f "src/create_worldloop_grid.c" && test -f "src/copy_worldloop_grid.c" && test -f "src/check_worldloop_result.c" && test -f "src/add_worldloop_result.c" && test -f "libsrc_c/cdf2c_modified.c" && test -f "libsrc_c/cdf2c_modified.h" ; then
+     WORLDLOOP_TARGETS="../bin/worldloop ../bin/create_worldloop_grid ../bin/copy_worldloop_grid ../bin/add_worldloop_result ../bin/check_worldloop_result"
+     CDF2C_SOURCES=cdf2c_modified.c
+     FOUND_WORLDLOOP="yes"
+     WORLDLOOP_C_FOR_SDOC="../src/worldloop.c"
+     AC_MSG_RESULT([Found the three-dimensional WORLDLOOP model])
+     WORLDLOOPLINE="WORLDLOOP:            yes"
+   else
+     WORLDLOOPLINE=""
+   fi
+   AC_SUBST(FOUND_WORLDLOOP)
+   AC_SUBST(WORLDLOOP_C_FOR_SDOC)
+   AC_SUBST(CDF2C_SOURCES)
+fi
+AC_SUBST(WORLDLOOP_TARGETS)
+
+
+### Check if we have SOS
+HAVE_SOS="-DHAVE_SOS=0"
+SOS_SOURCES=""
+FOUND_SOS="no"
+if test -f "libsrc_c/sos.c" && test -f "libsrc_c/sos.h"; then
+  HAVE_SOS="-DHAVE_SOS=1"
+  SOS_SOURCES="sos.c"
+  FOUND_SOS="yes"
+  AC_MSG_RESULT([Found the successive orders of scattering model needed for Raman option])
+fi
+AC_SUBST(FOUND_SOS)
+AC_SUBST(HAVE_SOS)
+AC_SUBST(SOS_SOURCES)
+
+
+### Check if we have BRDF
+HAVE_BRDF="-DHAVE_BRDF=0"
+BRDF_SOURCES=""
+FOUND_BRDF="no"
+BRDFLINE=""
+if test -f "libsrc_c/ocean.c" && test -f "libsrc_c/ocean.h" && test -f "libsrc_c/ambralsfor.c" && test -f "libsrc_c/ambralsfor.h"; then
+  HAVE_BRDF="-DHAVE_BRDF=1"
+  BRDF_SOURCES="ambralsfor.c ocean.c"
+  FOUND_BRDF="yes"
+  AC_MSG_RESULT([Found the BRDF supplement])
+  BRDFLINE="BRDF:                 yes"
+fi
+AC_SUBST(FOUND_BRDF)
+AC_SUBST(HAVE_BRDF)
+AC_SUBST(BRDF_SOURCES)
+
+
+### Check if we have polRadtran
+HAVE_POLRADTRAN="-DHAVE_POLRADTRAN=0"
+POLRADTRAN_SOURCES=""
+FOUND_POLRADTRAN="no"
+### Check if Evans' polradtran is included
+if test -f "libsrc_f/radtran3.f" && test -f "libsrc_f/radscat3.f" && 
+   test -f "libsrc_f/radintg3.f" && test -f "libsrc_f/radutil3.f" && 
+   test -f "libsrc_f/radmat.f"; then
+  AC_MSG_RESULT([Found Evans' radtran3.f etc. routines.])
+  HAVE_POLRADTRAN="-DHAVE_POLRADTRAN=1"
+  POLRADTRAN_SOURCES="radtran3.f radscat3.f radintg3.f radutil3.f radmat.f"
+  FOUND_POLRADTRAN="yes"
+else
+  AC_MSG_RESULT([Did not find Evans' radtran3.f etc. routines.])
+  AC_MSG_RESULT([Uvspec will be built without it.])
+fi
+AC_SUBST(HAVE_POLRADTRAN)
+AC_SUBST(FOUND_POLRADTRAN)
+AC_SUBST(POLRADTRAN_SOURCES)
+
+
+### Check if Kratz' AVHRR parameterization is included
+HAVE_AVHRR="-DHAVE_AVHRR=0"
+AVHRR_SOURCES=""
+AVHRR_INCLUDES=""
+FOUND_AVHRR="no"
+if test -f "libsrc_f/avhrr11.f" &&
+   test -f "libsrc_f/avhrr12.f" &&
+   test -f "libsrc_f/avhrr13.f" &&
+   test -f "libsrc_f/avhrr14.f" &&
+   test -f "libsrc_f/avhrr15.f" &&
+   test -f "libsrc_f/avhrr21.f" && 
+   test -f "libsrc_f/avhrr22.f" && 
+   test -f "libsrc_f/avhrr23.f" && 
+   test -f "libsrc_f/avhrr24.f" && 
+   test -f "libsrc_f/avhrr31.f" &&
+   test -f "libsrc_f/avhrr32.f" &&
+   test -f "libsrc_f/avhrr33.f" &&
+   test -f "libsrc_f/avhrr34.f" &&
+   test -f "libsrc_f/avhrr35.f" &&
+   test -f "libsrc_f/avhrr41.f" &&
+   test -f "libsrc_f/avhrr51.f"; then
+  AC_MSG_RESULT([Found Kratz' AVHRR parameterization.])
+  HAVE_AVHRR="-DHAVE_AVHRR=1"
+  FOUND_AVHRR="yes"
+  AVHRR_SOURCES="avhrr11.f avhrr12.f avhrr13.f avhrr14.f avhrr15.f avhrr21.f \
+ avhrr22.f avhrr23.f avhrr24.f avhrr31.f avhrr32.f avhrr33.f \
+ avhrr34.f avhrr35.f avhrr41.f avhrr51.f"
+  AVHRR_INCLUDES="avhrr.inc avhrr_kratz.h"
+else
+  AC_MSG_RESULT([Did not find Kratz' AVHRR parameterization.])
+  AC_MSG_RESULT([Uvspec will be built without it.])
+fi
+AC_SUBST(FOUND_AVHRR)
+AC_SUBST(HAVE_AVHRR)
+AC_SUBST(AVHRR_SOURCES)
+AC_SUBST(AVHRR_INCLUDES)
+
+
+### Check if the Fu and Liou code is included
+HAVE_FULIOU="-DHAVE_FULIOU=0"
+FULIOU_FSOURCES=""
+FULIOU_CSOURCES=""
+FOUND_FULIOU="no"
+if test -f "src/ckdfu.c"              &&
+   test -f "src/ckdfuf.f"             &&
+   test -f "src/ckdrayf.f"            &&
+   test -f "src/ckdcldf.f"            &&
+   test -f "src/ckdicef.f"            &&
+   test -f "src/fl_dkfrwn_0599.f"     &&
+   test -f "src/fl_misc_subs.f"       &&
+   test -f "src/fl_radparams.cinc"    &&
+   test -f "src/fl_radparams.inc"     &&
+   test -f "src/fl_special.inc"       &&
+   test -f "src/fl_trmm_window.inc"   &&
+   test -f "src/fl_trmm_wnflt_0599.f" &&
+   test -f "src/fl_water_hu2.f"; then
+  AC_MSG_RESULT([Found Fu and Liou parameterization.])
+  HAVE_FULIOU="-DHAVE_FULIOU=1"
+  FOUND_FULIOU="yes"
+  FULIOU_FSOURCES="ckdfuf.f ckdrayf.f ckdcldf.f ckdicef.f \
+                   fl_dkfrwn_0599.f fl_misc_subs.f        \
+                   fl_trmm_wnflt_0599.f fl_water_hu2.f"
+  FULIOU_CSOURCES="ckdfu.c"
+  FULIOU_INCLUDES="fl_radparams.cinc fl_radparams.inc \
+                   fl_special.inc fl_trmm_window.inc"
+else
+  AC_MSG_RESULT([Did not find Fu and Liou parameterization.])
+  AC_MSG_RESULT([Uvspec will be built without it.])
+fi
+AC_SUBST(FOUND_FULIOU)
+AC_SUBST(HAVE_FULIOU)
+AC_SUBST(FULIOU_INCLUDES)
+AC_SUBST(FULIOU_FSOURCES)
+AC_SUBST(FULIOU_CSOURCES)
+
+
+### Check if the LOWTRAN gas parameterization is included
+HAVE_LOWTRAN="-DHAVE_LOWTRAN=0"
+LOWTRAN_FSOURCES=""
+FOUND_LOWTRAN="no"
+if test -f "src/sbtaugas.f"           &&
+   test -f "src/taugas.f"             &&
+   test -f "src/taucor.f"             &&
+   test -f "src/depthscl.f"           &&
+   test -f "src/sbtaugas.fparam"      &&
+   test -f "src/sbtaugas.param"; then
+  AC_MSG_RESULT([Found LOWTRAN gas parameterization.])
+  HAVE_LOWTRAN="-DHAVE_LOWTRAN=1"
+  FOUND_LOWTRAN="yes"
+  LOWTRAN_FSOURCES="sbtaugas.f taugas.f taucor.f depthscl.f"
+  LOWTRAN_PARAM="sbtaugas.fparam sbtaugas.param"
+  LOWTRAN_CINCLUDE="sbtaugas.h"
+  LOWTRAN_FINCLUDE="sbtaugas.inc"
+fi
+AC_SUBST(FOUND_LOWTRAN)
+AC_SUBST(HAVE_LOWTRAN)
+AC_SUBST(LOWTRAN_PARAM)
+AC_SUBST(LOWTRAN_FINCLUDE)
+AC_SUBST(LOWTRAN_CINCLUDE)
+AC_SUBST(LOWTRAN_FSOURCES)
+
+
+### Check if Key et al (2002) is included
+KEY56_CSOURCES=""
+FOUND_KEY56="no"
+### Check if KEY56 gas parameterization is included
+if test -f "libsrc_c/yang56.c"                     &&
+   test -f "libsrc_c/yang56.h"                     &&
+   test -f "data/ic/yang56/ext.Dendrite"        &&
+   test -f "data/ic/yang56/ssa.Dendrite"        &&
+   test -f "data/ic/yang56/g.Dendrite"          &&
+   test -f "data/ic/yang56/ext.Hollow-Column"   &&
+   test -f "data/ic/yang56/ssa.Hollow-Column"   &&
+   test -f "data/ic/yang56/g.Hollow-Column"     &&
+   test -f "data/ic/yang56/ext.Plate"           &&
+   test -f "data/ic/yang56/ssa.Plate"           &&
+   test -f "data/ic/yang56/g.Plate"             &&
+   test -f "data/ic/yang56/ext.Rosette-4"       &&
+   test -f "data/ic/yang56/ssa.Rosette-4"       &&
+   test -f "data/ic/yang56/g.Rosette-4"         &&
+   test -f "data/ic/yang56/ext.Rosette-6"       &&
+   test -f "data/ic/yang56/ssa.Rosette-6"       &&
+   test -f "data/ic/yang56/g.Rosette-6"         &&
+   test -f "data/ic/yang56/ext.Rough-Aggregate" &&
+   test -f "data/ic/yang56/ssa.Rough-Aggregate" &&
+   test -f "data/ic/yang56/g.Rough-Aggregate"   &&
+   test -f "data/ic/yang56/ext.Solid-Column"    &&
+   test -f "data/ic/yang56/ssa.Solid-Column"    &&
+   test -f "data/ic/yang56/g.Solid-Column"; then
+  AC_MSG_RESULT([Found Key et al. (2002) ice particle parameterization.])
+  FOUND_KEY56="yes"
+  KEY56_CSOURCES="yang56.c"
+fi
+AC_SUBST(FOUND_KEY56)
+AC_SUBST(KEY56_CSOURCES)
+
+
+### Check if the new ice cloud parameterisation by Yang/Key/Mayer is included;
+### requires the Key et al (2002) parameterization
+HAVE_YANG="-DHAVE_YANG=0"
+YANG_SDOC=""
+FOUND_YANG="no"
+if test $FOUND_KEY56 = "yes"                        &&
+   test -f "data/ic/yang56/ext.new.Dendrite"        &&
+   test -f "data/ic/yang56/ssa.new.Dendrite"        &&
+   test -f "data/ic/yang56/g.new.Dendrite"          &&
+   test -f "data/ic/yang56/ext.new.Droxtal"         &&
+   test -f "data/ic/yang56/ssa.new.Droxtal"         &&
+   test -f "data/ic/yang56/g.new.Droxtal"           &&
+   test -f "data/ic/yang56/ext.new.Hollow-Column"   &&
+   test -f "data/ic/yang56/ssa.new.Hollow-Column"   &&
+   test -f "data/ic/yang56/g.new.Hollow-Column"     &&
+   test -f "data/ic/yang56/ext.new.Plate"           &&
+   test -f "data/ic/yang56/ssa.new.Plate"           &&
+   test -f "data/ic/yang56/g.new.Plate"             &&
+   test -f "data/ic/yang56/ext.new.Rosette-4"       &&
+   test -f "data/ic/yang56/ssa.new.Rosette-4"       &&
+   test -f "data/ic/yang56/g.new.Rosette-4"         &&
+   test -f "data/ic/yang56/ext.new.Rosette-6"       &&
+   test -f "data/ic/yang56/ssa.new.Rosette-6"       &&
+   test -f "data/ic/yang56/g.new.Rosette-6"         &&
+   test -f "data/ic/yang56/ext.new.Rough-Aggregate" &&
+   test -f "data/ic/yang56/ssa.new.Rough-Aggregate" &&
+   test -f "data/ic/yang56/g.new.Rough-Aggregate"   &&
+   test -f "data/ic/yang56/ext.new.Solid-Column"    &&
+   test -f "data/ic/yang56/ssa.new.Solid-Column"    &&
+   test -f "data/ic/yang56/g.new.Solid-Column"      &&
+   test -f "data/ic/yang56/ext.new.Spheroid"        &&
+   test -f "data/ic/yang56/ssa.new.Spheroid"        &&
+   test -f "data/ic/yang56/g.new.Spheroid"; then
+  AC_MSG_RESULT([Found new ice particle parameterization by Yang/Key/Mayer.])
+  HAVE_YANG="-DHAVE_YANG=1"
+  FOUND_YANG="yes"
+  YANG_SDOC="@set yang"
+fi
+AC_SUBST(FOUND_YANG)
+AC_SUBST(HAVE_YANG)
+AC_SUBST(YANG_SDOC)
+
+
+### Check if the OPAC aerosol optical properties are installed
+HAVE_OPAC="-DHAVE_OPAC=0"
+FOUND_OPAC="no"
+if test -f "data/aerosol/OPAC/optprop/inso.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/miam.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/micm.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/minm.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/mitr.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/soot.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/ssam.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/sscm.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/suso.mie.cdf" &&
+   test -f "data/aerosol/OPAC/optprop/waso.mie.cdf"; then
+  AC_MSG_RESULT([Found OPAC aerosol optical properties database in netcdf.])
+  HAVE_OPAC="-DHAVE_OPAC=1"
+  FOUND_OPAC="yes"
+fi
+AC_SUBST(FOUND_OPAC)
+
+### Check if the Mie optical properties for water clouds are installed
+HAVE_WCMIE="-DHAVE_WCMIE=0"
+FOUND_WCMIE="no"
+if test -f "data/wc/mie/wc.sol.mie.cdf" &&
+   test -f "data/wc/mie/wc.trm.mie.cdf"; then 
+  AC_MSG_RESULT([Found Mie water cloud properties database in netcdf.])
+  HAVE_WCMIE="-DHAVE_WCMIE=1"
+  FOUND_WCMIE="yes"
+fi
+AC_SUBST(FOUND_WCMIE) 
+AC_SUBST(HAVE_WCMIE) 
+
+### Check if the Baum optical properties for ice clouds are installed
+HAVE_BAUM="-DHAVE_BAUM=0"
+FOUND_BAUM="no"
+if test -f "data/ic/baum/ic.sol.baum.cdf" &&
+   test -f "data/ic/baum/ic.trm.baum.cdf"; then 
+  AC_MSG_RESULT([Found ice cloud properties database (Baum) in netcdf.])
+  HAVE_BAUM="-DHAVE_BAUM=1"
+  FOUND_BAUM="yes"
+fi
+AC_SUBST(FOUND_BAUM) 
+AC_SUBST(HAVE_BAUM) 
+
+### Check if the Baum v3.9 optical properties for ice clouds are installed
+HAVE_BAUM_V36="-DHAVE_BAUM_V36=0"
+FOUND_BAUM_V36="no"
+if test -f "data/ic/baum_v3.6/ic.agg.baum.cdf" &&
+   test -f "data/ic/baum_v3.6/ic.ghm.baum.cdf" &&
+   test -f "data/ic/baum_v3.6/ic.col.baum.cdf"; then 
+  AC_MSG_RESULT([Found ice cloud properties database (Baum V3.6) in netcdf.])
+  HAVE_BAUM_V36="-DHAVE_BAUM_V36=1"
+  FOUND_BAUM_V36="yes"
+fi
+AC_SUBST(FOUND_BAUM_V36) 
+AC_SUBST(HAVE_BAUM_V36) 
+
+### Check if full tests can be made
+HAVE_TESTS="-DHAVE_TESTS=0"
+FOUND_TESTS="no"
+if test -d "examples/tests"; then 
+  AC_MSG_RESULT([Found examples/tests folder.])
+  HAVE_TESTS="-DHAVE_TESTS=1"
+  FOUND_TESTS="yes"
+fi
+AC_SUBST(FOUND_TESTS) 
+AC_SUBST(HAVE_TESTS)
+
+### Check if the HEY optical properties for ice clouds are installed
+HAVE_HEY="-DHAVE_HEY=0"
+FOUND_HEY="no"
+if test -f "data/ic/hey/ic.agg.sol.cdf" &&
+   test -f "data/ic/hey/ic.col.sol.cdf" &&
+   test -f "data/ic/hey/ic.dro.sol.cdf" &&
+   test -f "data/ic/hey/ic.hol.sol.cdf" &&
+   test -f "data/ic/hey/ic.pla.sol.cdf" &&	
+   test -f "data/ic/hey/ic.ros.sol.cdf" &&
+   test -f "data/ic/hey/ic.ghm.sol.cdf"; then 
+  AC_MSG_RESULT([Found ice cloud properties database (HEY) in netcdf.])
+  HAVE_HEY="-DHAVE_HEY=1"
+  FOUND_HEY="yes"
+fi
+AC_SUBST(FOUND_HEY) 
+AC_SUBST(HAVE_HEY) 
+
+### Check if the yang2013 optical properties for ice clouds are installed
+### For each habit only one file is checked, we assume that all files are 
+### installed when these are found (6 files/habit). 
+HAVE_YANG2013="-DHAVE_YANG2013=0"
+FOUND_YANG2013="no"
+if test -f "data/ic/yang2013/ic.column_8elements.000.1.cdf" &&
+   test -f "data/ic/yang2013/ic.droxtal.000.1.cdf" &&
+   test -f "data/ic/yang2013/ic.hollow_bullet_rosette.000.1.cdf" &&
+   test -f "data/ic/yang2013/ic.hollow_column.000.1.cdf" &&
+   test -f "data/ic/yang2013/ic.plate.000.1.cdf" &&
+   test -f "data/ic/yang2013/ic.plate_10elements.000.1.cdf" &&
+   test -f "data/ic/yang2013/ic.plate_5elements.000.1.cdf" &&
+   test -f "data/ic/yang2013/ic.solid_bullet_rosette.000.1.cdf" &&
+   test -f "data/ic/yang2013/ic.solid_column.000.1.cdf"; then 
+  AC_MSG_RESULT([Found ice cloud properties database (Yang2013) in netcdf.])
+  HAVE_YANG2013="-DHAVE_YANG2013=1"
+  FOUND_YANG2013="yes"
+fi
+AC_SUBST(FOUND_YANG2013) 
+AC_SUBST(HAVE_YANG2013) 
+
+### Check if reptran coarse parameterization data is installed
+HAVE_REPTRAN_COARSE="-DHAVE_REPTRAN_COARSE=0"
+FOUND_REPTRAN_COARSE="no"
+if test -f "data/correlated_k/reptran/reptran_thermal_coarse.cdf" &&
+   test -f "data/correlated_k/reptran/reptran_solar_coarse.cdf"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: Found REPTRAN coarse parameterization in netcdf." >&5
+$as_echo "Found REPTRAN coarse parameterization in netcdf." >&6; }
+  HAVE_REPTRAN_COARSE="-DHAVE_REPTRAN_COARSE=1"
+  FOUND_REPTRAN_COARSE="yes"
+fi
+AC_SUBST(FOUND_REPTRAN_COARSE)
+
+### Check if extended reptran parameterization data is installed
+HAVE_REPTRAN_EXT="-DHAVE_REPTRAN_EXT=0"
+FOUND_REPTRAN_EXT="no"
+if test -f "data/correlated_k/reptran/reptran_thermal_fine.cdf" &&
+   test -f "data/correlated_k/reptran/reptran_solar_fine.cdf" &&
+   test -f "data/correlated_k/reptran/reptran_thermal_msg.cdf"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: Found extended REPTRAN parameterization in netcdf." >&5
+$as_echo "Found extended REPTRAN parameterization in netcdf." >&6; }
+  HAVE_REPTRAN_EXT="-DHAVE_REPTRAN_EXT=1"
+  FOUND_REPTRAN_EXT="yes"
+fi
+AC_SUBST(FOUND_REPTRAN_EXT)
+
+### Check if sssi (solar single scattering ISCCP) is included
+HAVE_SSSI="-DHAVE_SSSI=0"
+SSSI_SOURCES=""
+FOUND_SSSI="no"
+if test -f "libsrc_f/sssi.f"; then
+  AC_MSG_RESULT([Found SSSI solver.])
+  HAVE_SSSI="-DHAVE_SSSI=1"
+  FOUND_SSSI="yes"
+  SSSI_SOURCES="sssi.f"
+else
+  AC_MSG_RESULT([Did not find sssi solver.])
+  AC_MSG_RESULT([Uvspec will be built without it.])
+fi
+AC_SUBST(FOUND_SSSI)
+AC_SUBST(HAVE_SSSI)
+AC_SUBST(SSSI_SOURCES)
+
+
+### Check if we have gsl (GNU Scientific Library)
+HAVE_LIBM="-DHAVE_LIBM=0"
+HAVE_LIBGSL="-DHAVE_LIBGSL=0"
+HAVE_LIBGSLCBLAS="-DHAVE_LIBGSLCBLAS=0"
+FOUND_LIBM="no"
+FOUND_LIBGSL="no"
+FOUND_LIBGSLCBLAS="no"
+LIBGSL=""
+AC_CHECK_LIB(m,main,FOUND_LIBM="yes",,-lm)
+AC_CHECK_LIB(gslcblas,main,FOUND_LIBGSLCBLAS="yes",,-lgslcblas)
+AC_CHECK_LIB(gsl,main,FOUND_LIBGSL="yes",, -lgslcblas -lgsl -lm)
+if test "$FOUND_LIBGSL" = "yes"; then
+    LIBGSL="-lgsl -lgslcblas  -lm"
+    HAVE_LIBM="-DHAVE_LIBM=1"
+    HAVE_LIBGSL="-DHAVE_LIBGSL=1"
+    HAVE_LIBGSLCBLAS="-DHAVE_LIBGSLCBLAS=1"
+    AC_MSG_RESULT([Defining LIBGSL to be $LIBGSL])
+else
+    AC_MSG_RESULT([%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%])
+    AC_MSG_RESULT([% YOUR SYSTEM IS MISSING SOFTWARE NEEDED TO BUILD LIBRADTRAN %])
+    AC_MSG_RESULT([%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%])
+    AC_MSG_RESULT([Did not find GSL, the GNU Scientific Library.])
+    AC_MSG_RESULT([Please install and run configure again.])
+    AC_MSG_ERROR([Did not find GSL.])	
+fi
+AC_SUBST(HAVE_LIBGSL)
+AC_SUBST(HAVE_LIBGSLCBLAS)
+AC_SUBST(HAVE_LIBM)
+AC_SUBST(FOUND_LIBGSL)
+AC_SUBST(FOUND_LIBGSLCBLAS)
+AC_SUBST(FOUND_LIBM)
+AC_SUBST(LIBGSL)
+
+
+### Check if we have gmp (GNU Muliple Precision Library)
+HAVE_LIBGMP="-DHAVE_LIBGMP=0"
+FOUND_LIBGMP="no"
+LIBGMP=""
+AC_CHECK_LIB(gmp,main,FOUND_LIBGMP="yes",, -lgmp -lm)
+if test "$FOUND_LIBGMP" = "yes"; then
+    LIBGMP="-lgmp -lm"
+    HAVE_LIBGMP="-DHAVE_LIBGMP=1"
+    AC_MSG_RESULT([Defining LIBGMP to be $LIBGMP])
+else
+    AC_MSG_RESULT([Did not find GMP])
+fi
+AC_SUBST(HAVE_LIBGMP)
+AC_SUBST(FOUND_LIBGMP)
+AC_SUBST(LIBGMP)
+
+
+### Check if CLDGEN is included
+HAVE_CLDGEN="-DHAVE_CLDGEN=0"
+CLDGEN_CSOURCES=""
+CLDGEN_TSOURCES=""
+CLDGEN_LSOURCES=""
+CLDGEN_TOOL=""
+FOUND_CLDGEN="no"
+if test -f "src/cldgen.c"        &&
+   test -f "src/cldgen_lex.l"    &&
+   test -f "src/cldgen.h"        &&
+   test -f "libsrc_c/gencld.c"        &&
+   test -f "libsrc_c/gencld.h"        &&
+   test $FOUND_LIBGMP = "yes"        &&
+   test $FOUND_LIBGSL = "yes"        &&
+   test $FOUND_LIBGSLCBLAS = "yes";  then
+  AC_MSG_RESULT([Found CLDGEN cloud generator.])
+  HAVE_CLDGEN="-DHAVE_CLDGEN=1"
+  FOUND_CLDGEN="yes"
+  CLDGEN_CSOURCES="../libsrc_c/gencld.c"
+  CLDGEN_TOOL="../bin/cldgen"
+  CLDGEN_TSOURCES="../src/cldgen.c"
+  CLDGEN_LSOURCES="../src/cldgen_lex.l"
+  CLDGENLINE="CLDGEN:               yes"
+else
+  CLDGENLINE=""
+fi
+AC_SUBST(FOUND_CLDGEN)
+AC_SUBST(HAVE_CLDGEN)
+AC_SUBST(CLDGEN_CSOURCES)
+AC_SUBST(CLDGEN_TSOURCES)
+AC_SUBST(CLDGEN_LSOURCES)
+AC_SUBST(CLDGEN_TOOL)
+
+
+### Check for OpenGL
+### MYSTIC Online Visualization is available only 
+### if (a) OpenGL is available; (b) mystic and GLmystic are available
+HAVE_OPENGL="-DHAVE_OPENGL=0"
+OPENGLLINE=""
+LIBOPENGL=""
+GLMYSTIC_SOURCES=""
+
+AX_CHECK_GL
+AX_CHECK_GLU
+AX_CHECK_GLUT
+
+if test "$no_gl" != "yes" && test "$no_glu" != "yes" && test "$no_glut" != "yes" ; then
+ if test $FOUND_MYSTIC = "yes"; then
+  if test -f "libsrc_c/GLmystic.c" && test -f "libsrc_c/GLmystic.h"; then 
+    AC_MSG_RESULT([Found OpenGL - MYSTIC online visualization available.])
+    HAVE_OPENGL="-DHAVE_OPENGL=1"
+    LIBOPENGL="$GL_LIBS $GLU_LIBS $GLUT_LIBS"
+    GLMYSTIC_SOURCES="GLmystic.c"
+    OPENGLLINE="MYSTIC visualization: yes"
+  else
+    AC_MSG_RESULT([Did not find OpenGL - no MYSTIC online visualization.])
+  fi
+ fi
+fi		     
+
+CONDOR_SOURCES=""
+CONDOR_COMPILE=""
+COMPILING_CONDOR_AT_MIM="-DCOMPILING_CONDOR_AT_MIM=0"
+if test $compile_with_condor = true || test $compile_with_condor_at_mim = true; then
+  HAVE_OPENGL="-DHAVE_OPENGL=0"
+  OPENGLLINE=""
+  LIBOPENGL=""
+  GLMYSTIC_SOURCES=""
+#  CONDOR_SOURCES="condor_dummies.c"
+  CONDOR_SOURCES=""
+  CONDOR_COMPILE="condor_compile"
+  if test $compile_with_condor_at_mim = true; then
+    COMPILING_CONDOR_AT_MIM="-DCOMPILING_CONDOR_AT_MIM=1"
+  fi
+fi
+AC_SUBST(CONDOR_SOURCES)
+AC_SUBST(CONDOR_COMPILE)
+AC_SUBST(COMPILING_CONDOR_AT_MIM)
+
+AC_SUBST(LIBOPENGL)
+AC_SUBST(HAVE_OPENGL)
+AC_SUBST(GLMYSTIC_SOURCES)
+
+AC_OUTPUT(Makefile Makeconf \
+  bin/Makefile \
+  libsrc_c/Makefile libsrc_f/Makefile \
+  lib/Makefile \
+  src/Makefile test/Makefile flexstor/Makefile \
+  doc/Makefile doc/figs/Makefile sdoc/Makefile \
+  examples/Makefile examples/GUI/Makefile \
+  examples/GUI/lbl_O2A/Makefile examples/GUI/mc_clear/Makefile examples/GUI/profile_1D_wc/Makefile \
+  examples/GUI/profile_1D_wc_cooling/Makefile examples/GUI/profile_1D_wc_heating/Makefile \
+  examples/GUI/radiance_principal_plane/Makefile examples/GUI/spectrum_flex/Makefile \
+  examples/GUI/single_scattering_lidar/Makefile \
+  examples/GUI/spectrum_GOME/Makefile examples/GUI/spectrum_sciamachy/Makefile \
+  examples/GUI/spectrum_solar_sbdart/Makefile examples/GUI/spectrum_terrestrial_sbdart/Makefile \
+  examples/GUI/spectrum_UV/Makefile \
+  examples/GUI/spectrum_terrestrial_reptran/Makefile \
+  examples/GUI/transmittance_reptran/Makefile \
+  examples/GUI/brightness_msg/Makefile \
+  examples/GUI/radiance_sentinel/Makefile \
+  examples/GUI/radiance_sentinel_sunglint/Makefile \
+  data/Makefile data/crs/Makefile data/solar_flux/Makefile \
+  data/atmmod/Makefile \
+  data/albedo/Makefile data/albedo/bowker85/Makefile data/albedo/IGBP_map/Makefile \
+  data/altitude/Makefile \
+  data/cloudprp/Makefile data/cloudprp/input/Makefile
+  data/filter/Makefile \
+  data/filter/adeos/Makefile data/filter/alos/Makefile data/filter/earthcare/Makefile data/filter/envisat/Makefile \
+  data/filter/ers/Makefile \
+  data/filter/goes/Makefile \
+  data/filter/himawari/Makefile data/filter/landsat/Makefile \
+  data/filter/modis/Makefile \
+  data/filter/msg/Makefile data/filter/parasol/Makefile \
+  data/filter/proba/Makefile data/filter/sentinel/Makefile \
+  data/filter/seosat/Makefile data/filter/spot/Makefile \
+  data/scripts/Makefile \
+  data/wc/Makefile data/wc/isccp/Makefile \
+  data/ic/Makefile data/aerosol/Makefile \
+  data/aerosol/shettle/Makefile \
+  data/aerosol/OPAC/Makefile data/aerosol/OPAC/optprop/Makefile \
+  data/aerosol/OPAC/refractive_indices/Makefile \
+  data/aerosol/OPAC/standard_aerosol_files/Makefile \
+  data/ic/baum/Makefile data/wc/mie/Makefile data/ic/hey/Makefile\
+  data/ic/yang56/Makefile data/ic/fu96/Makefile data/ic/fu98/Makefile \
+  data/ic/isccp/Makefile data/ic/baum_v3.6/Makefile data/ic/yang2013/Makefile\
+  data/correlated_k/Makefile data/correlated_k/kato/Makefile \
+  data/correlated_k/kato2/Makefile  data/correlated_k/kato2andwandji/Makefile \
+  data/correlated_k/kato2.hitran96/Makefile \
+  data/correlated_k/kratz/Makefile \
+  data/correlated_k/fu/Makefile data/correlated_k/reptran/Makefile \
+  test/test.pl \
+  GUI/Makefile GUI/resources/Makefile 
+  src_py/Makefile src_py/writeLex.py)
+  
+
+### Print a summary so that important information isn't missed.
+
+if test -z "$F77"; then
+  FORT="$F2C $F2CFLAGS"
+else
+  FORT="$F77 $FFLAGS"
+fi
+
+AC_MSG_RESULT([
+
+libRadtran is now configured for $canonical_host_type
+
+  Source directory:     $srcdir
+  Installation prefix:  $prefix
+  C compiler:           $CC $GCC_IEEE_FP_FLAG $CFLAGS 
+  Fortran compiler:     $FORT
+  Fortran linker:       $LDF77
+  Fortran libraries:    $FLIBS
+  AWK:                  $AWK
+  PERL:                 $PERL
+  PYTHON:               $PYTHON
+  NCCMP:                $NCCMP
+  NetCDF  library:      $LIBNETCDF
+  NetCDFF library:      $LIBNETCDFF
+  GSL:                  $LIBGSL
+  GMP:                  $LIBGMP
+
+  nccmp:                $FOUND_NCCMP
+  PolRadtran:           $FOUND_POLRADTRAN
+  Kato et al.:          $FOUND_LIBNETCDF
+  Fu and Liou:          $FOUND_FULIOU
+  Kratz (AVHRR):        $FOUND_AVHRR
+  sos:                  $FOUND_SOS
+  OPAC:                 $FOUND_OPAC
+  Key et al. (2002):    $FOUND_KEY56
+  Yang/Key/Mayer:       $FOUND_YANG
+  Mie (water clouds):   $FOUND_WCMIE
+  Baum et al. (2005):   $FOUND_BAUM
+  Baum et al. (2014):   $FOUND_BAUM_V36 
+  HEY (ice phamat):     $FOUND_HEY
+  Yang et al. (2013):   $FOUND_YANG2013
+  REPTRAN coarse:       $FOUND_REPTRAN_COARSE
+  REPTRAN extended:     $FOUND_REPTRAN_EXT
+  SBDART/LOWTRAN:       $FOUND_LOWTRAN
+  Full tests:           $FOUND_TESTS
+  $BRDFLINE
+  $MYSTICLINE
+  $MYSTIC3DLINE
+  TENSTREAM solver:     $FOUND_LIBTENSTREAM
+  PETSC libs:           $HAVE_PETSC
+  MPI:                  $HAVE_MPI
+  $ALISLINE
+  $OPENGLLINE
+  $VROOMLINE
+  $LIDARLINE
+  $ARLEMLINE
+  $CLDGENLINE
+  $WORLDLOOPLINE
+  $TIPALINE
+])

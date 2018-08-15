@@ -1,0 +1,52 @@
+#
+# Makefile for libRadtran's data/ic/fu98 directory
+#
+# Bernhard Mayer
+# bernhard.mayer@dlr.de
+
+TOPDIR = ../../../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = fu98
+
+DATAFILES =  fu98.ext fu98.abs fu98.asy
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/ic/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/ic/$(THISDIR)
+.PHONY: mystic-dist
+
+install:
+	$(MKPATH) $(datafiledir)/ic/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/ic/$(THISDIR)
+.PHONY: clean
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

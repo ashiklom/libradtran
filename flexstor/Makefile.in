@@ -1,0 +1,55 @@
+#
+# Makefile for libRadtran's flexstor directory
+#
+# Arve Kylling
+# arve.kylling@nilu.no
+
+TOPDIR = ..
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+include $(TOPDIR)/Makeconf
+
+DISTFILES = Makefile.in  \
+	Flexstor.pm Column.pm SGL.pm TABLE.pm \
+	Spectrum.pm
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all: 
+.PHONY: all
+
+check: all
+.PHONY: check
+
+install: all
+.PHONY: install
+
+uninstall:
+.PHONY: uninstall
+
+clean:
+.PHONY: clean
+
+mostlyclean:
+.PHONY: mostlyclean
+
+distclean: clean
+	rm -f Makefile
+.PHONY: distclean
+
+realclean: distclean
+	rm -f tags TAGS
+.PHONY: realclean
+
+dist:
+	ln $(DISTFILES) ../`cat ../.fname`/flexstor
+.PHONY: dist
+
+mystic-dist:
+	ln $(MYSTICDISTFILES) ../`cat ../.fname`/flexstor
+.PHONY: mystic-dist
+
+Makefile: Makefile.in ../config.status
+	cd ..; sh config.status

@@ -1,0 +1,68 @@
+#
+# Makefile for libRadtran's data/albedo directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = albedo
+
+DATAFILES =  beet.dat  cwet.dat  lawn.dat  oat.dat   sand.dat  sno5.dat \
+	cdry.dat  gras.dat  loam.dat  rye.dat   sno2.dat  stub.dat \
+	SmithBaker1981Table1.dat Lu2006_TableV1.dat Vasilkov2005Table1.dat \
+	Bricaud1995Table2.dat 
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+SUBDIRS = bowker85 IGBP_map
+
+all: 
+	for dir in $(SUBDIRS); do echo making $@ in $$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+.PHONY: all
+
+
+dist: all
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/data/albedo/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(DISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	for dir in $(SUBDIRS); do mkdir ../../`cat ../../.fname`/data/albedo/$$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/data/$(THISDIR)
+.PHONY: mystic-dist
+
+
+install: all
+	$(MKPATH) $(datafiledir)/albedo
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/albedo
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: install
+
+
+clean:
+	for dir in $(SUBDIRS); do echo making $@ in $$dir; cd $$dir; $(MAKE) $@ || exit $$?; cd ..; done
+.PHONY: clean
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof
+

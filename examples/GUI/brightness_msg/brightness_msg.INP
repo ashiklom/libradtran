@@ -1,0 +1,10 @@
+atmosphere_file ../data/atmmod/afglus.dat
+output_quantity brightness
+rte_solver disort
+source thermal 
+mol_abs_param reptran_channel msg1_seviri_ch097
+quiet 
+zout TOA
+umu 0.08716 0.17365 0.25882 0.34202 0.42262 0.50000 0.57358 0.64279 0.70711 0.76604 0.81915 0.86603 0.90631 0.93969 0.96593 0.98481 0.99619 1.00000
+#output_user uu
+albedo 0.0

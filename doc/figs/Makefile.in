@@ -1,0 +1,51 @@
+#
+# Makefile for libRadtran's doc/figs directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = figs
+
+FIGURES = figure1.pdf figure3.pdf fuyang.pdf lblo2a.pdf mystic2.png \
+	reptran_lambda_grids.pdf reptran_solar.pdf reptran_thermal.pdf resolution_o2a.pdf resolution_o3.pdf transpz.pdf
+
+DISTFILES = Makefile.in $(FIGURES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../`cat ../../.fname`/doc/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/doc/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

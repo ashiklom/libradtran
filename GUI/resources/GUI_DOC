@@ -1,0 +1,982 @@
+(dp0
+S'mc_radial_pathlength'
+p1
+S'I3RC case 7, laser beam experiment. Radiances are sampled in radial  and pathlength elements. Specify the number of radial (Nr) and time (Nt) intervals. \nThe radius increment is calculated from Nr and the domain size. The time interval  may  be specified with mc_radial_pathlength_dt.'
+p2
+sS'mc_sensordirection'
+p3
+S'Define viewing direction of an irradiance sensor in Monte Carlo backward mode. Has been introduced for  irradiance calculations in topography and might not properly work with all options. \nFor radiance use the usual umu and phi.'
+p4
+sS'mc_ipa'
+p5
+S'Run MYSTIC in independent pixel mode. Only meaningful with rte_solver montecarlo.'
+p6
+sS'mc_rpv_file'
+p7
+S'Define a MYSTIC 2D RPV BRDF input file.'
+p8
+sS'sza'
+p9
+S'The solar zenith angle (degrees). The default solar zenith angle is 0.'
+p10
+sS'rh_file'
+p11
+S'File that defines a profile of relative humidity. If specified, the water vapour  profile in atmosphere_file is over-written. If -1 is specified at a level, the value  from atmosphere_file is used.'
+p12
+sS'ic_ipa_files'
+p13
+S'A two-column file, defining ice cloud property files (see ic_file) in the first  column and the correspoding weights in the second column. The radiative transfer  calculation is performed independently for each cloud column and the result is  the weighted average of all independent columns. If ic_ipa_files and  wc_ipa_files are both defined, both must have the same columns in the same  order, otherwise uvspec will complain.'
+p14
+sS'fu_h2o_continuum'
+p15
+S'Undocumented option to switch the H2O continuum on or off or select a specific  version of the continuum.'
+p16
+sS'polradtran_nstokes'
+p17
+S'Number of Stokes parameters\n1  for I (no polarization, default)\n2 for I,Q,U (Since V is very small in the atmosphere, it makes sense  to compute only I,Q,U. This saves computation time and  memory).\n3  for I,Q,U,V\n\nDefault is 1.'
+p18
+sS'sza_file'
+p19
+S'Location of solar zenith angle file for wavelength-dependent solar zenith angle. This is actually useful if you want to simulate an instrument  which scans so slowly that the solar zenith angle may change significantly during  the wavelength scan. \nThe file must have two or three columns. Column 1 is the wavelength,  in nm, and column 2 the corresponding  solar zenith angle. Optionally the third column may contain the corresponding solar azimuth angle. The solar  azimuth angle is only needed when calculating radiances. The wavelength  grid may be freely set. The solar zenith and azimuth angle will be interpolated to  the wavelength grid used for the radiation calculation.\nComments start with #. Empty lines are ignored.'
+p20
+sS'ic_set_ssa'
+p21
+S'Set the ice cloud single scattering albedo for all wavelengths and altitudes to a value between 0.0 and 1.0. If you use this option in combination with the ice cloud properties by Fu (1996), please make sure that you understand the explanation of ic_fu_tau.'
+p22
+sS'cox_and_munk_u10_map'
+p23
+S'Specify wind speed (in m/s) for the Cox and Munk  ocean BRDF with the help of an netCDF file, which is used in combinition  with the options latitude, longitude, and time.\n\ncox_and_munk_u10_map file\n\nwhere file is the location of the netCDF file.  libRadtran reads the value at the nearest pixel to the given latitude and  longitude. No spatial interpolation or averaging of the values is done.\n\nThe file must contain the elements of the wind vector U10 and V10.\nThese must be specified as functions of latitude and longitude U10(lat, lon), V10(lat, lon),  or additionally may also depent on time U10(time, lat, lon), V10(time, lat, lon). \nIf the variable time is present in the file, the wind speed will be interpolated  according to the option time_interpolate. All grids must be provided as  double lat(lat), double lon(lon), and double time(time).'
+p24
+sS'deltam'
+p25
+S'Turn delta-M scaling on/off. Set to either on or off. Note  that for the rte_solver disort2 delta-M scaling is hardcoded to  be always on.'
+p26
+sS'no_absorption'
+p27
+S'Switch all (molecular, aerosol, cloud, and ice cloud) absorption off. Please  note that this option simply sets the absorption optical thickness to 0. \nIf used together with xxx_set_tau this might be a bit confusing but  probably the most logical way. E.g. when using aerosol_default and  aerosol_set_tau 1, the aerosol optical thickness is set to 1, with 0.940539 scattering and 0.059461 absorption. If no_absorption  is added, the absorption optical thickness is set to 0 while the scattering optical thickness is preserved at 0.940539 (even though 1 was specified by  the user). We find this the most logical solution of the problem because  by switching no_absorption off and on one tests the effect of the  absorber in an isolated way, rather than mixing absorption and scattering. \nThe same is true for water and ice clouds. Note, that thermal emission of  molecules is also switched off.'
+p28
+sS'aerosol_angstrom'
+p29
+S'Scale the aerosol optical depth using the A{}ngstr"om formula. Specify  the A{}ngstr"om alpha and beta coefficients. The optical thickness defined here  is the integral from the user-definded altitude to TOA (top of atmosphere).'
+p30
+sS'no_scattering'
+p31
+S'Switch scattering off.'
+p32
+sS'ic_fu_tau'
+p33
+S'Specify if the Fu (1996) optical properties are delta-scaled or not. \nWith ic_fu_tau scaled delta-scaling is switched on, with  ic_fu_tau unscaled it is switched off. The default is without delta-scaling. Please note that this was changed on July 22, 2008: \nBefore, delta-scaling was switched on by default which might have caused some confusion, because irradiance calculations were not consistent with the other ice cloud parameterizations implemented in uvspec. \nUsing the Fu (1996) parameterization in combination with one of  ic_set_tau/tau550/gg/ssa or ic_scale_gg/ssa you now get consistent results with all other ice cloud parameterizations.\n\nTHIS IS THE OLD DOCUMENTATION (BEFORE CHANGE OF DELTA-SCALING  DEFAULT).\n\nIt has been confirmed that the difference with and  without delta-scaling is typically on the order of less than 1 - 2%  and therefore it was decided to switch delta-scaling off by default.\nPlease note that this has nothing to do with the internal delta-scaling by the solvers: e.g. disort2 always applies it\'s own internal delta-scaling  anyway. (THE FOLLOWING NEEDS TO BE MODIFIED).\nIf you define a cloud only by its microphysical properties (ice water content, effective radius), delta-scaling should certainly be switched on and you do not need to read further. \nIf, however, you want to use the Fu (1996) parameterization in combination with one of  ic_set_tau/tau550/gg/ssa or ic_scale_gg/ssa it might be reasonable to switch delta-scaling off and you should make sure that you understand the following. Citing from Fu (1996): "For nonspherical particles in cirrus clouds, it is found that a simple representation of the scattering phase function through the asymmetry factor is inadequate (Fu and Takano 1994). As demonstrated in appendix A, the fraction of scattered energy residing in the forward peak, f, needs to be removed from the scattering parameters to incorporate the strong forward peak contribution in multiple scattering." Or in other words, the sharp forward peak is truncated and added to the unscattered direct radiation. The remaining phase function (excluding the sharp forward peak) can be safely approximated by a Henyey-Greenstein function. The scaling implies a reduction of the optical thickness, the asymmetry parameter, and the single scattering albedo. This reduction can be rather severe, e.g. a factor of about 3 for the optical thickness in the visible spectral range. This implies seemingly inconsistent optical properties: For idential IWC content and effective radius, ic_properties key/yang would give an (unscaled) optical thickness about three times higher than ic_properties fu. The effect on the radiation field, however, will be comparable, due the consistent scaling of optical thickness, asymmetry parameter, and single scattering albedo. If you, however, adjust the optical thickness using e.g. ic_set_tau, the effect on the radiation field will be completely different because the (unscaled) optical thickness by Key (2002) has a completely different meaning as the (scaled) optical thickness by Fu (1996). In such cases it might be reasonable to switch scaling off. This is a complicated and confusing topic and it is suggested that you play around a bit with the options, read the Fu (1996) paper, and make heavy use of the verbose feature.'
+p34
+sS'absorption'
+p35
+S'Switch off absorption by individual minor trace gases which are currently only included when correlated_k lowtran is chosen. The syntax is  absorption species on/off\n\nwhere species may be one of O4, N2, CO, SO2, NH3, NO, HNO3. By default all are switched on.'
+p36
+sS'wc_scale_ssa'
+p37
+S'Scale the water cloud single scattering albedo for all wavelengths and altitudes with a float between 0.0 and 1.0.'
+p38
+sS'mc_relerr'
+p39
+S'Set the relative error that the local estimator has to reach for the total result and for each time bin. If the local estimator fulfills this constraint before all photons have been simulated, the run is stopped prematurely and results are put out. This option is only  available in combination with mc_lidar_....'
+p40
+sS'day_of_year'
+p41
+S'Integer, to correct the calculated radiation quantities for the \nSun-Earth distance for the specified Julian day (1-365). If not given,  the Earth-Sun distance is 1 AU (i.e. equinox distance),  that is, no correction is applied to the extraterrestrial  irradiance solar_file. Alternatively time may be used for  that purpose.'
+p42
+sS'source'
+p43
+S'Solar or thermal source. Set to either solar or thermal.\nSolar radiation is per default output in W/(m2 nm) for spectral and  correlated_k LOWTRAN calculations. For all other correlated_k options the output is integrated over the wavelength band.\nThermal radiation is per default output in W/(m2 cm-1), if the bandwidth  is equal to 1 cm-1 (default for correlated_k LOWTRAN calculations). \nOtherwise the output is the integrated flux over the wavenumber interval specified by thermal_bandwith, thermal_bands_file, or by the correlated_k option (Kato, Kato2, Kato2.96, Fu, AVHRR_KRATZ,  or Generic).'
+p44
+sS'no2_column_moleccm-2'
+p45
+S'Obsolete, use dens_column instead.\nSet the NO2 column to a given value. The column is integrated between the  user-defined altitude and TOA (top of atmosphere). The value must be in  molecules / cm2. If value is negative or no2_column_moleccm-2 is not specified, the NO2 column is not scaled.'
+p46
+sS'mc_ambrals_file'
+p47
+S'Define a MYSTIC 2D AMBRALS BRDF input file. AMBRALS is the \nAlgorithm for Modeling[MODIS] Bidirectional Reflectance Anisotropies  of the Land Surface by Wanner et al. (1995, 1997). See also  http://www-modis.bu.edu/brdf/models.html. The file consists of a header  followed by the three parameters iso, vol, and geo for each pixel.'
+p48
+sS'latitude'
+p49
+S'This option can be used to specify the latitude of the location to simulate.\n(This option only has an effects, if longitude is specified, too.)\n\nlatitude deg [min] [sec]\n\nwhere deg min sec is the position in degrees, arc minutes, and arc seconds north.\ndeg might also be a float number. min and sec can also be obmitted.\nThe latitude information will be used for a couple of things: \n\nlatitude in combination with longitude, time, and any map-option is used to select the location where to read the input data.\n\nlatitude in combination with longitude and time is used to calculate  the solar zenith angle, if no sza is specified (see also time_interval).\n\nlatitude in combination with longitude and time is used to choose a suitable default atmosphere file, if no atmosphere_file is specified.'
+p50
+sS'ic_properties'
+p51
+S"Defines how ice water content and effective particle radius are translated  to optical properties. Possible choices are fu \nParameterization by Fu (1996), Fu et al. (1998), see ic_file;  this is the default setting. Note that this is a parameterization which has been created to calculate fluxes but not radiances. \nNote also that the optical properties in the solar range provided by \nFu (1996) are delta-scaled properties (that is, the forward peak of the phase function is truncated and optical thickness, asymmetry parameter, and single scattering albedo are reduced accordingly), whereas uvspec uses non delta-scaled properties unless the option ic_fu_tau scaled is specified. By default the parameterization by Fu (1996) is treated consistently with all other ice cloud parameterizations. \nFor wavelengths up to 4 micrometer Fu (1996) is used while for wavelengths  larger than 4 micrometer Fu et al. (1998) is chosen. Please note that \nFu (1996) is based on ray-tracing calculations while Fu et al. (1998) is a mixture of ray-tracing and Mie calculations (which is required for  the infrared wavelengths where the geometrical assumption does not hold).\nHence, both parameterizations are not fully consistent. Rather, differences of some % are to be expected in the wavelength region where both  parameterizations overlap. Also, the wavelength dependence in the solar  and infrared parts is treated differently: In the solar part (Fu, 1996)  the optical properties are defined for wavelength bands - hence they  are assumed constant within each band. In the infrared (Fu et al. 1998)  they are defined at certain wavelengths and linearely interpolated  in between. If you use this option, please see also the discussion of ic_fu_tau and ic_fu_reff.\nThe allowed range for the effective radius is from 9.315 -  65.120 micrometer.  echam4\nUse the simple two-band parameterization of the ECHAM4 climate model, described  in Roeckner et al. (1996); this is probably only meaningful if you want to compare your results with ECHAM4, the two bands are 0.2 - 0.68 micrometer and 0.68 - 4.0 micrometer.\nWithin the two ECHAM4 bands, the optical properties are assumed constant.\nkey\nParameterization by Key et al. (2002). This parameterization can also be used to calculate radiances because it uses a double-Henyey-Greenstein phase function which better represents both forward and backward peaks. This parameterization covers the wavelength region   from 0.2 to 5.0 micrometer and is available for the following habits:\nsolid-column, hollow-column, aggregate, rosette-4, rosette-6, and plate.\n\nyang\nParameterization similar to Key et al. (2002) but based on more recent single scattering calculations. Below 3.4 micrometer it actually equals the Key et al. (2002) parameterization while from 3.4 - 100 micrometer new  coefficients have been calculated with much higher wavelength resolution and better accuracy. Hence, yang should give a reasonably consistent approximation from 0.2 - 100 micrometer, suitable for spectrally resolved calculations of radiance and irradiance.\nThe covered range for the effective radius depends on the ic_habit.\n(In micrometer: solid columns [5.96, 84.22], hollow columns [4.97, 70.24],  rough aggregate [3.55, 108.10],rosettes-4 [2.77, 45.30], rosettes-6 [2.85, 46.01],  plates  [4.87, 48.18], dendrites [0.45, 1.88], droxtals [9.48, 293.32],  spheroids  [6.58, 203.39]). \n\nbaum\nUse ice cloud parameterization from Baum et al. (2005), http://www.ssec.wisc.edu/~baum/Cirrus/IceCloudModels.html. The phase function is parameterized by 128 Legendre coefficients, calculated with the delta-fit method from \nHu et al. (2000). This parameterization covers the region   from 0.4 to 2.2 micrometer. If very high accuracy is needed e.g. in the vicinity of the halo,  the forward peak, or the backscatter peak, ic_properties baum_detailed is recommended.\nbaum_detailed\nSee ic_properties baum; the phase function is parameterized by 10,000 \nLegendre coefficients which provides in most cases a more accurate representation  of the Halo etc. For this option you need to obtain the respective tables  from the libRadtran webpage (100 MBytes!).\nmie\nUse pre-calculated Mie tables; useful for correlated_k;  the tables are expected in data_files_path/correlated_k/.../ *\nFor spectral or pseudo-spectral (correlated_k sbdart) calculations,  a set of pre-calculated tables is also available; the wavelength grid points of these  data has been carefully selected such that the extinction cross section,  single scattering albedo, and the asymmetry parameter are accurate to 1%  (compared to the fully-resolved Mie calculation) for all wavelengths between 250nm and 100 micrometer. For spectral or pseudo-spectral calculations ic_properties_interpolate has to be defined explicitely to initiate the interpolation of the optical properties to the internal wavelength grid.\nPlease note that this option may be extremely memory-consuming because for each  internal wavelength a full set of Legendre moments of the phase function is  stored (up to several thousands). The Mie tables are not part of the standard distribution  (because of their large size) but they are freely available from http://www.libradtran.org. \nNote that a Mie calculation assumes spherical ice particles, the scattering function of  which differs systematically from non-spherical particles. Hence, ic_properties mie is usually not representative of natural ice clouds.\nfilename\nRead optical properties from specified filename; file format is as produced  by the mie-tool of the libRadtran-tool box (see output_user cloudprp)  or by Frank Evans' cloudprp; for each of the internal (computational) wavelengths,  a separate file is expected (this option is subject to change).\n\nThe default property is fu.\n\nPlease note also that, in contrast to spherical particles, there is no unique  definition of effective size for non-spherical particles. In particular, the above parameterizations use different definitions which, however, differ only by  a constant factor.To use the original definition of the effective radius by Fu et al. (1996,1998) use ic_fu_reff fu!"
+p52
+sS'wc_set_tau'
+p53
+S'Set the total water cloud optical thickness to a constant value for all wavelengths.\nThe optical thickness defined here is the integral from the surface at the  user-defined altitude to TOA (top of atmosphere). This option is useful only  for monochromatic calculations or in wavelength regions where the optical properties  of water clouds can be considered constant, e.g. the ultraviolet range.'
+p54
+sS'include'
+p55
+S'Include a file into the uvspec input. Works exactly like the C #include or  the Fortran INCLUDE statements.'
+p56
+sS'filter_function_file'
+p57
+S'If specified, the calculated spectrum is multiplied with a filter function  defined in filter_function_file. The file must contain two columns. \nColumn 1 is the wavelength, in nm. Column 2 is the corresponding filter  function value. Comments start with #. Empty lines are ignored.\nIn combination with output sum or output integrate this option  is useful e.g. to calculate weighted irradiances or actinic fluxes or  to simulate broadband or satellite observations.'
+p58
+sS'f22_mixing_ratio'
+p59
+S'The mixing ratio of F22 in ppm (default: 0.000105 ppm).'
+p60
+sS'aerosol_no_scattering'
+p61
+S'Switch off scattering by aerosols.'
+p62
+sS'ECMWF_ic_reff'
+p63
+S'This option is preliminary and still subject to change!\nThe ECMWF data only contains cloud water content, but no effective radius.\nWith this option, the effective radius can be specified. \nThere are two possibilities:\nFor a fixed effective radius use the keyword fixed  and specify the reff in micrometer.\n\nECMWF_ic_reff fixed reff\n\nIn order to use the parametrisation by Ou and Liou, 1992 use the keyword Ou.\n\nECMWF_ic_reff Ou\n\nThe default option is Ou.'
+p64
+sS'no2_column_du'
+p65
+S'Obsolete, use dens_column instead.\nSet the NO2 column to a given value. The column is integrated between the  user-defined altitude and TOA (top of atmosphere). The value must be in \nDobson units. If value is negative or no2_column_du is not specified, the NO2 column is not scaled.'
+p66
+sS'rpv_rho0'
+p67
+S'Constant RPV rho0, see brdf_rpv_file. rpv_rho0 overwrites the wavelength-dependent value defined in brdf_rpv_file.'
+p68
+sS'rayleigh_depol'
+p69
+S'Rayleigh depolarization factor; the Rayleigh scattering phase function is p(mu) = a + b * mu**2 where a = 1.5*(1+depol)/(2+depol) and   b = 1.5*(1-depol)/(2+depol). By default the depolarization is calculated using the expressions from Bodhaine et al. (1999).'
+p70
+sS'radiosonde_levels_only'
+p71
+S'The atmosphere considered in the simulation has the same height range as the data in  the radiosonde-file. No further levels are added above those.\nThis option has only an effect in combination with radiosonde.'
+p72
+sS'ECMWF_levels_only'
+p73
+S'The atmosphere considered in the simulation has the same height range as the data in  the ECMWF_atmosphere_file/radiosonde-file. No further levels are added above those.\nThis option has only an effect in combination with ECMWF_atmosphere_file or radiosonde (this option is identical to radiosonde_levels_only).'
+p74
+sS'prndis'
+p75
+S'Specify one or more integers between 1 and 7.\nPrint various disort input and output in disorts own format. See  disort.doc for more information.\nWarning: Produces a lot of output.'
+p76
+sS'albedo_file'
+p77
+S'Location of surface albedo file for wavelength dependent surface albedo. \nThe file must have two columns.\nColumn 1 is the wavelength in nm, and column 2 the corresponding \nLambertian surface albedo. An arbitrary wavelength grid may be chosen as the  albedo will be interpolated linearely to the wavelength grid used for the  radiation calculation. Comments start with #. Empty lines are ignored.\nA large collection of spectral albedos is available e.g. at http://speclib.jpl.nasa.gov/.'
+p78
+sS'o2_mixing_ratio'
+p79
+S'The mixing ratio of O2 in ppm; scale the profile so that the mixing  ratio at the user-defined altitude assumes the specified value.'
+p80
+sS'ch4_mixing_ratio'
+p81
+S'The mixing ratio of CH4 in ppm (default: 1.6 ppm).'
+p82
+sS'cox_and_munk_sal'
+p83
+S'Salinity for Cox and Munk ocean BRDF (in "per mille", 0.1%; this  unit is equivalent to the other common units for salinity,  ppt - parts per thousand, psu - practical salinity unit);  at present only available with rte_solver DISORT2.\nThe number of streams (nstr) is automatically increased to 16 if cox_and_munk BRDF is switched on, to avoid numerical problems. The default value is 34.3. To switch on Cox and Munk \nBRDF, specify any of the cox_and_munk options and define at least  cox_and_munk_u10.'
+p84
+sS'mc_truncate'
+p85
+S'Truncate phase function at the specified polar angle mu. \nUSE ONLY IF YOU REALLY KNOW WHAT YOU ARE DOING!'
+p86
+sS'wc_ipa_files'
+p87
+S'A two-column file, defining water cloud property files (see wc_file) in the first  column and the corresponding weights in the second column. The radiative transfer  calculation is performed independently for each cloud column and the result is the weighted  average of all independent columns. If ic_ipa_files and wc_ipa_files  are both defined, both must have the same columns in the same order,  otherwise uvspec will complain.'
+p88
+sS'ic_no_scattering'
+p89
+S'Switch off scattering by ice clouds.'
+p90
+sS'atmosphere_file'
+p91
+S'Location of the atmospheric data file. Must have at least three columns containing the altitude, pressure, and temperature. Missing profiles are filled with 0 (e.g., if you did not specify  the ozone profile, there will be no ozone absorption!), with exception of the air density which  is calculated from pressure and temperature. Other traces gases may be set by dens_file.   The columns are interpreted as follows:\n\n1. z(km)  Altitude above sea level in km\n2. p(mb) Pressure in hPa\n3. T(K) Temperature in K\n4. air_density(cm-3)  Air density in cm-3\n5. o3_density(cm-3) Ozone density in cm-3\n6. o2(cm-3) Oxygen density in cm-3\n7. h2o(cm-3)  Water vapour density in cm-3\n8. co2(cm-3) CO2 density in cm-3\n9. no2(cm-3) NO2 density in cm-3\n\nThe atmosphere is specified top-down, that is, the top level is the first line in the file, the bottom (surface) level the last line. All properties refer to model level z, not to model layer. It is important that the correct units are  used, otherwise unpredictable results are guaranteed.\nComments start with #. Empty lines are ignored. Please note that there  is some redundancy: For air as an ideal gas the density can be calulated from pressure and temperature, dens = p / kT. uvspec will check  if this relation is fulfilled and will stop if it is not.  libRadtran provides the six standard atmospheres by Anderson et al. (1986):\n\nafglt Tropical\nafglms Midlatitude Summer\nafglmw Midlatitude Winter\nafglss Subarctic Summer\nafglsw  Subarctic Winter\nafglus U.S. Standard\n\nIf no atmosphere_file is defined, libRadtran will automatically select one. If the information  time, latitude and longitude are provided in the input file libRadtran will  choose from the first 5 files, otherwise it takes the U.S. Standard atmosphere.'
+p92
+sS'mc_spherical'
+p93
+S'Spherical geometry in MYSTIC. Works only in "1D" - wcloud_file  and icloud_file are not yet considered. If mc_spherical is selected mc_backward is switched on automatically.'
+p94
+sS'cloud_fraction_map'
+p95
+S'Undocumented option.'
+p96
+sS'mc_photons'
+p97
+S'Total number of photons to be traced by the Monte Carlo solver, MYSTIC.\nOnly meaningful with rte_solver montecarlo.'
+p98
+sS'reverse'
+p99
+S'Option for the strong and bold. Reverses the atmospheric input to the radiative transfer solvers. That is, the atmosphere is turned on the head.\nYes, that is actually useful for some purposes. If you think you need this contact the author. Otherwise, do not use.'
+p100
+sS'aerosol_species_file'
+p101
+S"Specify mass density profiles of a mixture of aerosol types. \n\naerosol_species_file profile [aero_1 aero_2 ... aero_n]\n\nwhere aero_1 to aero_n are the aerosol species to be included. \nFor each of these species, the optical properties are read from the  aerosol_species_library, e.g. the OPAC data set provided with  libRadtran. The profile file needs to include vertical profiles for each of these species. This file can be either in netCDF-format  (automatically recognized filename extension .nc or .cdf)  or in ASCII format. The format of the ASCII file is: \n\nz1  dens(aero_1, z1) dens(aero_2, z1)  ... dens(aero_n, z1) z2  dens(aero_1, z2) dens(aero_2, z2)  ...\n .  .  .\n .  .  .\n\nwhere z is the height in km, and dens are the aerosol mass densities in g/m3. Please make sure to include one column for each of  the species aero_1 to aero_n listed after  aerosol_species_file. \nFor netCDF input it is also possible to specify the unit 'kg kg**-1'; the data  are then automatically converted to g/m3."
+p102
+sS'brightness'
+p103
+S'Convert radiances / irradiances to equivalent brightness temperatures.'
+p104
+sS'f12_mixing_ratio'
+p105
+S'The mixing ratio of F12 in ppm (default: 0.000503 ppm).'
+p106
+sS'rpv_sigma'
+p107
+S'Constant RPV sigma, to be used for snow (Deguenther and Meerkoetter, 2000).\nA wavelength dependent sigma is not yet available.'
+p108
+sS'cox_and_munk_u10'
+p109
+S'Wind speed for Cox and Munk ocean BRDF (in m/s);  at present only available with rte_solver DISORT2.\nThe wind speed is the most important parameter affecting ocean BRDF.\nThe minimum allowed wind speed is 1 m/s because otherwise the strong specular reflection causes numerical problems. If a lower value is specified, the wind speed is automatically set to 1m/s. Also, the number of streams (nstr) is automatically increased to 16 if cox_and_munk BRDF is switched on, to avoid numerical problems.\nTo switch on Cox and Munk BRDF, specify any of the cox_and_munk options and define at least   cox_and_munk_u10.'
+p110
+sS'cox_and_munk_pcl'
+p111
+S'Pigment concentration for Cox and Munk ocean BRDF (in mg/m-3);  at present only available with rte_solver DISORT2. \nThe number of streams (nstr) is automatically increased to 16 if cox_and_munk BRDF is switched on, to avoid numerical problems. The default value is 0.01 mg/m-3. To switch on Cox and Munk \nBRDF, specify any of the cox_and_munk options and define at least  cox_and_munk_u10.'
+p112
+sS'mc_sample_grid'
+p113
+S'Sampling grid size (Nx Ny [dx dy]) for MYSTIC.\nOnly meaningful with rte_solver montecarlo.'
+p114
+sS'mc_actinic'
+p115
+S'Calculate MYSTIC actinic flux for each 3D grid box by dividing the absorbed energy by the  absorption coeffcient; this method is much better than the traditional photon counting  which usually comprises spikes (because in the latter method each photon is weighted with \n1/cos(theta) which may be a very large number); may need a considerable amount of memory,  depending on the 3D cloud grid. Only meaningful with rte_solver montecarlo.\nThis option is only available for forward calculations. For backward please use mc_backward_output f.'
+p116
+sS'thermal_bands_file'
+p117
+S'File with the center wavelengths and the wavelength band intervals to be used for  calculations in the thermal range. The following three columns are expected:\ncenter (or reference) wavelength, lower wavelength limit, upper wavelength limit [nm].\nthermal_bands_file defines the wavelength grid for the radiative transfer  calculation. The RTE solver is called for each of the wavelengths in the first column. \nThe atmospheric (scattering, absorption, etc) properties are also evaluated at these  wavelengths. For thermal radiation calculations, the Planck function is integrated  over the wavelength bands defined in the second and third columns. The result will therefore be a band-integrated irradiance which does only make sense when the  solar_file grid equals the thermal_bands_file grid.'
+p118
+sS'p_out'
+p119
+S'Undocumented option. Same as pressure_out.'
+p120
+sS'surface_temperature_map'
+p121
+S'Specify a surface_temperature map with a netCDF file which is used in combinition  with the options latitude, longitude, and time.\n\nsurface_temperature_map file [variable_name]\n\nwhere file is the location of the netCDF file.  libRadtran reads the value at the nearest pixel to the given latitude and  longitude. No spatial interpolation or averaging of the values is done.'
+p122
+sS'satellite_pixel'
+p123
+S'This option is specifies the pixel of the satellite image, which should be simulated. \n\nsatellite_pixel  pixel_x pixel_y\n\nThe arguments pixel_nr_x and pixel_nr_y specifies the pixel position in the native  system of the satellite, which is determinded by the option satellite_geometry.'
+p124
+sS'o3_crs'
+p125
+S'Choose between the following ozone cross sections.\nBass_and_Paur\nBass and Paur ozone cross section.\nMolina\nMolina and Molina (1986) ozone cross section.\nDaumont\nOzone cross section by Daumont et al. (1992), Malicet et al. (1995).\n\nMolina and Molina is default.'
+p126
+sS'output'
+p127
+S'Output processing. Choose between the following options:\nsum\nSum output over wavelength. Useful in combination with the  correlated_k option (Kato, Kato2, Kato2.96, Fu, AVHRR_KRATZ).\nintegrate\nIntegrate output over wavelength for solar and over wavenumber for thermal simulations. \nUseful for spectral calculations and correlated_k LOWTRAN.\nper_nm \nOutput is given in W/(m2 nm) or mW/(m2 nm) (W or mW is determined by the extraterrestrial spectrum.) per_cm-1 \nOutput is given in W/(m2 cm-1) or mW/(m2 cm-1).\nper_ck_band \nOutput is given in W/m2 or mW/m2 per correlated-k band. (This option can not be used for  spectral calculations and correlated_k LOWTRAN in the solar range.) none\nNo processing - output spectral information (default).'
+p128
+sS'mc_radial_pathlength_dt'
+p129
+S'Specify time increment for mc_radial_pathlength. Time is converted to pathlength  assuming a speed of light of 3E8 m/s'
+p130
+sS'optimize_fortran'
+p131
+S'When this option is activated, the minimum dimensions of the FORTRAN arrays  for the specific input conditions are determined and written to stderr.\n\nUsing worldloop two tolerance levels are added to the minimum number  of atmospheric levels, as this number may change during worldloop calculations.'
+p132
+sS'radiosonde'
+p133
+S'This option allows to change the temperature and pressure profile, and optionally to  specify one or more density profiles. The entry in the input file looks like this:\n\nradiosonde filename [gas_species] [unit] ...\n\nCurrently the following gas_species are included: ozone (O3), nitrogen dioxide (NO2),  water vapor (H2O), bromine oxide (BRO), chlorine dioxide (OCLO), formaldehyde (HCHO), and carbon dioxide (CO2). \nEach gas species is identified by its abbrevations given in parentheses above.\nUnit is an optional argument to defines the unit of the density. The profiles can be given in particles per cm3 (CM-3), in particles per m3 (M-3), as volume mixing ratio (VMR), as mass mixing  ratio in kg/kg (MMR), or as relative humidity (RH) (only for water). The default unit is RH for water vapour, \nMMR for ozone, and CM-3 for all other gases.\nThe radiosonde file must have (2 + number of gases) columns:\n1   pressure in hPa\n2   temperature in Kelvin\n3, 4 ...  density of trace gas in the specified unit\n\nA new z-grid will be calculated, starting at altitude and assuming a linear temperature variation between levels. The air density will be recalculated according to the ideal gas law, and the density of  the well mixed gases O2 and CO2 will be scaled accordingly.\nThe atmospheric data above the radiosonde data is taken from the atmosphere_file level by level, starting  at the first pressure level above the radiosonde data. The z-grid of the atmosphere file in  this height region is shifted accordingly.\nAlso if the density in the radiosonde file is specified as -1 at a level,  the value from the atmosphere_file is used.\nPossible calls are\n\nradiosonde ../examples/radiosonde.dat\n\njust in order to change the temperature and pressure profile, or\n\nradiosonde ../examples/radiosonde2.dat H2O RH O3 MMR NO2\n\nwhere water vapour density will be given as relative humidity, ozone as mass mixing ratio,  and NO2 in cm-3 (default).'
+p134
+sS'aerosol_files'
+p135
+S'A way to specify aerosol optical depth, single scattering albedo,  and phase function moments for each layer. The file specified by  aerosol_files has two columns where column 1 is the altitude in km. \nThe second column is a the name of a file which defines the optical properties of the layer starting at the given altitude. The files specified in the second column must have the  following format:\nColumn 1: \nThe wavelength in nm. These wavelengths may be different from those in solar_file. \nOptical properties are interpolated to the requested wavelengths.\nColumn 2:\nThe extinction coefficient of the layer in units km-1. \nColumn 3:\nThe aerosol single scattering albedo of the layer.\nColumn 4-(nmom+4):\nThe moments of the aerosol phase function. \n\nFor some simple examples see the files examples/AERO_*.LAYER. Note that  if using the rte_solver disort2 it makes good sense to make the  number of moments larger than nstr. For rte_solver disort and  rte_solver polradtran the number of moments included in the calculations  will be nstr+1. Higher order moments will be ignored for these solvers.\nPlease note that the uppermost line of the aerosol_files denotes simply the top altitude of the uppermost layer. The optical properties of this line are consequently ignored. There are two options for this line: either an optical property file with zero optical thickness is specified or "NULL" instead.'
+p136
+sS'mc_readrandomstatus'
+p137
+S'Read from file the random status for the random number generator. \nThis option is useful to re-run a simulation for debugging, especially if the buggy photon appears only late in a long simulation. This option automatically toggles on mc_readrandomseed.'
+p138
+sS'mc_surface_reflectalways'
+p139
+S'Usually, a photon is either absorbed or reflected at the surface,  with a probability defined by the surface albedo. If  mc_surface_reflectalways is specified, each photon is reflected and  the albedo is considered by reducing the photon weight. In case of BRDF, mc_surface_reflectalways is switched on automatically because the  other method is no longer implemented for non-Lambertian BRDFs, due to  implementation and numerical problems. For small albedos, the computational  time is increased if mc_surface_reflectalways is used; however,  the accuracy of the upward radiance (reflected by the surface) is increased  considerably. In case of clouds, however, computational time might be  increased considerably without gaining accuracy.'
+p140
+sS'rpv_t1'
+p141
+S'Constant RPV t1, to be used for snow (Deguenther and Meerkoetter, 2000).\nA wavelength dependent sigma is not yet available.'
+p142
+sS'rpv_t2'
+p143
+S'Constant RPV t2, to be used for snow (Deguenther and Meerkoetter, 2000).\nA wavelength dependent sigma is not yet available.'
+p144
+sS'mc_backward_output'
+p145
+S'Specify quantity to be calculated using backward Monte Carlo. So far the following options are implemented:  edir   direct horizontal irradiance edn   diffuse downward irradiance (default) eup   diffuse upward irradiance f   actinic flux abs   absorption emis   emission heat   heating rates, that is absorption + emission\n\nFor abs, emis, heat an optional argument W_per_m2_and_dz (default), \nW_per_m3, or K_per_day may be specified which converts the result e.g. to heating rates.'
+p146
+sS'ic_set_gg'
+p147
+S'Set the ice cloud asymmetry factor for all wavelengths and altitudes to a float between -1.0 and 1.0. If you use this option in combination with the ice cloud properties by Fu (1996), please make sure that you understand the explanation of ic_fu_tau.'
+p148
+sS'wavelength'
+p149
+S'Set the wavelength range by specifying first and last wavelength in nm. \nThe default output wavelength grid is that defined in solar_file,  unless spline is specified. Note that the radiative transfer calculations  are done on an internal grid which can be influenced with transmittance_wl_file or molecular_tau_file'
+p150
+sS'aerosol_visibility'
+p151
+S'Horizontal visibility in km. Affects the profile according to Shettle (1989) and the optical thickness.'
+p152
+sS'umu'
+p153
+S'Cosine of output polar angles in increasing order, starting with  negative (downwelling radiance, looking upward) values (if any) and on through  positive (upwelling radiance, looking downward) values. \nMust not be zero.'
+p154
+sS'ic_saturate'
+p155
+S'With this option, the relative humidity inside ice clouds can easily be adjusted  to a user-defined value, e.g. saturated with respect to water. \nThis option has one mandatory and one optional argument:\n\nic_saturate switch [relative_humidity]\n\nwhere switch is on, off, or ipa. \nThe second optional argument determines the relative humidity in %  (with respect to water!) inside the cloud. The default value is 100.\nipa is only relevant for independent column calculations. \n\nDetails for independent column simulations: Using switch on, the air  in all columns will be saturated, if there is a cloud in at least  one of the columns (this option should be used for stratiform clouds).\nUsing switch ipa, only cloudy columns are  affected (this option should be used for convective cloud fields.)'
+p156
+sS'thermal_bandwidth'
+p157
+S'Specify a constant bandwidth in cm-1 for thermal calculations. The default is 1 cm-1.\nThis option is ignored if used together with correlated_k KATO/KATO2/KATO2.96/FU/AVHRR_KRATZ.'
+p158
+sS'mc_escape'
+p159
+S'Calculate MYSTIC radiances via escape probabilities; slows down the tracing  but usually requires much less photons. Only meaningful with rte_solver montecarlo.'
+p160
+sS'ECHAM_clouds_file'
+p161
+S'Undocumented option.'
+p162
+sS'heating_rate'
+p163
+S'Calculation of heating rates. Output is only provided at altitudes specified by zout.\nTo get heating rate profiles a number of altitudes must thus be specified.\nHeating rates is the change of temperature with time in units of K/day.\nFor spectral calculations the default output is a matrix: \n\n0.0  zout1  zout2 ...\nlambda1  heating_rates  ...\nlambda2  .\n .  .\n .  .\n\nFor integrated calculations (output sum or output integrate) the default output  is in two columns with column 1 being the altitude and column 2 the heating rates.\nThe output of heating_rate can also be specified with the output_user option.\nNote that heating rates are only well-behaved up to altitudes for which the respective correlated-k options are valid. E.g. about 60 km for \nFu and about 80 km for Kato, Kato2, Kato2.96, and LOWTRAN.\nAttention: For spectral calculations, the extraterrestrial spectrum is assumed to be in  mW/(m2 nm).\n\nTwo different methods are implemented to calculate the heating rate, which can be selected with an optional keyword:\n\nheating_rate [method]\n\nwhere method may be either layer_cd (heating rates are derived from centered  differences of the flux, this is the default method) or local (heating rates are derived  from the actinic flux). Attention: heating_rate local introduces new levels into the profile which   slightly affects the model output.\n \nThere is also a third method called layer_fd, which means that heating rates are derived  from forward differences of the flux over one layer. Please be aware that the output is not a level  property, but representativ for the layer from the z-level of the line in the output file,  where is written up to next output level above!'
+p164
+sS'no_rayleigh'
+p165
+S'Switch Rayleigh scattering off.'
+p166
+sS'mc_azimuth_old'
+p167
+S'Use old MYSTIC azimuth convention (0 degree = looking from the direction of the sun; 180 degree = looking into the direction of the sun; that is, exactly opposite to the disort convention). The MYSTIC azimuth was changed March 1, 2004 - hence this option was introduced for compatibility reasons.'
+p168
+sS'ichap'
+p169
+S'Undocumented option for sdisort and qdisort.'
+p170
+sS'wc_saturate'
+p171
+S'With this option, the relative humidity inside water clouds can easily be adjusted  to a user-defined value, e.g. saturated with respect to water. \nThis option has one nessesary and one optional argument:\n\nic_saturate switch [relative_humidity]\n\nwhere switch is on, off, or ipa. \nThe second optional argument determines the relative humidity in %  (with respect to water!) inside the cloud. The default value is 100.\nipa is only relevant for independent column calculations. \nDetails for independent column simulations: Using switch on, the air  in all columns will be saturated, if there is a cloud in at least  one of the columns (this option should be used for stratiform clouds).\nUsing switch ipa, only cloudy columns are  affected (this option should be used for convective cloud fields.)'
+p172
+sS'mc_std'
+p173
+S'Calculate standard deviation of the average.'
+p174
+sS'no_molecular_absorption'
+p175
+S'Switch off molecular absorption.'
+p176
+sS'surface_type'
+p177
+S'With this option the surface_type is selected.\nThis option can be used with albedo_library in order to select an spectral albedo  or with rpv_library in order to select a BRDF function.\n\nsurface_type surface_type_number\n\nwhere surface_type_number is an integer starting from 0, where 0 refers to a black surface and the following numbers to  the entries in the specified library.'
+p178
+sS'polradtran_max_delta_tau'
+p179
+S'Initial layer thickness for doubling; governs accuracy, 10E-5 should be adequate. Do not go beyond half the real precision, i.e. 10e-8 for REAL*8.\nDefault 1.e-05.\nThis option is only relevant for rte_solver polradtran.'
+p180
+sS'polradtran_aziorder'
+p181
+S'Order of Fourier azimuth series: 0 (default for irradiance) is azimuthally symmetric case.\nFor radiance computation a higher order is required, thus the default for radiances is 4. \nThis option is only relevant for rte_solver polradtran.'
+p182
+sS'header'
+p183
+S'Include information on some of the input parameters in the output. May not be combined with flexstor. Please note that the information provided is rather  incomplete because this option was introduced quite early and was never updated. \nFor a more complete information please use the verbose option.'
+p184
+sS'aerosol_tau_file'
+p185
+S'Location of aerosol optical depth file. The file must have two columns.\nColumn 1 is the altitude in km. The altitude grid must be exactly equal to  the altitude grid specified in the file atmosphere_file.\nColumn 2 is the aerosol optical depth of each layer. \nTo allow wavelength-dependent aerosol optical thickness please use either aerosol_angstrom or aerosol_files.\nComments start with #. Empty lines are ignored.'
+p186
+sS'spline_file'
+p187
+S'Spline interpolate to arbitrary wavelengths, in nm, given as a single column in file  spline_file. The specified wavelengths must be within the range specified  by wavelength. Comments start with #. Empty lines are ignored.'
+p188
+sS'pressure'
+p189
+S'The surface pressure (at the user-defined altitude) in hPa. \nThe pressure profile as well as air, O2 and CO2 density profiles  are scaled accordingly.'
+p190
+sS'zout'
+p191
+S'This option is used to specify the output altitudes in km above surface altitude. \nOne or more altitudes may be specified in increasing magnitude. \n\nzout 0 1 2 3 4 5 ...\n\nOutput altitudes must be within the range defined in the atmosphere_file. Note that zout does not restructure the atmosphere model. Hence, if you specify zout 0.730 and have your atmosphere model in atmosphere_file go all the way down to  sea level, i.e. 0.0km., output is presented at 0.730km and calculations performed with an atmosphere between 0.0 and 0.730 km (and above of course). \nIf you want calculations done for e.g. an elevated site you have to restructure the atmosphere model and make sure it stops at the appropriate altitude.\nThis you may either due by editing the atmosphere file or by using  altitude. Note that for rte_solver polradtran the atmosphere file must  contain the altitudes specified by zout. You can also use toa for  top of atmosphere and sur for surface altitude and cpt  for cold point tropopause.\n\n\nInstead of specifying the altitudes in km, it is also possible to use a keywords as  argument for this option. Possible keywords are atm_levels,  all_levels, model_levels, model_layers, and model_levels_and_layers. \nFor atm_levels, all levels from the atmosphere_file are used as output levels.  \nFor all_levels, all levels (including levels from atmosphere_file,  dens_file, cloud files, altitude options) are used as output levels. \nFor model_levels, model_layers, model_levels_and_layers  the levels, layers, or both from the ECMWF_atmosphere_file are used as output level.\nUsage e.g.:\n\nzout model_levels [nlev_max]\n\nWith the optional argument nlev_max the user may specify the number of zout layers  from the ground.'
+p192
+sS'wc_file'
+p193
+S'Location of file defining water cloud properties. The file must contain three columns: Column 1 is the altitude in km, column 2  the liquid water content (LWC) in grams per cubic meter, and column 3 the effective droplet radius in micrometer. Empty lines are ignored. Comments start with #.\nNote that the definition of cloud altitudes in wc_file refers to sea level,  not to altitude above ground. E.g., when altitude is set to 1.63km, and the first  cloud level is defined at 3km, the cloud would start at 1.37km above ground.  \nAn example of a cloud is given in examples/WC.DAT.\n\nPer default the cloud properties are interpreted as layer properties. Before  version 1.4 the default was level properties: The optical depth of a layer was  calculated using information from the upper and lower levels defining the layer,  see wc_layer and wc_level.\nTo switch to the old behaviour, use wc_level. See the section about water clouds  for a realistic example how the contents of the wc_file are converted to optical properties.'
+p194
+sS'slit_function_file'
+p195
+S'If specified, the calculated spectrum is convolved with the function found in the slit_function_file. The file must contain two columns. Column 1 is the wavelength, in nm, and relative to the center wavelength. Column 2 is the corresponding slit function value. It must be unity at the maximum. The wavelength steps in the slit function file must be equidistant. Comments start with #. Empty lines are ignored. Please  note that prior to convolution the spectrum is interpolated to the wavelength steps of the slit function. For this reason, make sure that the resolution of the slit function is high enough even if the slit function is e.g. a  simple triangle which could in principle be described with 3 grid points.'
+p196
+sS'mc_lidar_file'
+p197
+S'File containing positions, looking directions, and opening angles of lasers and detectors for lidar simulations in MYSTIC.  Only meaningful with mc_lidar.'
+p198
+sS'nscat'
+p199
+S'The order of scattering for the sos radiative transfer equation solver. \nDefault is 20. May also be used with the sdisort solver. If set to 1 sdisort  will run in single scattering mode while if set in to 2, sdisort runs in full multiple  scattering mode.'
+p200
+sS'aerosol_set_tau550'
+p201
+S'Set the aerosol optical thickness at 550nm. Other wavelengths are scaled accordingly.\nNote that this option requires for technical reasons that the wavelength interval defined by wavelength does contain 550nm.\nThe optical thickness defined here is the integral from the user-definded  altitude to TOA (top of atmosphere).'
+p202
+sS'ic_fu_reff'
+p203
+S'If ic_fu_reff fu is specified, the   parameterization uses the original definition of the effective radius as specified in Fu (1996/98). By default it uses the same definition of the effective radius as the Key et al. (2002), Yang et al. (2000) and Baum et al. (2005) parameterizations; see discussion of ic_properties.'
+p204
+sS'ECHAM_sza'
+p205
+S'Undocumented option.'
+p206
+sS'wavelength_index'
+p207
+S'Set the wavelengths to be selected. To be used together with predefined wavelength grids, such as transmittance_wl_file molecular_tau_file and particularly  useful in combination with the correlated_k option where often only a  specified number of wavelength bands is required. E.g., in combination with correlated_k AVHRR_KRATZ, wavelength_index 15 15 will select wavelength index 15 which corresponds to channel 4, or wavelength_index 10 14 will select  those bands required for channel 3. Indices start from 1.'
+p208
+sS'aerosol_set_ssa'
+p209
+S'Set the aerosol single scattering albedo for all wavelengths and altitudes to a constant value between 0.0 and 1.0.'
+p210
+sS'ic_file'
+p211
+S'Location of file defining ice cloud properties. The file must contain three columns. Column 1 is the altitude in km, column 2  the ice water content in grams per cubic meter, and column 3 the effective particle radius in micrometer. The ice water content and effectice particle radius must be specified at the same altitude grid as  in atmosphere_file. Note that the definition of cloud altitudes  in ic_file refers to sea level, not to altitude above ground. E.g., when altitude is set to 1.63km, and the first cloud level is  defined at 3km, the cloud would start at 1.37km above ground.\nComments start with #. Empty lines are ignored. An example  of an ice cloud is given in examples/IC.DAT. \n\nPer default the cloud properties are interpreted as layer properties. Before  version 1.4 the default was level properties: The optical depth of a layer was  calculated using information from the upper and lower levels defining the layer, see ic_layer and ic_level.\nTo switch to the old behaviour, use ic_level. See the section about ice clouds  for a realistic example how the contents of the ic_file are converted to optical properties.'
+p212
+sS'albedo_map'
+p213
+S'This option is preliminary and still subject to change (no wavelength dependency yet)!\nA possibility to specify a wavelength independent albedo with the help of  a netCDF file, which is used in combinition  with the options latitude, longitude, and time.\n\nalbedo_map file [variable_name]\n\nwhere file is the location of the netCDF file. \nWith the optional argument the name of the albedo variable in  the netCDF file can be specified (the default name is AL).\nThe albedo must be provided as function of latitude and longitude AL(lat, lon),  and may also depend on time AL(time, lat, lon). \nThe latitude, longitude, and time grids must be provided as doubles  double lat(lat), double lon(lon), and double time(time).\nlibRadtran reads the value at the nearest pixel to the given latitude and  longitude. No spatial interpolation or averaging of the values is done.\nIf a time-dependent albedo is provided, the albedo data nearest to the specified time  will be selected (or linear interpolated if time_interpolate is switched on).'
+p214
+sS'mc_wcloud_file'
+p215
+S'Define a MYSTIC 3D water cloud input file.\nThe expected format of the cloud file is:\n\nNx  Ny  Nz  gspec flag dx  dy  z(1) z(2) ... z(n) ix  iy  iz  ext  g  ssa  (if flag == 1) ix  iy  iz  ext  reff  (if flag == 2) ix  iy  iz  LWC  reff  (if flag == 3)\n\nwhere Nx, Ny and Nz are the number of grid boxes in x, y, and z-direction.\ngspec and wspec are parameters, which determin the format of the 3rd and  following lines. In the second line dx and dy are the sizes of the boxes in x-  and y-direction in km. \nIn the third and following lines the indices ix, iy, and iz specify cloudy pixels. \nThe optical properties of the cloud, are given by the other parameters in the line,  where ext is the extinction coefficient [1/km], g the assymetry parameter, reff the effective radius [micrometer], and ssa the single scattering albedo.\nThe conversion from microphysical to optical properties is defined by wc_properties  (identical to the 1D case). For more information please consult the MYSTIC documentation,  doc/README.MC.'
+p216
+sS'aerosol_set_tau'
+p217
+S'Set the aerosol optical thickness for all wavelengths and altitudes to a constant value. The optical thickness defined here is the integral from the user-definded altitude to TOA (top of atmosphere).'
+p218
+sS'mc_vroom'
+p219
+S'Variance Reduction Optimal Options Method.'
+p220
+sS'ECMWF_ic_file'
+p221
+S'Reads in combination with the options latitude, longitude, and time (all mandatory) the pressure, temperature, and cloud ice water content (CIWC) and cloud cover (CC) from an ECMWF netCDF data file.\nNo spatial interpolation of the values is done.\nThe data nearest to the specified time will be selected (or linearly interpolated  if time_interpolate is switched on).\nIn order to use the ECMWF data without cloud overlap assumption, use cloud_overlap off.'
+p222
+sS'mc_photons_file'
+p223
+S'Distribution of photons over wavelength bands; to be used with correlated_k; for an example see data/correlated_k/kato/photons.dat. No error checking yet!\nDo only use if you are absolutely sure what you are doing.\nOnly meaningful with rte_solver montecarlo.'
+p224
+sS'mc_momcld_file'
+p225
+S'Does not exist anymore as 3D cloud properties are now handled with  wc_properties.'
+p226
+sS'wc_set_ssa'
+p227
+S'Set the water cloud single scattering albedo for all wavelengths and altitudes to a float between 0.0 and 1.0. This option is useful only for monochromatic  calculations or in wavelength regions where the optical properties of water clouds  can be considered constant, e.g. the ultraviolet range.'
+p228
+sS'mc_emission'
+p229
+S'Calculate MYSTIC emission of each grid box; may need a considerable amount of memory, depending on the 3D cloud grid. Note that emission is calculated directly without tracing  any photons which makes this option very fast. Increasing mc_photons will therefore  not affect the result. Only meaningful with rte_solver montecarlo and source thermal. \nAn optional argument W_per_m2_and_dz (default), W_per_m3, or K_per_day may  be specified which converts the result e.g. to heating rates. This option is only available  for forward calculations. For backward please use mc_backward_output emis.'
+p230
+sS'transmittance'
+p231
+S'Calculate transmittance / reflectance instead of absolute quantities. \nThat is, set the extraterrestrial irradiance to 1 and do not correct for Sun-Earth distance:T = E / E0 *\n where E is the irradiance / actinic flux and E0 is the extraterrestrial flux.\n\nPlease note the difference to reflectivity.'
+p232
+sS'dens_column'
+p233
+S'Set the total column of a density profile. The column is integrated between the  user-defined altitude and TOA (top of atmosphere). The syntax is\n\ndens_column species column [unit]\n\nwhere species is one of O3, O2, H2O, CO2, NO2, BRO, OCLO, or HCHO, see also dens_file.\nThe second argument is the total column value, and the optional third argument is the unit,  in which the column is given. The unit can be DU (Dobson units) or CM_2 (molecules/cm2).  \nThe default units are DU for O3, and CM_2 for all other gases. It is possible to have several dens_column commands in the input file (maximum one per species). \n\ndens_column NO2 1.2 DU'
+p234
+sS'ic_scale_gg'
+p235
+S'Scale the ice cloud asymmetry factor for all wavelengths and altitudes with a float between 0.0 and 1.0. If you use this option in combination with the ice cloud properties by Fu (1996), please make sure that you understand the explanation of ic_fu_tau.'
+p236
+sS'mc_backward_writeallpixels'
+p237
+S'If set, write all pixels to the output files; otherwise, only those are written  which are actually calculated.'
+p238
+sS'verbose'
+p239
+S'If specified abundances of informative messages are output to stderr. To make use of this information, you may want to write the standard uvspec output to  one file and the diagnostic messages to another. To do so, try (./uvspec < uvspec.inp > uvspec.out) >& verbose.txt (depending on your shell you  might need a slightly different syntax). The irradiances  and radiances will be written to uvspec.out while all  diagnostic messages go into verbose.txt. See also quiet.'
+p240
+sS'output_user'
+p241
+S'User defined output. This option is case sensitive. Here the user may specify the columns  desired for output. Default output is the  wavelength lambda, edir, edn, eup, uavgdir, uavgdn, uavgup  for disort, sdisort, and spsdisort, whereas the default for  twostr is lambda, edir, edn, eup, uavg.\nThe lines containing radiances and the output of rte_solver polradtran are not affected.  lambda\nWavelength in nm.\nwavenumber\nWave number in cm-1.\nsza solar zenith angle zout\nOutput altitude in km.\nedir, eglo, edn, eup, enet, esum\nDirect, global, diffuse downward, and diffuse upward irradiance.\nNet is global - upward, sum is global + upward.  uu\nRadiances:  uu(umu(0),phi(0)) ... uu(umu(0),phi(m)) ... uu(umu(n),phi(0)) ... uu(umu(n),phi(m)) fdir, fglo, fdn, fup, f\nDirect, global, diffuse downward, diffuse upward, and total actinic flux.\nuavgdir, uavgglo, uavgdn, uavgup, uavg\nDirect, global, diffuse downward, diffuse upward, and total diffuse  mean intensity (= actinic flux / 4 pi).\nalbedo\nAlbedo.\nheat\nHeating rate in K/day.\n\n\nIt is also possible to gain some information about the atmosphere and the clouds:\np pressure [hPa], ,\nT, T_d temperature [K], dewpoint temperature [K]\nT_sur surface temperature [K]\ntheta  potential temperature [K]\ntheta_e equivalent potential temperature [K]\nn_xxx number density of the gas xxx [cm-3]\nrho_xxx mass density of the gas xxx [kg/m3]\nmmr_xxx mass mixing ratio of the gas xxx [kg/kg]\nvmr_xxx volume mixing ratio of the gas xxx [m3/m3]\nrh relative humidity over water [percent]\nrh_ice relative humidity over ice   [percent]\nc_p specific heat capacity of the air (humidity and temperature dependent)\nCLWC cloud liquid water content   [kg/kg]\nCLWD cloud liquid water density   [g/m3]\nCIWC cloud ice water content  [kg/kg]\nCIWD cloud ice water density  [g/m3]\nTCC total cloud cover  [0-1]\n\nwhere xxx is one of \nAIR, O3, O2, H2O, CO2, NO2, BRO, OCLO, or HCHO.'
+p242
+sS'aerosol_set_gg'
+p243
+S'Set the aerosol asymmetry parameter for all wavelengths and altitudes to a constant value between -1.0 and 1.0.'
+p244
+sS'satellite_geometry'
+p245
+S'With this option the satellite geometry is determinded. The argument for this option\n\nsatellite_geometry  netCDF_file \n\nis the location of a netCDF_file, which must contain latitude and longitude position as well as zenith and azimuth viewing angle for each pixel.\nFor format specification see the example file data/satellite/MSG_seviri/MSG_seviri_geometry.nc.\nThis option has to be used in combination with satellite_pixel.\nYou can also use the abbreviation satellite_geometry MSG for MSG simulation, but in order to use this, you have to copy the netCDF file\n\ncp -r /data/A3/satellite_geometry/satellites libRadtran/data/\n\nwhich is not in cvs version, as it is to large.'
+p246
+sS'rpv_scale'
+p247
+S'Apply a constant scaling factor for the RPV BRDF. Required e.g. if the the albedo should be set to a certain value. This factor is only used by rte_solver disort2.'
+p248
+sS'brdf_ambrals'
+p249
+S'AMBRALS BRDF; specify iso, vol, and geo. Used by MYSTIC and disort2.'
+p250
+sS'polradtran_quad_type'
+p251
+S'Type of quadrature used: \nG  gaussian\nD double gaussian, \nL\nLobatto\nE (default) extra-angle(s), this must be used of polradtran is used in  combination with umu. Will internally use Gaussian scheme (G). \nSee also radtran documentation.\n\nDefault E. \nThis option is only relevant for rte_solver polradtran.'
+p252
+sS'ic_files'
+p253
+S'A way to specify ice cloud optical depth, single scattering albedo,  and phase function moments for each layer. The file specified by  ic_files has two columns where column 1 is the altitude in km. The second column is the name of a file which defines the optical properties of the level  starting at the given altitude. The files specified in the second column must  have the following format:\nColumn 1: \nThe wavelength in nm. These wavelengths may be different from those in solar_file. \nOptical properties are interpolated to the requested wavelengths.\nColumn 2:\nThe extinction coefficient of the layer in units km-1. \nColumn 3:\nThe single scattering albedo of the layer.\nColumn 4-(nmom+4):\nThe moments of the scattering phase function. \n\nNote that for rte_solver disort2 it makes good sense to make the  number of moments larger than nstr because all moments are used  in the calculation. For rte_solver disort and  rte_solver polradtran the number of moments included in the calculations  will be nstr+1. Higher order moments will be ignored for these solvers.\nPlease note that the uppermost line of the ic_files denotes simply the top altitude of the uppermost layer. The optical properties of this line are consequently ignored. There are two options for this line: either an optical property file with zero optical thickness is specified or "NULL" instead.'
+p254
+sS'ic_cloudcover'
+p255
+S'Set the fraction of the horizontal sky area which is covered by clouds.\nWhen a cloud cover is specified, the result will be calculated by the independent pixel approximation (IPA), that is, as weighted average  of cloudless sky and overcast sky, where the cloud properties are taken  from ic_file, etc. Please note that, if both wc_cloudcover and ic_cloudcover are set, both must be equal.\n\nThis option is ignored, if the option cloud_fraction_file is used.'
+p256
+sS'solar_file'
+p257
+S'Location of file holding the extraterrestrial spectrum.\n\nsolar_file filename [unit]\n\nThe file must contain two columns. Column 1 is the wavelength in nm, and column 2  the corresponding extraterrestrial flux. The user may freely use any units he/she wants on the extraterrestrial flux. The wavelength grid specified defines the wavelength resolution at which results are returned. However,  the wavelength range is determined by wavelength. solar_file may be  omitted for thermal radiation calculations (source thermal) as well as  transmittance and reflectivity calculations. If omitted, the  output resolution equals the internal wavelength grid which the model chooses  for the radiative transfer calculation.\nComments start with #. Empty lines are ignored.\n\nFor some purpuses it is useful to tell libRadtran the units of the spectrum.\nThis can be done with the optional second argument. If unit is set to per_nm libRadtran assumes that the unit of the spectrum is W/(m2 nm), if set to per_cm-1 it assumes W/(m2 cm-1).\nNote that solar_file is ignored if correlated_k is specified.'
+p258
+sS'emissivity_map'
+p259
+S'This option is preliminary and still subject to change (no wavelength dependency yet)!\nSpecify a wavelength independent emissivity with the help of  an netCDF file, which is used in combinition  with the options latitude, longitude, and time.\n\nemissivity_map file [variable_name]\n\nwhere file is the location of the netCDF file. \nWith the optional argument variable_name the name of the emissivity variable in  the netCDF file can be specified. (By default the expected name is EMIS.)\nThe emissivity must be specified as function of latitude and longitude EMIS(lat, lon),  or additionally may also depent on time EMIS(time, lat, lon). \nAll grids must be provided as  double lat(lat), double lon(lon), and double time(time).\nlibRadtran reads the value at the nearest pixel to the given latitude and  longitude. No spatial interpolation or averaging of the values is done.\nIf the variable time is present in the file, the emissivity data nearest to the specified time  will be selected (or interpolated if time_interpolate is switched on).'
+p260
+sS'n2o_mixing_ratio'
+p261
+S'The mixing ratio of N2O in ppm (default: 0.28 ppm).'
+p262
+sS'ic_set_tau'
+p263
+S'Set the total ice cloud optical depth to a constant value for all wavelengths.\nThe optical thickness defined here is the integral from the surface at the  user-defined altitude to TOA (top of atmosphere). This option is useful  only for monochromatic calculations or in wavelength regions  where the optical properties of ice clouds can be considered constant, e.g. the  ultraviolet region. If you use this option in combination with the ice cloud properties by Fu (1996), please make sure that you understand the explanation of ic_fu_tau.'
+p264
+sS'spline'
+p265
+S'Spline interpolate to wavelengths lambda_0 to lambda_1 in steps of lambda_step, in nm. Specified as e.g.\n\nspline 290. 365. 0.5\n\nHere, the calculated spectrum is interpolated to wavelengths 290.0, 290.5, 291.0,  ..., 364.5, 365.0. For interpolation to arbitrary wavelengths use spline_file.\nThe specified wavelength interval must be within the one specified by wavelength.'
+p266
+sS'zout_interpolate'
+p267
+S'The z-grid of optical properties is determined by the atmosphere_file, and, if specified, by other profile files like dens_file, rh_file,  or refractive_index_file. \nAdditional levels might be introduced by the zout  option and the second argument of the altitude option. By default  (if zout_interpolate is not specified) levels introduced  by the zout option will not affect the optical property  profiles, that is, the optical properties are constant within the layers specified by  the atmosphere_file and profile files.\nIf zout_interpolate is specified, the atmospheric profiles (tracegases, temperature ...)  are interpolated to the levels introduced by zout, and optical  properties are determined from the interpolated atmospheric properties.\nIf heating_rate or rte_solver polradtran is specified, zout_interpolate  will also be automatically activated.  zout_interpolate generally causes smoother variation of the optical properties.\n */\n /*  output, uvspec  uvspec, output\nThe uvspec output differs for the different solvers. It may be controlled to  some degree using output_user.\n\n DISORT, SDISORT and SPSDISORT  DISORT, SDISORT and SPSDISORT\nFor the disort, sdisort and spsdisort solvers uvspec outputs one block of data to  standard output (stdout) for each wavelength. The format of the block is\n\n\nlambda edir edn eup uavgdir uavgdn uavgup  if umu is not specified. If umu is specified the format of the block is\n\n\nlambda edir edn eup uavgdir uavgdn uavgup  umu(0) u0u(umu(0))  umu(1) u0u(umu(1))  .  .  .  .  If both umu and phi is specified the output format of each block is\n\n\nlambda edir edn eup uavgdir uavgdn uavgup  phi(0)  ...  phi(m) umu(0) u0u(umu(0))   uu(umu(0),phi(0)) ... uu(umu(0),phi(m)) umu(1) u0u(umu(1))   uu(umu(1),phi(0)) ... uu(umu(1),phi(m))   .  .  .  .\n  .  .  .  .\numu(n) u0u(umu(n))   uu(umu(n),phi(0)) ... uu(umu(n),phi(m))  and so on for each wavelength.\n\n TWOSTR  TWOSTR\nThe format of the output line for the twostr solver is\n\n\nlambda edir edn eup uavg\n\n\nfor each wavelength.\n\n POLRADTRAN  POLRADTRAN\nThe output from the polradtran solver depends on the number of\nStokes parameters, polradtran_nstokes. For each wavelength the  output block is\n\n\nlambda down_flux(1) up_flux(1) ...  down_flux(is) up_flux(is)  if phi is not specified. Here is is the number of Stokes parameters specified by polradtran_nstokes. If  phi and umu are specified the block is\n\n\nlambda down_flux(1) up_flux(1) ...  down_flux(is) up_flux(is)  phi(0)  ...  phi(m)\nStokes vector I umu(0) u0u(umu(0))   uu(umu(0),phi(0)) ... uu(umu(0),phi(m)) umu(1) u0u(umu(1))   uu(umu(1),phi(0)) ... uu(umu(1),phi(m))   .  .  .  .\n  .  .  .  .\numu(n) u0u(umu(n))   uu(umu(n),phi(0)) ... uu(umu(n),phi(m))\nStokes vector Q   .  .  .\t .  .  .\t Note that polradtran outputs the total (=direct+diffuse)  downward flux. Also note that u0u is always zero for polradtran.\n\n Description of symbols  Description of symbols\n\nIn the above output blocks the symbols used have the following meaning.  */\n /*  output, uvspec  uvspec, output\nThe uvspec output differs for the different solvers. It may be controlled to  some degree using output_user.\n\n DISORT, SDISORT and SPSDISORT  DISORT, SDISORT and SPSDISORT\nFor the disort, sdisort and spsdisort solvers uvspec outputs one block of data to  standard output (stdout) for each wavelength. The format of the block is\n\n\nlambda edir edn eup uavgdir uavgdn uavgup  if umu is not specified. If umu is specified the format of the block is\n\n\nlambda edir edn eup uavgdir uavgdn uavgup  umu(0) u0u(umu(0))  umu(1) u0u(umu(1))  .  .  .  .  If both umu and phi is specified the output format of each block is\n\n\nlambda edir edn eup uavgdir uavgdn uavgup  phi(0)  ...  phi(m) umu(0) u0u(umu(0))   uu(umu(0),phi(0)) ... uu(umu(0),phi(m)) umu(1) u0u(umu(1))   uu(umu(1),phi(0)) ... uu(umu(1),phi(m))   .  .  .  .\n  .  .  .  .\numu(n) u0u(umu(n))   uu(umu(n),phi(0)) ... uu(umu(n),phi(m))  and so on for each wavelength.\n\n TWOSTR  TWOSTR\nThe format of the output line for the twostr solver is\n\n\nlambda edir edn eup uavg\n\n\nfor each wavelength.\n\n POLRADTRAN  POLRADTRAN\nThe output from the polradtran solver depends on the number of\nStokes parameters, polradtran_nstokes. For each wavelength the  output block is\n\n\nlambda down_flux(1) up_flux(1) ...  down_flux(is) up_flux(is)  if phi is not specified. Here is is the number of Stokes parameters specified by polradtran_nstokes. If  phi and umu are specified the block is\n\n\nlambda down_flux(1) up_flux(1) ...  down_flux(is) up_flux(is)  phi(0)  ...  phi(m)\nStokes vector I umu(0) u0u(umu(0))   uu(umu(0),phi(0)) ... uu(umu(0),phi(m)) umu(1) u0u(umu(1))   uu(umu(1),phi(0)) ... uu(umu(1),phi(m))   .  .  .  .\n  .  .  .  .\numu(n) u0u(umu(n))   uu(umu(n),phi(0)) ... uu(umu(n),phi(m))\nStokes vector Q   .  .  .\t .  .  .\t Note that polradtran outputs the total (=direct+diffuse)  downward flux. Also note that u0u is always zero for polradtran.\n\n Description of symbols  Description of symbols\n\nIn the above output blocks the symbols used have the following meaning. \n\ncmu \nComputational polar angles from polradtran.\ndown_flux, up_flux\nThe total (direct+diffuse) downward (down_flux) and upward (up_flux) irradiances.\nSame units as extraterrestrial irradiance.\nlambda\nWavelength (nm) edir\nDirect beam irradiance (same unit as extraterrestrial irradiance, e.g mW/(m2 nm) if  using the atlas3 spectrum in the data/solar_flux directory.) edn\nDiffuse down irradiance, i.e. total minus direct beam (same unit as edir).\neup\nDiffuse up irradiance (same unit as edir).\nuavg\nThe mean intensity. Proportional to the actinic flux: To obtain the actinic flux,  multiply the mean intensity by 4 pi (same unit as edir).\nuavgdir\nDirect beam contribution to the mean intensity. (same unit as edir).\nuavgdn\nDiffuse downward radiation contribution to the mean intensity. (same unit as edir).\nuavgup\nDiffuse upward radiation contribution to the mean intensity. (same unit as edir).\nu0u\nThe azimuthally averaged intensity at numu user specified  angles umu. (units of e.g. mW/(m2 nm sr) if using the atlas3 spectrum  in the data/solar_flux directory.)   uu\nThe radiance (intensity) at umu and phi user specified  angles (unit e.g. mW/(m2 nm sr) if using the atlas3 spectrum  in the data/solar_flux directory.)   uu_down, uu_up\nThe downwelling and upwelling radiances (intensity) at cmu and  phi angles (unit e.g. mW/(m2 nm sr) if using the atlas3 spectrum  in the data/solar_flux directory.)The total downward irradiance is given by\n\n\nirr_down = edir + edn  The total mean intensity is given by\n\n\nuavg = uavgdir + uavgdn + uavgup  If deltam is on it does not make sense to look at the individual  contributions to uavg since they are delta-M scaled.'
+p268
+sS'mc_elevation_file'
+p269
+S'Define a MYSTIC 2D elevation input file (default: elevation2D.dat). The  expected format of the elevation file is:\n\nNx  Ny  dx  dy ix  iy  elevation\n\nwhere Nx and Ny are the number of grid boxes in x- and y-direction, dx and dy are the size of the grid boxes in km.\nIn the second and the following lines the indices in x- and y-direction and the elevation in km at this point are specified.\n\nAttention: While the other files refer to grid boxes, the elevation is defined at grid points. It has to be this  way because each "elevation pixel" contains a surface  which is defined by the four cornes of the pixel. If the grid covers an area of 200x200 km^2 and the pixel sizes  are dx = 1km and dy = 1km, the elevation has to be defined  at 201x201 points (ix = 1 .. Nx, iy = 1 .. Ny).'
+p270
+sS'cox_and_munk_sal_map'
+p271
+S'Specify ocean salinity (in ppt) for the Cox and Munk  ocean BRDF with the help of an netCDF file, which is used in combinition  with the options latitude, longitude, and time.\n\ncox_and_munk_pcl_map file [variable_name]\n\nwhere file is the location of the netCDF file.  libRadtran reads the value at the nearest pixel to the given latitude and  longitude. No spatial interpolation or averaging of the values is done.\n\nThe expected name of the pigment concentration variable is per default salinity, but can be changed with the optional argument variable_name.\nThe pigment concentration must be provided as function of latitude and longitude, salinity(lat, lon),  or additionally may also depent on time salinity(time, lat, lon). \nIf a time-dependent salinity is specified, the salinity will be interpolated  according to the option time_interpolate. All grids must be provided as  double lat(lat), double lon(lon), and double time(time).'
+p272
+sS'wc_level'
+p273
+S'Interpret cloud properties as level properties (this was the default behaviour before version 1.4; see also  wc_file). If wc_level is defined, a wc_file would be interpreted as follows:\n\n#  z  LWC  R_eff\n#  (km)  (g/m^3) (um)  5.000   0  0  4.000   0.2  12.0  3.000   0.1  10.0  2.000   0.1  8.0 \n\nThe value 0.2 g/m3 refers to altitude 4.0km, as e.g. in  a radiosonde profile. The properties of each layer are calculated as average over the adjacent levels. E.g. the single scattering properties for the model layer between 3 and 4km are obtained by averaging over the two levels 3km and 4km. To allow easy definition of sharp cloud boundaries, clouds are only formed if both liquid water contents above and below the respective layer are larger than\n0. Hence, in the above example, the layers between 2 and 3 as well as between 3 and 4km are cloudy while those between 1 and 2km and between\n4 and 5km are not.'
+p274
+sS'ic_scale_ssa'
+p275
+S'Scale the ice cloud single scattering albedo for all wavelengths and altitudes with a float between 0.0 and 1.0. If you use this option in combination with the ice cloud properties by Fu (1996), please make sure that you understand the explanation of ic_fu_tau.'
+p276
+sS'wc_properties'
+p277
+S"Define how liquid water content and effective droplet radius are translated  to optical properties. Possible choices are hu \nParameterization by Hu and Stamnes (1993);  this is the default setting. Note that  the parameterization is somewhat different for 'correlated_k FU' than for all other  cases because in the latter case the parameterization from the newer (March 2000) \nFu and Liou code is used while otherwise the data are taken from the original \nHu and Stamnes paper. Note that this parameterization has been developed to calculate irradiances, hence it is less suitable for radiances.\nThis is due to the use of the Henyey-Greenstein phase function as an approximation of the real Mie phase function.\necham4\nUse the very simple two-band parameterization of the ECHAM4 climate model, described  in Roeckner et al. (1996); this is probably only meaningful if you want to compare your results with ECHAM4, the two bands are 0.2 - 0.68 micrometer and 0.68 - 4.0 micrometer; within these bands, the optical properties are assumed constant.\nmie\nUse pre-calculated Mie tables; useful for correlated_k;  the tables are expected in data_files_path/correlated_k/../ *\nFor spectral or pseudo-spectral (correlated_k sbdart) calculations,  a set of pre-calculated tables is also available; the wavelength grid points of these  data has been carefully selected such that the extinction cross section,  single scattering albedo, and the asymmetry parameter are accurate to 1%  (compared to the fully-resolved Mie calculation) for all wavelengths between 250nm and 100 micrometer. For spectral or pseudo-spectral calculations wc_properties_interpolate has to be defined explicitely to initiate the interpolation of the optical properties to the internal wavelength grid.\nPlease note that this option may be extremely memory-consuming because for each  internal wavelength a full set of Legendre moments of the phase function is  stored (up to several thousands). The Mie tables are not part of the standard distribution  (because of their large size) but they are freely available from http://www.libradtran.org. \nThis is the correct option to calculate radiances, to be preferred over the \nHenyey-Greenstein approach of Hu and Stamnes (1993).\nfilename\nRead optical properties from specified filename; file format is as produced  by the mie-tool of the libRadtran-tool box (see output_user cloudprp)  or by Frank Evans' cloudprp; for each of the internal (computational) wavelengths,  a separate file is expected. Use only if you really know what you are doing (this option is subject to change)."
+p278
+sS'polradtran_src_code'
+p279
+S'Radiation sources included:\n0 none\n1 solar\n2 thermal\n3 both\n\nDefault 1.\nThis option is only relevant for rte_solver polradtran.'
+p280
+sS'h2o_mixing_ratio'
+p281
+S'The mixing ratio of H2O in ppm. Scale the profile so that the mixing  ratio at the user-define altitude assumes the specified value.'
+p282
+sS'altitude'
+p283
+S"Set the bottom level in the model atmosphere provided in  atmosphere_file to be at the given altitude above sea level (km).\n\naltitude 0.73   # Altitude of IFU, Garmisch-Partenkirchen  # Be aware, for this to work the atmosphere  # file must start at 0 km.\n\nThe profiles of pressure, temperature, molecular absorbers,  ice and water clouds are cut at the specified altitude. \nThe aerosol profile is not affected by altitude but starts right from the model surface. This is a convenient way for the user to calculate the  radiation at other altitudes than sealevel. Note that altitude is very different from zout where the radiation is calculated at an altitude of zout above the surface. E.g. to calculate the radiation field 1 km above the surface  at a location at 0.73 km above sealevel, one would specify 'altitude 0.73'  and 'zout 1.0'.\nIf an altitude is specified which is below the lowest level in the  atmosphere_file, the atmospheric profiles are extrapolated assuming a constant  gradient for temperature and mixing ratios.\nA second optional argument may be given to altitude as e.g.\n\naltitude 0.73 0.5\n\nHere the bottom level will be at 0.73 km and the vertical resolution of the model atmosphere will be redistributed to have a spacing between levels specified by the second number, here 0.5 km. (Levels 0.73, 1.23, 1.73 ... will be added to the original atmosphere grid and optical properties  are devided into the new layers. In order to use interpolated properties use zout_interpolate.\nSee verbose output for details.) \nBe aware that specifying a fine vertical spacing will produce many layers thus increasing the  computing time. Also the radiative transfer equation solvers implemented in Fortran 77 might need to have some array sizes increased (see src_f/DISORT.MXD)."
+p284
+sS'mc_albedo_file'
+p285
+S'Define a MYSTIC 2D albedo input file (default: albedo2D.dat).\nThe expected format of the elevation file is:\n\nNx  Ny  dx  dy ix  iy  albedo\n\nwhere Nx and Ny are the number of grid boxes in x- and y-direction, dx and dy are the size of the pixel in km.\nIn the second and the following lines the indices in x- and y-direction and the albedo of the pixel are specified.'
+p286
+sS'nrefrac'
+p287
+S'For the rte_solver sdisort refraction may be included by specifying  nrefrac. If refraction is included also set parameter  refraction_file.\n0\nNo refraction, default.\n1\nRefraction included using fast, but harsh method.\n2\nRefraction included using slow, but accurate method.'
+p288
+sS'reflectivity'
+p289
+S'Calculate transmission / reflectivity instead of absolute quantities. \nFor irradiances / actinic fluxes the transmission T is defined asT = E / (E0 cos(theta)) *\n where E is the irradiance / actinic flux, E0 is the extraterrestrial flux,  and theta is the solar zenith angle.\n\nThe reflectivity R is defined asR = pi L / (E0 cos(theta)) *\n where L is the radiance, E0 is the extraterrestrial flux,  and theta is the solar zenith angle.\n\nObviously, reflectivities do not depend on Sun-Earth distance. Please  note the difference to transmittance.'
+p290
+sS'ozone_column'
+p291
+S'Obsolete, use dens_column instead.\nSet the ozone column to a given value. The column is integrated between the  user-defined altitude and TOA (top of atmosphere). The value must be in \nDobson units. If value is negative or ozone_column is not specified, the ozone column is not scaled.'
+p292
+sS'zout_sea'
+p293
+S'like zout, but above sea surface'
+p294
+sS'aerosol_scale_ssa'
+p295
+S'Scale the aerosol single scattering albedo for all wavelengths and altitudes with a positive number. If the resulting scaled single scattering albedo is larger than 1 it is set to 1.'
+p296
+sS'mc_lidar_abserr'
+p297
+S'Set the absolute error that the local estimator has to reach for the total result and for each time bin. If the local estimator fulfills this constraint before all photons have been simulated, the run is stopped prematurely and results are put out. The absolute error has to be given in terms of attenuated backscatter coefficient.'
+p298
+sS'ECHAM_atmosphere_file'
+p299
+S'Undocumented option.'
+p300
+sS'aerosol_scale_tau'
+p301
+S'Scale the aerosol extinction for all wavelengths and altitudes with a positive number.'
+p302
+sS'ECMWF_ozone_climatology'
+p303
+S'The Intergrated Forecast System (IFS) of the ECMWF uses a ozone climatology for radiative  transfer instead of the ozone simulated by the IFS. If this option is activated the ozone profile of the  atmosphere_file or ECMWF_atmosphere_file is replaced by the ozone climatology.\n(If there is also a dens_file for ozone, it modifies the ozone climatology profile.)'
+p304
+sS'cloud_fraction_file'
+p305
+S'File containing a cloud fraction profile. Two columns are expected:\naltitude [km] and cloud fraction, including ice and water clouds. If cloud_fraction_file is defined, effective cloud properties are calculated assuming either random overlap or maximum random overlap of the cloud layers (see also cloud_overlap).'
+p306
+sS'time_interval'
+p307
+S'This option can be used in order to calculate an effective solar zenith angle  for a time interval, instead of a distinct point in time. \nThe cosine of the solar zenith angle is here replaced by its time average. \nThe azimuth of the sun is replaced by an anverage of the azimuth position weighted  with the cosine of the solar zenith angle.\n\ntime_interval dtime_start dtime_end [unit]\ntime_interval  -180  180  min\n\nthe time interval reaches from time + dtime_start to  time + dtime_end, in the example from 180 minutes before time to 180 minutes after time. The unit argument is optional, and can be one of the  following: s (seconds), min (minutes), or h (hour). The default is s.\nThis option makes only an effect in combination with time, latitude, longitude,  and only an effect for solar simulations (and of cause if no sza defined).'
+p308
+sS'wc_files'
+p309
+S'A way to specify cloud extinction coefficient, single scattering albedo,  and scattering phase function for each layer. The file specified by  wc_files has two columns where column 1 is the altitude in km. The second column is the name of a file which defines the optical properties of the layer  starting at the given altitude. The files specified in the second column must  have the following format:\nColumn 1: \nThe wavelength in nm. These wavelengths may be different from those in solar_file. \nOptical properties are interpolated to the requested wavelengths.\nColumn 2:\nThe extinction coefficient of the layer in units km-1. \nColumn 3:\nThe single scattering albedo of the layer.\nColumn 4-(nmom+4):\nThe moments of the scattering phase function. \n\nNote that if using the rte_solver disort2 it makes good sense to make the  number of moments larger than nstr. For rte_solver disort and  rte_solver polradtran the number of moments included in the calculations  will be nstr+1. Higher order moments will be ignored for these solvers.\nPlease note that the uppermost line of wc_files denotes simply the top altitude of the uppermost layer. The optical properties of this line are consequently ignored. There are two options for this line: either an optical property file with zero optical thickness is specified or "NULL" instead.'
+p310
+sS'cox_and_munk_pcl_map'
+p311
+S'A possibility to specify pigment concentration (in mg/m3) for the Cox and Munk  ocean BRDF with the help of an netCDF file, which is used in combinition  with options latitude, longitude, and time.\n\ncox_and_munk_pcl_map file [variable_name]\n\nwhere file is the location of the netCDF file.  libRadtran reads the value at the nearest pixel to the given latitude and  longitude. No spatial interpolation or averaging of the values is done.\n\nThe default name of the pigment concentration variable is chlorophyll, but can be changed with the optional argument variable_name.\nThe pigment concentration must be provided as function of latitude and longitude, chlorophyll(lat, lon),  or additionally may also depend on time chlorophyll(time, lat, lon). \nIf a time-dependent pigment concentration is specified, the pigment concentration will be interpolated  according to the option time_interpolate. All grids must be provided  in the file as double lat(lat), double lon(lon), and double time(time).'
+p312
+sS'aerosol_refrac_index'
+p313
+S'Wavelength-independent refractive index of the aerosol; if wavelength-dependence  is required, use aerosol_refrac_file instead. Together with  aerosol_sizedist_file this forms the input to Mie calculations of the  aerosol optical properties. Please see the description of aerosol_refrac_file to learn how the optical properties are set up.\nIt is recommended to avoid this option and rather to calculate the aerosol optical  properties externally e.g. with mie and to pass them to uvspec with  aerosol_files.'
+p314
+sS'aerosol_vulcan'
+p315
+S'Aerosol situation above 2 km. Integer.\n1\nBackground aerosols.\n2\nModerate vulcanic aerosols.\n3\nHigh vulcanic aerosols.\n4\nExtreme vulcanic aerosols.'
+p316
+sS'output_format'
+p317
+S'Specification of the output format.\n\noutput_format format\n\nwhere format is either ascii (default) or flexstor.\nThere is also the possibility to write uvspec simulation results to an existing netCDF file \n\noutput_format format output_file\n\nwhere format is netCDF if the output_file contains a lat/lon/time grid  or sat_picture if the output_file contains a pixel_x/pixel_y/time grid.'
+p318
+sS'aerosol_species_library'
+p319
+S'With this option the directory is specified where the optical property files for all aerosols species used in the aerosol_species_file are expected: For each species defined in aerosol_species_file, netCDF-file species_name.nc, (e.g. INSO.nc), which contains the optical properties of the aerosol species, has to be provided. The netcdf format is the one produced by  the libRadtran mie tool.\n\nAt the libRadtran webpage we provide the OPAC data set (Hess et al. 1998) which can be directly used with uvspec: \n\naerosol_species_library OPAC\n\nOPAC contains following aerosol species: \n\nINSO  # insoluble\nWASO  # water_soluble\nSOOT  # soot\nSSAM  # sea_salt_accumulation_mode\nSSCM  # sea_salt_coarse_mode\nMINM  # mineral_nucleation_mode\nMIAM  # mineral_accumulation_mode\nMICM  # mineral_coarse_mode\nMITR  # mineral_transported\nSUSO  # sulfate_droplets'
+p320
+sS'rayleigh_tau_file'
+p321
+S'Location of Rayleigh scattering optical depth file. Usually, the Rayleigh scattering cross section is calculated from the air pressure provided in atmosphere_file (scaled with pressure). Use this option only if you really want to specify the optical depth directly (e.g. for a model intercomparison). The optical thickness profile may be either monochromatic or spectral. \nThe format is exactly the same as for molecular_tau_file.'
+p322
+sS'mc_visualize'
+p323
+S'Switch on OpenGL visualization for MYSTIC.'
+p324
+sS'molecular_tau_file'
+p325
+S'Location of molecular absorption optical depth file. Usually, molecular absorption is calculated from trace gas concentrations provided in atmosphere_file (scaled with ozone_column, etc. Use this option only if you want to specify the optical depth directly (e.g. for a model intercomparison) or for a line-by-line calculation. If a spectral molecular_tau_file is specified, the wavelength  grid defined there is used as internal wavelength grid for the radiative transfer calculation, if not defined otherwise with transmittance_wl_file.\nmolecular_tau_file can be either of the following three formats:\nMonochromatic:\nColumn 1 is the altitude in km where the altitude grid must be exactly equal  to the altitude grid specified in atmosphere_file. \nColumn 2 is the absorption optical depth of each layer.\nSpectral, ASCII:\nThe first line contains the level altitudes in decreasing order; the following lines  contain the wavelength [nm] in the first column and then the absorption optical depths of each layer. \nSpectral, netcdf:\nnetcdf is a common platform independent format; the description, a library to read and  write netcdf including some tools to generate netcdf is available at  http://www.unidata.ucar.edu/packages/netcdf/. A molecular_tau_file must obey  certain rules; an example is available at the libRadtran homepage, \nUVSPEC.O2A.afglms.cdf, a line-by-line spectrum of the oxygen A-Band  around 760nm, calculated for the mid-latitude summer  atmosphere by Anderson et al. (1986). The advantage of netcdf compared to ASCII is that it is much faster to read, and that the file  is a self-contained, including data and a description of the variables and arrays.\nIt is therefore particularly useful for line-by-line calculations where usually  many spectral data points are involved.\n\nComments start with #. Empty lines are ignored.'
+p326
+sS'rpv_library'
+p327
+S'The rpv libraries are collections of spectral BRDFs of different surface types, \nThis option must be used either with surface_type  or surface_type_map, in order to select the specific surface type.\n\nFor using a rpv_library write \n\nrpv_library library_path \n\nwhere library_path is the path of the directory, where the BRDF data is stored. The files are  expected to have the names IGBP.01.rpv, IGBP.02.rpv, ... If surface_type 1 is specified the BRDF from IGBP.01.rpv will be used, and so on.\nEach file must have the structure like an brdf_rpv_file.\n(This option is quite the same as brdf_rpv_file, except that it offers you an easy way to use the option surface_type_map in combinition with your brdf_rpv_files.)\n\n\nFor our group there is also a built-in library for IGBP surface types.\n\nrpv_library IGBP\n\nThe built-in library contains the first 17 surface types see albedo_library.\nThe data is given for the wavelength 443nm, 565nm, 670nm, and 865nm. Stay near this wavelength in order to get reasonable results. In future this the rpv-library will be\nNDVI dependent, but until now the most common NDVI class is selected automatically.'
+p328
+sS'aerosol_refrac_file'
+p329
+S'File containing the wavelength-dependent refractive index of the aerosol. Three columns are expected: wavelength [nm] and the  real and imaginary parts of the refractive index.\nTogether with aerosol_sizedist_file this forms the  input to Mie calculations of the aerosol optical properties. Please note that  only the single-scattering albedo, the scattering phase function, and the wavelength-dependence of the extinction coefficient are affected by the Mie calculation  while the absolute value of the extinction coefficient is taken from other sources; generally, the extinction coefficient at the first internal wavelength is taken from whatever is available (either default Shettle (1989) or user-defined); the extinction at all other wavelengths is scaled according to the Mie calculation. \nFor this reason, the absolute numbers are not relevant - only the shape of the  size distribution matters. In detail:\nIf the aerosol properties are defined using the refractive index and the  size distribution, the wavelength dependence of the optical properties is  determined by Mie theory. At present there are at least three ways to define the  absolute value of the optical thickness: (1) visibility defines the  profile at the first internal wavelength; for a monochromatic calculation and in correlated-k mode, the first internal wavelength equals the  first wavelength output by uvspec; for spectral calculations, the  first wavelength might be a little bit smaller than the first wavelength  output by uvspec; (2) aerosol_tau_file defines the optical  thickness profile at the first internal wavelength; or (3) absolute optical thickness and wavelength-dependence are defined by aerosol_angstrom.\nIt is recommended to avoid this option and rather to calculate the aerosol optical  properties externally e.g. with mie and to pass them to uvspec with  aerosol_files.'
+p330
+sS'cloud_overlap'
+p331
+S'Cloud overlap assumption. Following options are implemented:\n\nrand  Random overlap of cloud layers maxrand  Maximum random overlap scheme max  Maximum overlap scheme off  Turn off cloud overlap for ECMWF clouds \nPer default the cloud_overlap schema is switched off.'
+p332
+sS'mc_pcld_file'
+p333
+S'Cloud phase function file for MYSTIC.\nOnly meaningful with rte_solver montecarlo.\nThis is an experimental option.'
+p334
+sS'z_interpolate'
+p335
+S'The profile in the atmosphere_file provides the constituents of the atmosphere  at the given levels. Where additional levels are introduced and in order to calculate layer properties, an assumption about the variation of the property within the layer is required. These interpolation methods can be  changed by the z_interpolate option. Two arguments are required, the  property, and the interpolation method:\n\nz_interpolate property interpolation_method\n\nProperties which may be specified are:\nO3, O2, H2O, CO2, NO2, BRO, OCLO, HCHO\nT temperature (here linmix is not suitable)\n\nPossible interpolation methods are:\nlinear\nThe specified property (number density of the gas or temperature) varies linearly with height.\nlog\nThe specified property (number density of the gas or temperature) vaires logarithmically with hight.\nThis is a reasonable option for all well mixed trace gases.\nlinmix \nThis option is only possible for gas profiles.\nThe mixing ratio of the gas (assuming a logarithmically varying  air density) varies linearly with hight.\n\nFor all gas densities the default interpolation method is linmix, for temperature it is linear.'
+p336
+sS'f11_mixing_ratio'
+p337
+S'The mixing ratio of F11 in ppm (default: 0.000268 ppm).'
+p338
+sS'time_interpolate'
+p339
+S'If a map option is used in combination with time, the data, which is nearest to the  specified time is used for the simulation. This means time_interpolate is switched  off per default.\n\nIf this option is switched on, the data fields stored in the netCDF files are interpolated  to the specified time. (Be aware, that this might cause strange effects for data field  of moving properties. E.g. an interpoated cloud fields might have double horizontal extend,  but only half optical depth.)'
+p340
+sS'mc_readrandomseed'
+p341
+S'Read from file the random seed (positive integer) for the random number generator. \nUsually a random seed is determined from current time plus process id. \nThis option is useful to re-run a simulation for debugging.'
+p342
+sS'ic_properties_interpolate'
+p343
+S'Interpolate ice cloud optical properties over wavelength; useful for precalculated  optical property files defined with ic_properties. Please note that this option  may be extremely memory-consuming because for each internal wavelength a full set of \nLegendre moments of the phase function is stored (up to several thousands).'
+p344
+sS'refractive_index_file'
+p345
+S'Undocumented option to read a refractive index profile. Actually not the refractive index profile  but refractive index - 1 mut be provided for better accuracy. The file must have two columns:  altitude [km]   refractive_index-1'
+p346
+sS'nstr'
+p347
+S'Number of streams used to solve the radiative transfer equation.\nDefault is 6 for fluxes and 16 for radiances.\n(For rte_solver disort and disort2 only even nstr are possible.)'
+p348
+sS'rpv_theta'
+p349
+S'Constant RPV theta, see brdf_rpv_file. rpv_theta overwrites the wavelength-dependent value defined in brdf_rpv_file.'
+p350
+sS'longitude'
+p351
+S'This option can be used to specify the longitude of the location to simulate.\n(This option only has an effects, if latitude is specified, too.)\n\nlongitude deg [min] [sec]\n\nwhere deg min sec is the position in degrees, arc minutes, and arc seconds east.\ndeg might also be a float number. min and sec can also be obmitted.\nThe longitude information will be used for a couple of things: \n\nlongitude in combination with latitude, time, and any map-option is used to select the location where to read the input data.\n\nlongitude in combination with latitude and time is used to calculate  the solar zenith angle, if no sza is specified (see also time_interval).\n\nlongitude in combination with latitude and time is used to choose a suitable default atmosphere file, if no atmosphere_file is specified.'
+p352
+sS'mc_temperature_file'
+p353
+S'Define a MYSTIC 2D temperature input file.\nThe expected format of the temperature file is:\n\nNx  Ny  dx  dy ix  iy  temperature\n\nwhere Nx and Ny are the number of grid boxes in x- and y-direction, dx and dy are the size of the grid boxes in km.\nIn the second and the following lines the indices in x- and y-direction and the temperature of the pixel are specified.'
+p354
+sS'mc_heating'
+p355
+S'Calculate MYSTIC heating rates for each grid box; may need a considerable amount of memory, depending on the 3D cloud grid. Only meaningful with rte_solver montecarlo. mc_heating is identical to mc_absorption for source solar. For source thermal, however,  the emission of a photon in a grid box is counted as cooling. \nAn optional argument W_per_m2_and_dz (default), W_per_m3, or K_per_day may  be specified which converts the result e.g. to heating rates. This option is only available  for forward calculations. For backward please use mc_backward_output heat.'
+p356
+sS'h2o_precip'
+p357
+S'Precipitable water in kg / m2 (which is approximately 1mm). \nThe water vapor profile is scaled accordingly. The precipitable water  is integrated from the user-defined altitude to TOA (top of atmosphere).'
+p358
+sS'dens_file'
+p359
+S'Specify density profiles (or matrix, see below) of various traces gases to be included in the radiative  transfer calculation. The entry of the input file looks like this:\n\ndens_file gas_species [unit] filename\n\nAt the moment following gas_species are included: ozone (O3), nitrogen dioxide (NO2), water vapor (H2O), bromine oxide (BRO), chlorine dioxide (OCLO), formaldehyde (HCHO), and carbon dioxide (CO2). The gas species is identified  by their abbrevations given in the parenthesis above.\nUnit is an optional argument to define the unit of the density. The profiles can be given in particles per cm3 (cm-3), in particles per m3 (m-3), as volume mixing ratio (vmr), as mass mixing  ratio (mmr), or as relative humidity (only for water). The default for unit is cm-3.\nThe model expects a density file with two columns:\n1. z(km)\nAltitude above sea level in km.\n2. density of trace gas [in the specified unit]\nThe density of the trace gase\n\nThe altitude grid may be different from the atmosphere file. All densities inside the range  of the dens_file are replaced. For all other altitudes the values from the atmosphere_file are used. If the density is specified as -1 at a level, the value from atmosphere_file is used.\n\nTo scale the profile to a total column value use dens_column.\n\nFor airmass factor calculations it is for some species necessary to account for the  variation of the profile with sza. This may be accomplished by specifying a dens_file  in the following format:\n\n0.0  SZA1  SZA2 ...\nz(1)  dens(1,1)  ...\nz(2)  .  .\n .  .  .\n\nwhere z(i) are the altitude levels above sea level in km, SZA is the solar zenith  angle in degrees, and dens is the density [in the specified unit] of the trace gases as  function of solar zenith angle and altitude. \nThe matrix may only be specified for one specie. It may however be combined with profiles of other species. For examples see the examples directory.\nA density matrix can only be used in connection with rte_solver sdisort!'
+p360
+sS'time'
+p361
+S'Specifies the time to simulate.\n\ntime YYYY MM DD hh mm ss\n\nwhere YYYY is the year, MM the month, DD the day,  hh the hour, mm the minute, ss the second in UTC.\nThe time information will be used for a couple of things: \n\ntime in combination with latitude, longitude, and any map-option is used to select the location where to read the input data.\n\ntime is used to correct extraterrestrial  irradiance for the Sun-Earth distance with the day of year. If not given,  the Earth-Sun distance is 1 AU (i.e. equinox distance).\n\ntime in combination with latitude and longitude is used to calculate  the solar zenith angle if no sza is specified.\n\ntime in combination with latitude and longitude is used to choose a suitable default atmosphere file, if no atmosphere_file is specified.\n\n\ntime in combination with an ECMWF_atmosphere_file is used to choose a date in the ECMWF input file.'
+p362
+sS'aerosol_ssa_file'
+p363
+S'Location of aerosol single scattering albedo file. The file must have two columns.\nColumn 1 is the altitude in km. The altitude grid must be exactly equal to  the altitude grid specified in the file atmosphere_file.\nColumn 2 is the single scattering albedo of each layer. \nThe single scattering albedo defined with this option is constant with wavelength. If you require spectral dependence please use aerosol_files.\nComments start with #. Empty lines are ignored.'
+p364
+sS'flexstor'
+p365
+S'Provide output in flexstor format. Must not be combined with header.\nAlso, does not currently work when umu and/or phi is specified.'
+p366
+sS'ic_layer'
+p367
+S'Interpret ice cloud properties as layer properties (this is the default behaviour since version 1.4; see also  ic_file). Cloud properties are assumed to be constant within each layer. The layer reaches from the  level where the properties are defined in the ic_file to the level above.\nFor example, the following lines\n\n#  z  IWC  R_eff\n#  (km)  (g/m^3) (um)  4.000   0.0   0.0  3.000   1.0  10.0\n\ndefine a cloud in the layer between 3 and 4 km with sharp boundaries.'
+p368
+sS'aerosol_sizedist_file'
+p369
+S'Aerosol size distribution. Two columns are expected: The radius\n[micrometer] and the particle number. Together with aerosol_refrac_index or aerosol_refrac_file this forms the input to Mie calculations of the  aerosol optical properties. Please note that  only the single-scattering albedo, the scattering phase function, and the wavelength-dependence of the extinction coefficient are affected by the Mie calculation  while the absolute value of the extinction coefficient is taken from other sources; generally, the extinction coefficient at the first internal wavelength is taken from whatever is available (either default Shettle (1989) or user-defined); the extinction at all other wavelengths is scaled according to the Mie calculation. \nFor this reason, the absolute numbers are not relevant - only the shape of the  size distribution matters. For details see also the description of aerosol_refrac_file.\nIt is recommended to avoid this option and rather to calculate the aerosol optical  properties externally e.g. with mie and to pass them to uvspec with  aerosol_files.'
+p370
+sS'cox_and_munk_uphi'
+p371
+S'Wind direction for Cox and Munk ocean BRDF. Default value is 0 degrees, which is wind from the South. 90 degrees corresponds to wind from the West, etc. (Honestly, this was never truly validated. It could possibly be that 0 is wind from the North, 90 is wind from the East, etc.)'
+p372
+sS'mc_basename'
+p373
+S'Filename for MYSTIC 3D output (default: mc).'
+p374
+sS'mc_backward'
+p375
+S'Backward tracing of photons. mc_backward takes either zero, two or four coordinates:\n mc_backward [ix_start iy_start] [ix_end iy_end]\n\nwhere ix_start, iy_start is the index of the sample pixel to be calculated or the pixel area from ix_start to ix_end and iy_start to iy_end.\nAll x-indices must be in the range of 0 ... (Nx-1) and y-indices the range of 0 ... (Ny-1).\nIf no coordinates are specified, all sample pixels will be calculated.\nmc_backward computes radiances and downward diffuse irradiances. If  a different quantity is required, please use mc_backward_output.'
+p376
+sS'mc_bcond'
+p377
+S'Undocumented option to define MYSTIC boundary conditions: periodic (default), absorbing, mirror (not really supported).'
+p378
+sS'cox_and_munk_solar_wind'
+p379
+S'Use old definition of wind direction for Monte Carlo simulations. If this switch is set, the wind azimuth is identical to the incoming photon azimuth. Else, the wind azimuth is set by cox_and_munk_uphi or is 0. by default.'
+p380
+sS'data_files_path'
+p381
+S'The path to the directory where all uvspec internal data files live, e.g.\nthe files that are in the subdirectories of the data directory that comes with the uvspec distribution. The default is ../data/.'
+p382
+sS'ic_level'
+p383
+S'Interpret cloud properties as level properties (this was the default behaviour before version 1.4; see also  ic_file). If ic_level is defined, a ic_file would be interpreted as follows:\n\n#  z  IWC  R_eff\n#  (km)  (g/m^3) (um)  5.000   0  0  4.000   0.2  12.0  3.000   0.1  10.0  2.000   0.1  8.0 \n\nThe value 0.2 g/m3 refers to altitude 4.0km, as e.g. in  a radiosonde profile. The properties of each layer are calculated as average over the adjacent levels. E.g. the single scattering properties for the model layer between 3 and 4km are obtained by averaging over the two levels 3km and 4km. To allow easy definition of sharp cloud boundaries, clouds are only formed if both liquid water contents above and below the respective layer are larger than\n0. Hence, in the above example, the layers between 2 and 3 as well as between 3 and 4km are cloudy while those between 1 and 2km and between\n4 and 5km are not.'
+p384
+sS'mc_backward_writeback'
+p385
+S'If set, the distribution of photons contributing to the result is written  to a file with extension .bac'
+p386
+sS'wc_no_scattering'
+p387
+S'Switch off scattering by water clouds.'
+p388
+sS'correlated_k'
+p389
+S'To calculate integrated shortwave or longwave irradiance, or to simulate  satellite instrument channels, choose between the following  correlated-k schemes:\nKato \nKato et al. (1999), shortwave; based on HITRAN 96. Please note that the  bands above 2.5 micrometer are not very reliable which, however, has only little impact on integrated shortwave radiation.\nKato2\nKato et al. (1999), shortwave; optimized version (Seiji Kato, personal communication, 2003); please note that Kato2 only has 148 subbands (that is, calls to the rte_solver)  compared to 575 for Kato which translates to an increase in computational speed by  up to a factor of 4 with only little increase in uncertainty. The absorption data are based on HITRAN 2000. Please note that the bands above 2.5 micrometer are not very reliable which,  however, has only little impact on integrated shortwave radiation.\nKato2.96\nKato et al. (1999), shortwave; optimized version (Seiji Kato, personal communication, 2003); similar to Kato2 but based on HITRAN96. Please note that the bands above 2.5 micrometer  are not very reliable which, however, has only little impact on integrated shortwave radiation.\nFu\nFu and Liou (1992/93), shortwave and longwave; fast parameterization, developed for climate models.\nAVHRR_KRATZ\nKratz (1995), AVHRR instrument channels\nLOWTRAN\nGas absorption parameterization from LOWTRAN; code adopted from SBDART (Ricchiazzi et al., 1998);  please see the section on "Spectral resolution".\nSBDART\nIdentical to LOWTRAN.\n\nIf correlated_k KATO/KATO2/KATO2.96/FU/AVHRR_KRATZ is specified, the extraterrestrial  flux is taken from internally defined files specific for each parameterization, not  from solar_file. The output is the integrated irradiance for  each band. To get e.g. integrated shortwave irradiance, simply add all  bands of the Kato et al. (1999) or the Fu and Liou (1992/93) parameterization. The five AVHRR channels are weighted sums of the libRadtran output. Examples how to integrate the output in the\nAVHRR_KRATZ case are included in the uvspec self check which is initiated with   make check.'
+p390
+sS'ic_set_tau550'
+p391
+S'Set the ice cloud optical thickness at 550nm. Other wavelengths are scaled accordingly.\nThe optical thickness defined here is the integral from the surface at the  user-defined altitude to TOA (top of atmosphere). \nNote that this option requires for technical reasons that the wavelength interval defined by wavelength does contain 550nm.\nIf you use this option in combination with the ice cloud properties by Fu (1996), please make sure that you understand the explanation of ic_fu_tau.'
+p392
+sS'aerosol_gg_file'
+p393
+S'Location of aerosol asymmetry parameter file. The file must have two columns.\nColumn 1 is the altitude in km. The altitude grid must be exactly equal to  the altitude grid specified in the file atmosphere_file.\nColumn 2 is the asymmetry parameter of each layer. \nThe asymmetry parameter defined with this option is constant with wavelength.\nIf you require spectral dependence please use aerosol_files.\nComments start with #. Empty lines are ignored.'
+p394
+sS'quiet'
+p395
+S'If specified, informative messages are turned off. See also verbose.'
+p396
+sS'wc_layer'
+p397
+S'Interpret cloud properties as layer properties (this is the default behaviour since version 1.4; see also  wc_file). Cloud properties are assumed to be constant over the layer. The layer reaches from the  level, where the properties are defined in the wc_file to the level above that one.\nFor example, the following lines\n\n#  z  LWC  R_eff\n#  (km)  (g/m^3) (um)  4.000   0.0   0.0  3.000   1.0  10.0\n\ndefine a cloud in the layer between 3 and 4 km with sharp boundaries.'
+p398
+sS'surface_temperature'
+p399
+S'Surface temperature, used for thermal infrared calculations. If not specified, the temperature of the lowest atmospheric level is used as surface temperature.'
+p400
+sS'aerosol_season'
+p401
+S'Specify season to get appropriate aerosol profile.\n1\nSpring-summer profile.\n2\nFall-winter profile.'
+p402
+sS'wc_cloudcover'
+p403
+S'Set the fraction of the horizontal sky area which is covered by clouds.\nWhen a cloud cover is specified, the result will be calculated by the independent pixel approximation (IPA), that is, as weighted average  of cloudless sky and overcast sky, where the cloud properties are taken  from wc_file, etc. Please note that, if both wc_cloudcover and ic_cloudcover are set, both must be equal.\n\nThis option is ignored, if the option cloud_fraction_file is used.'
+p404
+sS'albedo'
+p405
+S'The Lambertian surface albedo, a number between 0.0 and 1.0, constant for all wavelengths. For wavelength dependent surface albedo  use albedo_file. The default albedo is 0.0.'
+p406
+sS'brdf_rpv_file'
+p407
+S'4 column file, containing the Rahman, Pinty, and Verstraete (RPV) BDRF parameterization, Rahman et al. (1993).\nBidirectional reflectance distribution functions for a variety of surfaces are  given in the paper. This option in only supported with DISORT 2.0 and\nMYSTIC. The columns of the input file are wavelength [nm], rho0, k, and theta. \nThe parameters are interpolated linearely to the internal wavelength grid. \nTo make sure that the results are reasonable, specify the RPV data on a wavelength  grid similar or equal to that used internally for the radiative transfer calculation!\nOptionally, a fifth column with a constant scaling factor may be defined which, however, is only used by rte_solver disort2.'
+p408
+sS'aerosol_moments_file'
+p409
+S"Location of aerosol moments file, a one-column file containing an arbitrary number of Legendre terms of the phase function. The phase functionp(mu) is *\n p (mu) = sum (m=0 to infinity) (2m+1) * k(m) * Pm (mu) *\n where k(m) is the m'th moment and Pm (mu) is the m'th Legendre polynomial.\n\nIf not specified, a Henyey-Greenstein phase function is assumed  where the asymmetry parameter g is either a default value depending on the  aerosol type or may be specified using aerosol_set_gg."
+p410
+sS'pressure_out'
+p411
+S"Specify the output levels in pressure coordinates. The syntax is  pressure_out p1 p2 ...\n\nwhere 'p1 p2 ...' are the output levels in hPa. \nThe pressure output levels must be sorted in decreasing order. \nOutput pressure levels must be within the range defined in the atmosphere_file. You can also use toa for  top of atmosphere and sur for surface altitude and cpt  for cold point tropopause."
+p412
+sS'fisot'
+p413
+S'Specifies that isotropic illumination is used at top-boundary instead of beam source. Useful for those who want to calculate the reflectance  for a homogeneous or inhomogeneous atmosphere. The intensity is still set by solar_file.'
+p414
+sS'aerosol_haze'
+p415
+S'Aerosol type in the lower 2 km of the atmosphere. Integer.\nSee E.P. Shettle, "Models of aerosols, clouds and precipitation for  atmospheric propagation studies", in "Atmospheric propagation in the  uv, visible, ir and mm-region and related system aspects", \nAGARD Conference Proceedings (454), 1989.\n1\nRural type aerosols.\n4\nMaritime type aerosols.\n5\nUrban type aerosols.\n6\nTropospheric type aerosols.'
+p416
+sS'wc_set_tau550'
+p417
+S'Set the water cloud optical thickness at 550nm. The optical thickness defined here  is the integral from the surface at the user-defined altitude  to TOA (top of atmosphere). Other wavelengths are scaled accordingly.\nNote that this option requires for technical reasons that the wavelength interval defined by wavelength does contain 550nm.'
+p418
+sS'mc_maxscatters'
+p419
+S'If set, photons are destroyed after n scatters.'
+p420
+sS'angstrom'
+p421
+S'Deprecated option. Same as aerosol_angstrom.'
+p422
+sS'phi0'
+p423
+S'Azimuth angle of the sun (0 to 360 degrees). \n\nSun in the South  0 degrees\nSun in the West  90 degrees\nSun in the North  180 degrees\nSun in the East   270 degrees\n\n\nFor all one-dimensional solvers the absolute azimuth does not matter, but only the relative azimuth phi-phi0.'
+p424
+sS'wc_properties_interpolate'
+p425
+S'Interpolate water cloud optical properties over wavelength; useful for precalculated  optical property files defined with wc_properties. Please note that this option  may be extremely memory-consuming because for each internal wavelength a full set of \nLegendre moments of the phase function is stored (up to several thousands).'
+p426
+sS'mc_icloud_file'
+p427
+S'Define a MYSTIC 3D ice cloud input file.\nThe format of the 3D ice cloud file is identical to the 3d water cloud file  (see mc_wcloud_file).'
+p428
+sS'ic_habit'
+p429
+S'Ice crystal habit for the Yang et al. (2000) and  Key et al. (2002) parameterizations, see also  ic_properties key/yang. May be one of solid-column,  hollow-column, rough-aggregate, rosette-4, rosette-6, plate, droxtal, and spheroid. Please note that this parameterization is only valid for a restricted size range, depending on the habit (see table 1 in \nKey et al. (2002)). Also, some of the habits are only available for wavelengths below 5 micrometer (rosette-4) while others are only available for wavelengths larger than 3 micrometer (droxtal, spheroid).'
+p430
+sS'ECMWF_wind_file'
+p431
+S'Reads in combination with the options latitude, longitude, and time (all mandatory) the wind components U, V, and W from an ECMWF netCDF data file. The data nearest to the specified  time will be selected (or linearly interpolated, if time_interpolate is switched on).'
+p432
+sS'phi'
+p433
+S'Azimuth output angles (in degrees) in increasing order. \nThe radiance is output at phi and umu.\n\nSensor in the North (looking South)   0 deg\nSensor in the East  (looking West)   90 deg\nSensor in the South (looking North) 180 deg\nSensor in the West  (looking East)  270 deg\n\nFor all one-dimensional solvers the absolute azimuth does not matter, but only the relative azimuth phi-phi0.'
+p434
+sS'mc_rpv_type'
+p435
+S'File containing wavelength-dependent RPVs to be used in combination with mc_rpv_file.'
+p436
+sS'mc_absorption'
+p437
+S'Calculate MYSTIC absorption of each 3D grid box and write it to file mc_basename.abs.spc  in the following format:\n\nlambda ix iy iz absorption\n\nOnly meaningful with rte_solver montecarlo.\nAn optional argument W_per_m2_and_dz (default), W_per_m3, or K_per_day may  be specified which converts the result e.g. to heating rates. This option is only available  for forward calculations. For backward please use mc_backward_output abs.'
+p438
+sS'co2_mixing_ratio'
+p439
+S'The mixing ratio of CO2 in ppm; scale the profile so that the mixing  ratio at the user-defined altitude assumes the specified value.'
+p440
+sS'aerosol_default'
+p441
+S'Set up a default aerosol according to Shettle (1989). The default properties are  a rural type aerosol in the boundary layer, background aerosol above 2km, spring-summer conditions and a visibility of 50km. These settings may be modified with aerosol_haze, aerosol_vulcan, aerosol_season, and aerosol_visibility.'
+p442
+sS'ECMWF_atmosphere_file'
+p443
+S'Reads in combination with the options latitude, longitude, and time (all mandatory) the pressure, temperature, ozone, and water vapour from an ECMWF netCDF data file and will combine it with the data given by the atmosphere_file.\nNo spatial interpolation of the values is done.\nThe atmospheric data nearest to the specified time  will be selected (or linearly interpolated if time_interpolate is switched on). \nAtmospheric profiles, which are not provided by the ECMWF file (O2, CO2, NO2) are taken from  the atmosphere_file. Per default, also the atmosphere above the ECMWF data is taken  from the atmosphere_file. In order to avoid this, please have a look  at the option: ECMWF_levels_only.'
+p444
+sS'mc_hiddenline'
+p445
+S'Switch on hidden line removal for the MYSTIC online visualization. Good for topography, not so  good for clouds because the latter look much more realistic when the hidden layers are plotted in transparent mode.'
+p446
+sS'mc_sensorposition'
+p447
+S'Define the position of a sensor. Has been introduced for irradiance calculations in topography and might not properly work with all options.'
+p448
+sS'mc_refraction'
+p449
+S'Enable refraction for rte_solver montecarlo. Works only with in 1D spherical geometry (with option mc_spherical).'
+p450
+sS'rpv_k'
+p451
+S'Constant RPV k, see brdf_rpv_file. rpv_k overwrites the wavelength-dependent value defined in brdf_rpv_file.'
+p452
+sS'mc_polarisation'
+p453
+S'Switch on polarization for rte_solver montecarlo.'
+p454
+sS'rte_solver'
+p455
+S'Set the radiative transfer equation solver to be used. \nIt not specified the default rte_solver is disort2.\nOptions are disort\nThe standard plane--parallel disort algorithm by Stamnes et al. (1988), version 1.3. For documentation see src_f/DISORT.doc as well as  the papers and the DISORT report at *\nftp://climate.gsfc.nasa.gov/pub/wiscombe/Multiple_Scatt/. To optimize for computational time  and memory, please adjust the parameters in src_f/DISORT.MXD for your application and re-compile. \nFor your application please use rte_solver disort2 which is the advanced version, unless you  e.g. want to explore how a specific feature of disort2 (e.g. the Nakajima intensity correction) improves  the disort result.\ndisort2\nVersion 2 of disort. For documentation see src_f/DISORT2.doc as well as  the papers and the DISORT report at *\nftp://climate.gsfc.nasa.gov/pub/wiscombe/Multiple_Scatt/.\ndisort2 has several improvements compared to its \'ancestor\' disort\n1.3. Hence we recommend to use disort2 rather than the older version.\nTo optimize for computational time  and memory, please adjust the parameters in src_f/DISORT.MXD for your application and re-compile.  sdisort\nPseudospherical disort as described by Dahlback and Stamnes (1991). Double precision version. To optimize for computational time and memory, please adjust the parameters  in src_f/DISORT.MXD for your application and re-compile.  spsdisort\nPseudospherical disort as described by Dahlback and Stamnes (1991), single precision   version. Warning: it is not recommended to use spsdisort for really large solar zenith angles nor for cloudy conditions. For large optical thickness it is numerically unstable and may produce wrong results. To optimize for computational time and memory, please adjust the parameters in src_f/DISORT.MXD for your application and re-compile.  polradtran\nThe plane-parallel radiative transfer solver of Evans and Stephens (1991).\nIncludes polarization. The full implementation of the polRadtran solver is quite  new (version 1.4). If you find unusual behaviour, please contact the libRadtran authors.  twostr\nThe two--stream radiative transfer solver described by Kylling et al. (1995), in pseudo-spherical geometry.\ntwostrpp\nThe two--stream radiative transfer solver described by Kylling et al. (1995), in plane-parallel geometry.\nsos\nA scalar pseudospherical succesive orders of scattering code. Works for  solar zenith angles smaller than 90 degrees. Can calculate azimuthally  averaged radiances. Set nscat to specify the order of scattering.\nmontecarlo\nThe MYSTIC code, see http://www.bmayer.de/mystic.html. Note that\nMYSTIC is not part of the libRadtran distribution at present. However, it has been given to some users on a collaborative basis.\n\nFor a more detailed description of MYSTIC read libRadtran/doc/README.MC.\n\ntzs\nTZS stands for "thermal, zero scattering" and is a very fast analytical solution  for the special case of thermal emission in a non-scattering atmosphere. Please  note that TZS does only radiance calculations at top of the atmosphere.\nsss\nSSS stands for "solar, single scattering" and is an analytical single scattering approximation which might be reasonable for an optically thin atmosphere. Please note that SSS does only radiance calculations  at top of the atmosphere. This is an experimental solver - be careful!\nnull\nThe NULL solver does not solve the radiative transfer equation. However, it sets up the optical properties, and does the post-processing; useful if you are either interested  in the overhead time required by a particular model input or if you are simply interested  in the optical properties, as output by verbose.\n\nDefault: disort2'
+p456
+sS'surface_type_map'
+p457
+S'Specify a surface type map, which is used in combinition with  albedo_library, latitude, and longitude in order to  select the surface type relevant for the simulation.\nNo pixel interpolation is done.\nThe format of the call is:\n\nsurface_type_map file [variable_name]\n\nwhere file is the location of the surface type map file. The map is expected to  be in netCDF format. The file must contain the variables double lat(nlat),  double lon(nlon), and byte surface_type (nlat, nlon). If the name of the  surface type variable is different, the optional argument can be used in order to specify  the variable name. For format specification see also data/albedo/IGBP/SURFACE_TYPE_IGBP_10min.cdf.\n\nFor using the IGBP map, the call is surface_type_map IGBP. This map has a resolution of 10  minutes and contains the surface types 1 to 18 defined in the albedo_library IGBP. \nFresh snow and sea ice are not included, as their extent is too variable. Attention:  \nThat implies e.g. that the Arctic is considered ocean_water and not sea_ice!\n\nLocations on the pixel boundaries are interpreted as the pixel northward and eastward respectively. E.g. location 0 N, 0 E is interpreted like the pixel ranging from\n0 to 10min North and from 0 to 10min East.'
+p458
+sS'albedo_library'
+p459
+S'Albedo libraries are a collection of spectral albedos of different surface types. \nThis option must be used either with surface_type  or surface_type_map, in order to select the specific surface type.\nThere are two possibilities for libraries:  the built-in IGBP library or a user defined albedo library.\n\nThe built-in library of the International Geosphere Biosphere Programme is  selected with albedo_library IGBP.\nThe IGBP library contains 20 surface types:\n\n 1 evergreen_needle_forest  2 evergreen_broad_forest  3 deciduous_needle_forest  4 deciduous_broad_forest  5 mixed_forest  6 closed_shrubs  7 open_shrubs  8 woody_savanna  9 savanna\n10 grassland\n11 wetland\n12 cropland\n13 urban\n14 crop_mosaic\n15 antarctic_snow\n16 desert\n17 ocean_water\n18 tundra\n19 fresh_snow\n20 sea_ice\n\nSurface types 1 - 17 are defined by the International Geosphere Biosphere \nProgramme (IGBP); additionally there are tundra, fresh_snow, and sea_ice surface types.\nThe spectral albedo of the ground is determined as a function of solar  zenith angle, precitable water, and clouds. The spectral resolution  equals the grid of the correlated-k Fu/Liou parameterisation.\nThis library originates from the NASA CERES/SARB Surface Properties Project,  see Belward and Loveland (1996).\n\nFor creating your own albedo library use albedo_library path, where path is  the path of the directory where the albedo data is stored. The files are expected to have the  names albedo_01.dat, albedo_02.dat, ... If surface_type 1 is specified the albedo from albedo_01.dat will be used, and so on.  \nEach file is required to have two columns:\nColumn 1 is the wavelength in nm, and column 2 the corresponding \nLambertian surface albedo. The wavelength grid may be freely set. The  albedo will be interpolated linearely to the wavelength grid used for the  radiation calculation. Comments start with #. Empty lines are ignored.\nThis option is similar to albedo_file, except that it offers an easy way to use the option surface_type_map in combinition with albedo files.)'
+p460
+sS'mc_lidar'
+p461
+S'Use local estimator to simulate a lidar. If mc_lidar is set, you need to provide a lidar file for mc_lidar_file. A detailed documentation is available on request from RPB.'
+p462
+sS'altitude_map'
+p463
+S'Specifies an altitude map which is used in combinition with  latitude, longitude in order to  select the altitude for the simulation.\nNo interpolation is done between the pixels of the map.\nThe format of the call is:\n\naltitude_map file [variable_name]\n\nwhere file is the location of the altitude map file. The map is expected to  be in netCDF format. The file must contain double lat(lat),  double lon(lon), and the altitude variable, where variable_name is the  name of the surface elevation variable in the netCDF file. The default name is Z.\nThe altitude variable must be altitude(lat, lon). \nFor format discribtion see also the example map included in libRadtran, data/altitude/ELEVATION_GTOPO_10min.cdf.\nTo use this map in uvspec, you may also use altitude_map GTOPO. This map has a resolution  of 10 arc minutes and the unit of the altitude is meter. Please note that this resolution might not ne adequate for your application. \nIf an altitude in the map is below the lowest level of the  atmosphere_file, the atmospheric profiles are extrapolated assuming a constant  gradient for temperature and mixing ratios.'
+p464
+sS'mc_surfaceparallel'
+p465
+S'Calculate irradiance parallel to the surface instead of horizonal irradiance. This option is obviously only interesting for topograpy and only for calculations at the surface. For other levels the option is ignored.'
+p466
+sS'mc_randomseed'
+p467
+S'Provide your own random seed (positive integer) for the random number generator. \nUsually a random seed is determined from current time plus process id. \nThis option is useful to re-run a simulation for debugging.'
+p468
+sS'wc_ipa'
+p469
+S'Independent column calculation for a 3D cloud field.\nAs argument a name of a 3D cloud file must be given. This file has to  be in the format as needed by MYSTIC.'
+p470
+sS'mc_delta_scaling'
+p471
+S'Undocumented option.'
+p472
+sS'atm_z_grid'
+p473
+S'With this option the vertical resolution of the atmosphere_file data is changed to  the levels (in km above sea surface) given as argument. This might be useful in oder to reduce the number  of levels (save computational time) or in order to easily adjust the atmosphere profile to the resolution  of a Monte Carlo cloud file mc_wcloud_file or mc_icloud_file.\n\natm_z_grid 0 2 4 6 8 10 20 30 ...'
+p474
+sS'zout_sur'
+p475
+S'Same as zout.'
+p476
+sS'transmittance_wl_file'
+p477
+S'Location of single column file that sets the wavelength grid used for the  internal transmittance calculations. The wavelengths must be in nm.\nDo not use this option unless you know what you are doing.\nComments start with #. Empty lines are ignored.'
+p478
+sS'ECMWF_wc_file'
+p479
+S'Reads in combination with the options latitude, longitude, and time (all mandatory) the pressure, temperature, and cloud liqid water content (CLWC) and cloud cover (CC) from an ECMWF netCDF data file.\nNo spatial interpolation of the values is done.\nThe data nearest to the specified time will be selected (or linearly interpolated  if time_interpolate is switched on). \nIn order to use the ECMWF data without cloud overlap assumption, use cloud_overlap off.'
+p480
+sS'wc_set_gg'
+p481
+S'Set the water cloud asymmetry factor for all wavelengths and altitudes to a float between -1.0 and 1.0. This option is useful only for monochromatic  calculations or in wavelength regions where the optical properties of water clouds  can be considered constant, e.g. the ultraviolet range.'
+p482
+sS'wc_scale_gg'
+p483
+S'Scale the water cloud asymmetry factor for all wavelengths and altitudes with a float between 0.0 and 1.0.'
+p484
+sS'rayleigh_crs'
+p485
+S'Choose between the following Rayleigh scattering cross sections.\nBodhaine\nBodhaine et al (1999) Rayleigh scattering cross section.\nNicolet\nNicolet (1984) Rayleigh scattering cross section.\nPenndorf\nPenndorf (1957) Rayleigh scattering cross section.\n\nBodhaine et al. is default.'
+p486
+sS'wvn'
+p487
+S'Deprecated option. Same as wavelength.'
+p488
+sS'crs_file'
+p489
+S'May be used to specify cross sections of O3, NO2, \nBRO, OCLO, or HCHO to be used instead of those coming with  libRadtran. No temperature dependence may be specified. Use as follows:\n\ncrs_file NO2 ../examples/no2_crs.dat\n\nThe NO2 or O3,BRO or OCLO or HCHO must be specified to identify the species for which the cross section applies.\nThe cross section file has two columns:\n1. wavelength (nm)\n2. cross section (cm2)'
+p490
+s.

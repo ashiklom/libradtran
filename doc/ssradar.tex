@@ -1,0 +1,98 @@
+\subsection{SSRadar - Single Scattering Radar \index{SSRadar}}
+
+A simple single scattering radar simulator which assumes pure Rayleigh scattering
+in a 1D plan-parallel atmosphere at water or ice spheres without molecular absorption. 
+It solves the equation for the radar reflectivity factor $Z$
+$$
+Z = \sum_i N_i D_i^6
+$$
+
+directly from the given droplet distribution defined by discrete sampling intervalls
+$\left(N_i, N_i + \Delta N\right)$ containing the droplet diameters $\left(D_i, D_i 
++ \Delta D\right)$ (\citet{Rinehart2010}).
+
+Usage (outputfile is optional, output is printed to stdout by default):
+\begin{Verbatim}[fontsize=\footnotesize]
+ssradar inputfile [outputfile]
+\end{Verbatim}
+The simulation is defined in the input file with the following structure:
+\subsubsection {First line:}
+\begin{description}
+\item[wavelength] The wavelength in mm.
+\item[Z-Position] The vertical position of the radar in m.
+\item[Zenith Angle] The zenith angle in degree, $0$ means looking straight upwards, 
+$180$ means looking straight downwards, must not be $90$.
+\item[Ground Altitude] Vertical position of the ground in m.
+\end{description}
+Notes: The ground altitude can be used to add topographic data when creating two- or 
+three-dimensional radar images with multiple simulations. The signal from the ground is
+set to $100$ $dBZ$.
+\subsubsection{Second line:}
+\begin{description}
+\item[Range Gates] Number of range gates.
+\item[Range Gate Length] Radial Length of a range gate in m.
+\item[First Range Gate] Radial Distance of the first range gate from the radar in m.
+\item[Output] Ouput format. -1 is text only, 1 is mmclx only, 0 is both.
+\end{description}
+Notes: The simulator takes a straight radial line from the radar into the direction defined
+by the zenith angle. This line is partitioned into a number of intervals (number of 
+range gates) with a fixed length (range gate length) starting at a given distance 
+(first range gate) from the radar. Keep in mind that the first range gate is defined by 
+its distance along that line and not by its z-position, and that the length of a range
+gate is the actual geometrical length. The distinction between first range gate and position
+of the radar serves to be able to only focus on the parts that are needed and it will be
+further important once attenuation has been implemented. MMCLX output has been added for
+easy compatibility.
+\subsubsection{The following lines define the reflective layers, one line per layer:}
+\begin{description}
+\item[Height] Z-Position of the lower border of the layer in m.
+\item[Thickness] Vertical thickness of the layer in m.
+\item[Effective Radius] Effective Radius of the distribution in um.
+\item[Distribution] What kind of distribution (mono, gamma, log, or a filename), for
+details see \code{distribution} and \code{size\_distribution\_file} in chapter \ref{sec:mie}.
+\item[Distribution Parameter] Distribution Parameter for gamma and log, for
+details see \code{distribution} in chapter \ref{sec:mie}.
+\item[Maximum Radius Factor] Upper radius cutoff factor for gamma and log, for
+details see \code{n\_r\_max} in chapter \ref{sec:mie}.
+\item[Temperature] Temperature of the layer in degree Celsius.
+\item[Phase] Phase of the layer, water or ice.
+\item[Liquid Water Content] Liquid Water Content of the layer in $g/m^3$
+\end{description}
+Notes: You can simulate supercooled liquid water down to $-34^{\circ}C$.
+Reflective layers must not overlap or be below ground but can otherwise be 
+configured freely. 
+
+\subsubsection{Example Input:}
+\begin{Verbatim}[fontsize=\scriptsize,frame=single]
+# wvl - z-pos -   zenith angle - ground altitude
+# mm  - m     -   degree       - m
+  8.5   500.0       45.0        0.0
+# Range Gates - RG Length - First RG - Output
+# (int)         m           m          (-1,0,1)
+  15            500.0       0.0        -1
+# height - thickness - reff - dist - distparam - max r fact - T - phase - LWC
+# m        m           um     (str)  (double)    (double)  deg C  (str)   g/m^3
+  1000.0   1000.0      18.0   mono       0          0        10.  water   0.30
+  2000.0    500.0      15.0   log        1.1        5         0.  water   0.10
+  3000.0    500.0      12.0   gamma      7          5       -10.  water   0.05
+  3500.0   2000.0      10.0   dist.dat   0          0       -20.  ice     0.02
+\end{Verbatim}
+
+\subsubsection{Example Output:}
+\begin{Verbatim}[fontsize=\scriptsize,frame=single]
+Wavelength: 8500 um
+Height of radar: 0.000000e+00 m
+Zenith Angle: 0.000000e+00
+Number of Range Gates: 6
+Range Gate Width: 1.000000e+03 m
+First Range Gate Radial Distance: 0.000000e+00 m
+First Range Gate Z-Position: 0.000000e+00 m
+RG No    RG Dist [m]     RG Z-Pos [m]    Z [dBZ]
+1        0.000000e+00    0.000000e+00    0.000000
+2        1.000000e+03    1.000000e+03    -16.016457
+3        2.000000e+03    2.000000e+03    -19.641281
+4        3.000000e+03    3.000000e+03    -23.466286
+5        4.000000e+03    4.000000e+03    -27.732285
+6        5.000000e+03    5.000000e+03    0.000000
+\end{Verbatim}
+

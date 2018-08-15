@@ -1,0 +1,9 @@
+
+  int nvx = 105;
+  int nv1x = nvx+1;
+
+  int mbx = 18;
+
+  int mg = 12;
+
+

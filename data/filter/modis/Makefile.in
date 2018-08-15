@@ -1,0 +1,69 @@
+#
+# Makefile for libRadtran's data/filter/modis directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = modis
+
+DATAFILES = modis_aqua_b01 modis_aqua_b02 modis_aqua_b03 modis_aqua_b04 \
+            modis_aqua_b05 modis_aqua_b06 modis_aqua_b07 modis_aqua_b08 \
+            modis_aqua_b09 modis_aqua_b10 modis_aqua_b11 modis_aqua_b12 \
+            modis_aqua_b13 modis_aqua_b14 modis_aqua_b15 modis_aqua_b16 \
+            modis_aqua_b17 modis_aqua_b18 modis_aqua_b19 modis_aqua_b20 \
+            modis_aqua_b21 modis_aqua_b22 modis_aqua_b23 modis_aqua_b24 \
+            modis_aqua_b25 modis_aqua_b26 modis_aqua_b27 modis_aqua_b28 \
+            modis_aqua_b29 modis_aqua_b30 modis_aqua_b31 modis_aqua_b32 \
+            modis_aqua_b33 modis_aqua_b34 modis_aqua_b35 modis_aqua_b36 \
+            modis_terra_b01 modis_terra_b02 modis_terra_b03 modis_terra_b04 \
+            modis_terra_b05 modis_terra_b06 modis_terra_b07 modis_terra_b08 \
+            modis_terra_b09 modis_terra_b10 modis_terra_b11 modis_terra_b12 \
+            modis_terra_b13 modis_terra_b14 modis_terra_b15 modis_terra_b16 \
+            modis_terra_b17 modis_terra_b18 modis_terra_b19 modis_terra_b20 \
+            modis_terra_b21 modis_terra_b22 modis_terra_b23 modis_terra_b24 \
+            modis_terra_b25 modis_terra_b26 modis_terra_b27 modis_terra_b28 \
+            modis_terra_b29 modis_terra_b30 modis_terra_b31 modis_terra_b32 \
+            modis_terra_b33 modis_terra_b34 modis_terra_b35 modis_terra_b36
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

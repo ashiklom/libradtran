@@ -1,0 +1,63 @@
+#
+# Makefile for libRadtran's data/filter/msg directory
+#
+# Josef Gasteiger
+# josef.gasteiger@lmu.de
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = msg
+
+DATAFILES = msg1_seviri_ch006 msg1_seviri_ch008 msg1_seviri_ch016 msg1_seviri_ch039 \
+            msg1_seviri_ch062 msg1_seviri_ch073 msg1_seviri_ch087 msg1_seviri_ch097 \
+            msg1_seviri_ch108 msg1_seviri_ch120 msg1_seviri_ch134 msg1_seviri_hrv \
+            msg2_seviri_ch006 msg2_seviri_ch008 msg2_seviri_ch016 msg2_seviri_ch039 \
+            msg2_seviri_ch062 msg2_seviri_ch073 msg2_seviri_ch087 msg2_seviri_ch097 \
+            msg2_seviri_ch108 msg2_seviri_ch120 msg2_seviri_ch134 msg2_seviri_hrv \
+            msg3_seviri_ch006 msg3_seviri_ch008 msg3_seviri_ch016 msg3_seviri_ch039 \
+            msg3_seviri_ch062 msg3_seviri_ch073 msg3_seviri_ch087 msg3_seviri_ch097 \
+            msg3_seviri_ch108 msg3_seviri_ch120 msg3_seviri_ch134 msg3_seviri_hrv \
+            msg4_seviri_ch006 msg4_seviri_ch008 msg4_seviri_ch016 msg4_seviri_ch039 \
+            msg4_seviri_ch062 msg4_seviri_ch073 msg4_seviri_ch087 msg4_seviri_ch097 \
+            msg4_seviri_ch108 msg4_seviri_ch120 msg4_seviri_ch134 msg4_seviri_hrv
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/filter/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/filter/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/filter/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

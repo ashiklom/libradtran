@@ -1,0 +1,24 @@
+#
+# This example reproduces Fig 3., upper left plot, in Mayer and Kylling (2005). 
+# "Technical note: the libRadtran software package for radiative 
+# transfer calculation-description and examples of use", ACP, 5, 1855-1877, 2005.
+# Available from http://www.atmos-chem-phys.net/5/1855/2005/acp-5-1855-2005.html
+#
+# See that paper for a complete description.
+#
+
+atmosphere_file midlatitude_summer
+
+wavelength 750 780
+
+#correlated_k LOWTRAN
+#transmittance_wl_file ./resources/examples/spectrum_O2A.TRANS
+
+mol_tau_file abs ../data/lbl/UVSPEC.O2A.afglms.cdf
+
+output_quantity transmittance
+
+rte_solver twostr        # Radiative transfer equation solver
+
+output_user lambda edir eglo
+quiet

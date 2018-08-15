@@ -1,0 +1,43 @@
+# Wavelength bands for IGBP-Fu-Albedo
+#
+#  Columns:
+#  1  band number
+#  2  subband number
+#  3  "central lambda" [micro meter]
+#  4  lower band limit [micro meter]
+#  5  upper band limit [micro meter]
+
+# solar first band with subband differentiation
+   1   1    0.20005    0.1754    0.2247
+   1   2    0.23430    0.2247    0.2439 
+   1   3    0.26480    0.2439    0.2857
+   1   4    0.29210    0.2857    0.2985
+   1   5    0.31050    0.2985    0.3225
+   1   6    0.34000    0.3225    0.3575
+   1   7    0.39750    0.3575    0.4375
+   1   8    0.46750    0.4375    0.4975
+   1   9    0.54625    0.4975    0.5950
+   1  10    0.64230    0.5950    0.68966
+
+# solar bands with no subband differentiation 
+# must be the same as in wvl.dat
+   2   1    1.00       0.68966   1.29870
+   3   1    1.60       1.29870   1.90476
+   4   1    2.20       1.90476   2.50000
+   5   1    3.00       2.50000   3.50877
+   6   1    3.70       3.50877   4.00000
+
+# thermal bands with no subband differentiation 
+# must be the same as in wvl.dat
+   7   1    4.90       4.54545   5.26316
+   8   1    5.60       5.26316   5.88235
+   9   1    6.50       5.88235   7.14286
+  10   1    7.60       7.14286   8.00000
+  11   1    8.50       8.00000   9.09091
+  12   1    9.60       9.09091  10.20410
+  13   1   11.30      10.20410  12.50000
+  14   1   13.70      12.50000  14.92540
+  15   1   16.60      14.92540  18.51850
+  16   1   21.50      18.51850  25.00000
+  17   1   30.00      25.00000  35.71430
+  18   1   70.00      35.71430  10000.000

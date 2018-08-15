@@ -1,0 +1,73 @@
+Recommended Tools to Install the libRadtran C and Fortran Libraries
+under Windows 95/98/NT/2000
+
+Last update: December 8, 2000
+
+   We recommend installing the following GNU tools before attempting to
+build the libRadtran C and Fortran libraries:
+
+   * Cygnus Development Suite 
+
+     The Cygnus Development Suite is a port of GNU C compiler gcc
+     and contains all tools necessary for the compilation of 
+     libRadtran, in particular `make' and a port of the UNIX
+     `bash'.
+
+   This package allows the compilation of libRadtran as on a 
+UNIX system without any changes. Aside from being able to compile
+libRadtran, you will get one of the best compilers available to date
+for free.
+   
+   The Cygnus Develoment Suite is available from http://cygwin.com.
+
+   Following is a short description of the essential steps for 
+the installation of the GNU development suite. For more, and 
+probably more recent information, please read the documentation 
+provided with the Cygnus distribution. The installation process
+described below is of course subject to changes.
+
+
+   For the impatient:
+   -----------------
+
+(1) Get the Cygnus Port of the GNU C compiler. It is available from 
+    http://cygwin.com. Follow the instructions on the Web page to 
+    download the latest distribution. At present, you would simply
+    click on "Install Cygnus now" and start the "setup.exe" which 
+    is saved to your disk. Follow the further instructions and 
+    install at least the following components:
+      bash, binutils, cygwin, flex, gawk, gcc, gzip, make, tar
+
+(2) If you want, you may test the compiler: create a file 
+    'hello.c' with your favourite text editor (you may use for example
+    the Notepad to do this, but for more professional use we recommend
+    a better editor, e.g. GNU Emacs, which is available from  
+    http://www.gnu.org/software/emacs/windows/ntemacs.html).
+
+    ---------- hello.c, cut here ------------
+
+    #include <stdio.h>
+
+    main()  {
+      printf ("hello, world!\n");
+    }
+
+    ---------- hello.c, cut here ------------
+
+    Start the Cygnus development suite by clicking on the Icon or
+    starting "cygnus.bat" and compile test program:
+    'gcc -o hello hello.c'. If everything is installed correctly, 
+    the compiler will create an executable, 'hello.exe'.
+
+(3) Install libRadtran: 
+    Start the Cygnus development suite, unpack the libRadtran 
+    distribution ('gzip -d libRadtran-x.xx.tar.gz', 
+    'tar -xvf libRadtran-x.xx.tar') where x.xx is the version of 
+    the current distribution and follow the instructions in the 
+    'INSTALL' file in the libRadtran-x.xx directory. These are 
+    basically: execute './configure' and 'make'. For more 
+    information refer to the documentation provided with libRadtran.
+
+
+
+

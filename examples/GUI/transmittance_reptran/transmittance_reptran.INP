@@ -1,0 +1,11 @@
+source solar
+rte_solver twostr
+mol_abs_param reptran medium
+wavelength 395 2000
+
+atmosphere_file ../data/atmmod/afglus.dat
+
+output_quantity transmittance
+output_user lambda edir eglo
+
+quiet 

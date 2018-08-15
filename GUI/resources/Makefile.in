@@ -1,0 +1,59 @@
+#
+# Makefile for libRadtran's GUI/resources directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = resources
+
+DATAFILES =  how_to.html GUI_DOC icon.png  splash.png Selected.png Label.png windows.ico default_example_image.png \
+	     esa.gif
+
+HTML_DOC_TAR_FILE  = html_doc.tar.gz
+HTML_DOC_DIR       = html_doc/*/*
+
+DISTFILES = Makefile.in $(DATAFILES) $(HTML_DOC_TAR_FILE)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+	tar -xzf $(HTML_DOC_TAR_FILE) 
+
+dist: 
+	ln $(DISTFILES) ../../`cat ../../.fname`/GUI/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: 
+	ln $(MYSTICDISTFILES) ../../`cat ../../.fname`/GUI/$(THISDIR)
+.PHONY: mystic-dist
+
+install: 
+	$(MKPATH) $(datadir)/GUI/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datadir)/GUI/$(THISDIR)
+	tar -xzvf $(HTML_DOC_TAR_FILE) -C $(datadir)/GUI/$(THISDIR)
+#AK 20100308	$(INSTALL_DATA) $(HTML_DOC_DIR) $(datadir)/GUI/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile
+
+realclean: distclean
+
+Makefile: Makefile.in ../../config.status
+	cd ../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

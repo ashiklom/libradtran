@@ -1,0 +1,221 @@
+\documentclass[11pt,twoside,a4paper,fleqn]{book} 
+
+%--- Packages to use
+%
+\usepackage[]{fancyhdr}   
+\usepackage[]{natbib}
+\usepackage{alltt}
+\usepackage{times}
+\usepackage{verbatim}
+\usepackage{lscape}         % landscape mode of a single page
+\usepackage[]{longtable}    % allow tables longer than one page
+\usepackage{makeidx}        % index of terms
+\usepackage{tabularx}       % allows line breaking in table columns
+\usepackage{ifpdf}
+\usepackage{fancyvrb}
+\usepackage{wrapfig}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{xifthen}
+\usepackage[T1]{fontenc} 
+\usepackage{cprotect}
+
+%--- Margins
+%
+\voffset-2.0cm
+\headheight16pt
+\headsep1.1cm
+\textheight22cm
+\hoffset-1.3cm
+\oddsidemargin2.2cm
+\textwidth14.0cm
+\parskip1ex
+\parindent0ex
+
+%--- Headings
+%
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{}
+\fancyhead[LE,RO]{\small{\sc\thepage}}
+\fancyhead[LO]{\small{\scshape\rightmark}}
+\fancyhead[RE]{\small{\scshape\leftmark}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{%
+  \fancyhead{}
+  \renewcommand{\headrulewidth}{0pt}
+}  
+
+
+%--- Some layout commands
+%
+\sloppy
+\raggedbottom
+\hbadness=10000
+\makeindex
+\bibliographystyle{egu}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} 
+
+
+%--- PDF/LaTeX specific options
+\ifpdf
+  \usepackage[pdftex]{graphicx}    % includegraphics
+  \DeclareGraphicsExtensions{.pdf}
+  \usepackage{color}
+  \definecolor{DarkBlue}{rgb}{0,0,0.5}
+  \usepackage
+    [pdftex,                         % or dvips
+     colorlinks=true,
+     linkcolor=DarkBlue,
+     citecolor=DarkBlue,
+     urlcolor=DarkBlue,
+     pdftitle={libRadtran User's Guide},
+     pdfauthor={B. Mayer, A. Kylling, C. Emde, U. Hamann, R.Buras, J. Gasteiger and B. Richter},
+     pdfsubject={},
+     pdfkeywords={},
+     bookmarks=true,
+     bookmarksopen=false,
+     pdfpagemode=None,
+     plainpages=false,
+     pdfpagelabels]
+  {hyperref}
+  \setcounter{tocdepth}{2}
+\else
+  \usepackage[dvips]{graphicx}    % includegraphics
+  \DeclareGraphicsExtensions{.eps}
+  \setcounter{tocdepth}{1}
+\fi
+
+\title{libRadtran User's Guide}
+\author{Bernhard Mayer, Arve Kylling, Claudia Emde,
+  Robert Buras, Ulrich Hamann, Josef Gasteiger, Bettina Richter}
+
+\newcommand{\code}[1]{%
+  {\texttt{#1}}}
+\newcommand{\fcode}[1]{%
+  \ \\[1.5ex]
+  \framebox[13cm][l]{
+    \begin{minipage}{13cm}
+      \small\texttt{#1}
+    \end{minipage}
+  }
+  \ \\
+}
+  
+%aky20100302  {\small\texttt{#1}}}
+\newcommand{\file}[1]{%
+  {\texttt{#1}}}
+%aky20100302  {\small\texttt{#1}}}
+\newcommand{\strong}[1]{%
+  \textbf{#1}}
+
+%--- Email adresses
+\newcommand{\email}[1]{%
+  {\small \texttt{#1}}}
+
+
+%--- For FIXMEs
+\newcommand{\FIXME}[1]{{\bfseries FIXME: #1}}
+
+%--- To include example files
+\newcommand{\efile}[1]{%
+  \fvset{fontsize=\footnotesize, frame=single, fontfamily=courier, samepage=true}%
+  \VerbatimInput{#1}%
+}
+
+%--- To specify options in uvspec_lex.l / mie_lex.l
+\newcommand{\option}[1]{%
+\item[#1] \index{#1} \hfill\\} 
+
+%--- To specify parameter in uvspec_lex.l / mie_lex.l
+\newcommand{\parameter}[1]{%
+\item[#1] \hfill\\} 
+
+%--- specify option in text and create index entry 
+\newcommand{\codeidx}[1]{%
+  \code{#1}\index{#1}}
+
+%--- MYSTIC documentation 
+\newcommand{\ifmystic}[1]{%
+  \ifthenelse{\boolean{mystic_doc}}{#1}{}}
+
+%--- MYSTIC3D documentation 
+%--- The % at the end of the first line is required; otherwise 
+%--- an extra blank was added to the text if threedmystic was FALSE
+\newcommand{\ifthreedmystic}[1]{%
+  \ifthenelse{\boolean{mystic3d_doc}}{#1}{}}
+\cMakeRobust{\ifthreedmystic}
+
+%--- LIDAR documentation (and HIDDEN stuff)
+\newcommand{\iflidar}[1]{%
+  \ifthenelse{\boolean{lidar_doc}}{#1}{}}
+
+%--- Undocumented options
+\newcommand{\undocumented}[1]{%
+  \ifthenelse{\boolean{udoc}}{#1}{}}
+
+\newboolean{mystic_doc}
+\newboolean{mystic3d_doc}
+\newboolean{lidar_doc}
+\newboolean{udoc}
+
+\begin{document}
+
+\input{mystic.doc}             % if false MYSTIC is not documented
+\setboolean{udoc}{false}       % if false, undocumented options are not included
+
+\input{./title.tex} 
+
+%--- Create an empty page
+%
+\newpage
+\thispagestyle{empty}
+\rule{0pt}{10pt}
+\newpage
+
+\pagenumbering{roman}
+\tableofcontents
+
+\cleardoublepage
+\pagenumbering{arabic}
+
+%--- Introduction / Preface
+\input{intro}
+
+%--- Radiative transfer theory
+\input{radiative_transfer_theory}
+
+%--- Radiative transfer simulations
+\input{radiative_transfer}
+
+%--- Calculation of optical properties
+\input{optical_properties}
+
+%--- Further tools
+\input{tools}
+
+\chapter{Complete description of input options}
+\label{chap:complete-description-input-options}
+
+%---Description of uvspec options
+\input{uvspec_lex}
+
+\clearpage 
+%---Tool for Mie calculations 
+\input{mie_lex}
+
+%--- Bibliography
+\clearpage 
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliography{./literature}
+
+%--- Index
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Index}
+\printindex
+
+\end{document}

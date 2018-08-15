@@ -1,0 +1,19 @@
+# Extraterrestrial flux for David Kratz' AVHRR correlated-k parameterization
+# ??? preliminary                                                ???
+# ??? Planck function at center wavenumber * wavenumber integral ???
+569.917  27.890909  # atlas_plus_modtran:  30.03
+590.222  41.000640  # atlas_plus_modtran:  43.78
+613.705  36.908397  # atlas_plus_modtran:  38.93
+657.328  98.951576  # atlas_plus_modtran: 101.35
+720.768  84.987327  # atlas_plus_modtran:  84.22
+763.537  29.212701  # atlas_plus_modtran:  28.56
+842.143 142.568771
+944.741  60.133838
+1011.03  44.467533
+3550.05   1.561354
+3650.23   1.229377
+3749.57   1.261159
+3854.27   1.125316
+3961.16   1.075875
+10836.5 0.00000000
+11931.8 0.00000000

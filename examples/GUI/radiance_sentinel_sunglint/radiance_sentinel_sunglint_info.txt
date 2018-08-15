@@ -1,0 +1,2 @@
+Title: Satellite channel (solar) looking at ocean
+Radiance at Sentinel3 OLCI sensor band 13 (around 761nm) for a clearsky atmosphere over ocean as a function of viewing nadir angle. The representative wavelengths parameterization is utilized. The parameterization data need to be installed.

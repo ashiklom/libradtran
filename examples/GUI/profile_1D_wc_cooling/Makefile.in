@@ -1,0 +1,68 @@
+#
+# Makefile for libRadtran's examples/GUI/profile_1D_wc_cooling directory
+#
+# Arve Kylling
+# arve.kylling@nilu.no
+
+TOPDIR = ../../..
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = profile_1D_wc_cooling
+
+EXAMPLEFILES =  profile_1D_wc_cooling.png \
+	profile_1D_wc_cooling_info.txt  profile_1D_wc_cooling_prev.jpg \
+	profile_1D_wc_cooling.INP       profile_1D_wc_cooling_thumb.jpg \
+	profile_1D_wc_cooling.OUT      
+
+DISTFILES = Makefile.in $(EXAMPLEFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: inp.inp big.jpg thumb.jpg info.txt
+
+inp.inp:
+	cp profile_1D_wc_cooling.INP inp.inp
+
+big.jpg: 
+	cp profile_1D_wc_cooling_prev.jpg big.jpg
+
+thumb.jpg:
+	cp profile_1D_wc_cooling_thumb.jpg thumb.jpg	
+
+info.txt:
+	cp profile_1D_wc_cooling_info.txt info.txt
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/examples/GUI/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/examples/GUI/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(examplesdir)/GUI/$(THISDIR)
+	$(INSTALL_DATA) $(EXAMPLEFILES) $(examplesdir)/GUI/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof
+

@@ -1,0 +1,621 @@
+	* Version ??
+	* tools/uvspec_lex.l
+	  Added function free_output . Will
+	  eventually contain code to free the output structure. (AK)
+	* uvspec may now be built with the rt3 solver of Evans' polradtran
+     	  package. This involved a few changes. (AK)
+	* src_c/ascii.c (AK)
+	  Added following functions : 
+		ASCII_calloc_float_5D 
+		ASCII_free_float_4D	
+		ASCII_free_float_5D	
+	* When test/test.pl is run with --answers the user must now
+	  interact with the program to replace the examples/*.OUT files.
+	* tools/ancillary.c (AK)
+	  changed: 
+             (int) (input.spline_lambda_1-input.spline_lambda_0)/input.spline_lambda_step+1;
+	  to:
+             (int) ((input.spline_lambda_1-input.spline_lambda_0)/input.spline_lambda_step+1);
+   	  for obvious reasons....
+	* src_f/wcloud.f
+	  Squashed a nasty bug. Should not cause much
+ 	  harm in the UV, but very bad for ssa in the NIR. Basically a +
+	  that should have been a -. (AK's fault in the first place, fixed
+	  independently by AK and BM).
+	* tools/sza.c (AK)
+	  Changes to read_sza in order to cope with noninteger end wavelengths and sza_file.
+	* data/albedo, included missing albedo data from Feister and Grewe (AK)
+	* src_f/sdisort.f and src_f/twostr (AK)
+	  Changed schekin and tchekin respectively 
+    	  to use same tests for utau as src_f/disort.f:
+
+                IF( ABS(utau(lu)-tauc(nlyr) ))
+          $           utau(lu) = tauc(nlyr)
+
+	changed to:
+	
+                IF( ABS(utau(lu)-tauc(nlyr) ).LE.1.E-4 .OR.
+          $           (ABS(utau(lu)-tauc(nlyr)).LE.1.E-6*tauc(nlyr)))
+          $           utau(lu) = tauc(nlyr)
+	* src_c/fortran_and_c.c (AK)
+ 	  fixed an ary index problem in fortran2c_4D_float_ary,
+  	  
+
+	
+Tue Jan  4 19:05:10 MET DST 2000   Arve Kylling <arve.kylling@nilu.no>
+	* Version 0.15
+	* First is listed the major changes that most users may be
+	  interested in, next follows a detailed list of both major and 
+	  minor changes.
+
+	* MAJOR CHANGES:
+        * major rewrite and cleanup of uvspec.c. Benefits: simpler, less
+	  memory demanding and faster (about 25%) code. (BM+AK)
+	* Independent Pixel Approximation! Specify `wc_ipa' in the input
+   	  file to do an IPA calculation for the 3D cloud defined in
+	  wcloud3D.dat (format as in MC). Works with any RTE solver and
+ 	  calculates irradiance, actinic flux, and radiances.  
+	  As an alternative to wcloud3D.dat, you may specify a
+	  `wc_cloudcover' in the input file. The calculation will then use
+	  the 1D cloud specified in wc_file to do an IPA for a cloudless
+	  and an overcast pixel. (BM)
+	* more new input variables: 'wc_layer'm 'wc_set_ssa', 'wc_set_gg',
+	  'mc_photons', 'transmittance'. See documentation for description. (BM)
+	* Added more tests to test.pl and cleaned up the coding a bit. (AK)
+	* Checked for memory leaks using ccmalloc; the larger ones are all 
+	  fixed,  see below, except for the largest one: the memory for
+	  the output structure, output_struct *output, is allocated all
+	  over the place, and the memory is never freed again. This is no
+	  problem, as long as uvspec() is not called repeatedly, e.g. in a
+	  loop. (BM)
+	
+	* MINOR CHANGES AND DETAILED DESCRIPTION OF MAJOR CHANGES:
+	* tools/uvspec.c: (BM)
+     	 cleaned up uvspec(); created various functions for different tasks 
+    	 and split them up into different new source files:
+         atmosphere.c          setup clear sky atmosphere (Rayleigh, ozone, ...)
+      	 extraterrestrial.c    setup extraterrestrial irradiance
+         aerosol.c             setup atmospheric aerosol
+         cloud.c               setup water and ice clouds
+         molecular.c           setup molecular absorption other than ozone
+         sza.c                 setup solar zenith angle
+         albedo.c              setup surface albedo
+         ancillary.c           replaces uvspec_anc.c, various stuff
+
+         Each of these source files is accompanied by a header file which
+	 includes the prototypes of the public functions. uvspec.h
+	 includes all these header files, implying that '#include
+	 "uvspec.h' is enough to include any of  these functions.
+
+	 tools/uvspec.c:             cleaned up
+	 tools/atmosphere.c:         new source file
+	 tools/extraterrestrial.c:   new source file
+	 tools/aerosol.c:            new source file
+	 tools/cloud.c:              new source file
+	 tools/molecular.c:          new source file
+	 tools/sza.c:                new source file
+	 tools/albedo.c:             new source file
+	 tools/ancillary.c:          new source file
+
+	 tools/uvspec.h:             #included all following header files 
+	 tools/atmosphere.h:         new header file
+	 tools/extraterrestrial.h:   new header file
+	 tools/aerosol.h:            new header file
+	 tools/cloud.h:              new header file
+	 tools/molecular.h:          new header file
+	 tools/sza.h:                new header file
+	 tools/albedo.h:             new header file
+	 tools/ancillary.h:          new header file
+
+	 tools/uvspec_anc.c:         replaced by tools/ancillary.c
+	 tools/uvspec_anc.h:         replaced by tools/ancillary.h
+	  - added call to setup_ipa() which reads a 3D cloud (from './wcloud3D.dat')
+	    and creates a set of output->nipa independent pixels output->wcipa[] with 
+	    weights output->ipaweight[]. The weights consider the different area
+	    fractions of each pixel.
+	  - removed the input.rte.nlyr and input.rte.nlev assignments (see tools/uvspec.h)
+	  - uvspec_check(): added 
+	       else 
+	         fclose(f);
+	    after the 
+	       if ( (f = fopen(Input.slit_function_filename, "r")) == NULL) {	
+	    check for the slit function file.
+          - fixed radiance bug by replacing  
+	      output->uu[iv][lu][j][iu] = tmp_uu[iv];
+            with
+	      output->uu[iv][lu][j][iu] = tmp_uu[iv]*output->wl.fbeam[iv];
+           (in 0.14 and before, the radiance was accidentally not multiplied 
+           with the extraterrestrial irradiance).
+	* tools/uvspec.h: (BM)
+	  - added 
+        	wc_out_struct  *wcipa;
+	    to output_struct to support IPA. wcipa[ip] holds a cloud profile
+	    for each independent pixel.
+	  - added new variables
+        	 float        cloudcover;
+	         int          ipa;
+	    to input_struct
+	  - added 
+	         int wcnlam;
+	    to wc_out_struct in order to hold the number of wavelengths
+	  - removed
+        	 int nlyr;
+	         int nlev;
+	    from rte_struct because these were the only parameters in input_struct which
+	    had to be modified within uvspec()
+	  - added 
+	        #define ATMFILE_O2       5
+	        #define ATMFILE_H2O      6
+	        #define ATMFILE_CO2      7
+	        #define ATMFILE_NO2      8
+	    to do the first step towards infrared :-)
+	  - added 
+	        #define O2       2
+	        #define H2O      3
+	        #define CO2      4
+	        #define NO2      5
+	  - Added 'transmittance' as an input variable; 
+            if transmittance is specified, an extraterrestrial
+            irradiance of 1 is assumed, and no correction for
+            Earth-Sun-distance is applied.	
+	* tools/uvspec_lex.l: (BM)
+          - added new input variables: 
+            'wc_layer'  if specified, the cloud properties defined in
+	    'wc_file' are interpreted as per layer, rather than per level. 
+            As an example, a 'wc_file'                 
+                   ...
+                   3.000   0.0    10.0
+                   2.000   1.0    10.0
+                   1.000   0.0    10.0
+                   ...
+            would have a constant liquid water content of 1 g/m3 in  
+            the layer between 2 and 3km.
+            'wc_set_ssa' set water cloud single scattering albedo (as in
+	    aerosol_set_ssa) 
+            'wc_set_gg'  set water cloud asymmetry parameter (as in
+	    aerosol_set_gg) 
+	    'mc_photons' number of photons to be traced by the MC model
+	  - added input option 'wc_ipa' to specify independent pixel approximation   
+	  - added input option 'wc_cloudcover' to specify cloud cover for IPA
+	  - changed the ordering of the indices in the result arrays, due to the changes 
+	    in the array structure (see tools/solve_rte.c). The variables and their new 
+	    ordering are:
+	        Output.rfldir[lev][iv],
+	        Output.rfldn [lev][iv], 
+	        Output.flup  [lev][iv],
+	        Output.uavgso[lev][iv], 
+	        Output.uavgdn[lev][iv], 
+        	Output.uavgup[lev][iv],
+	        Output.uavg  [lev][iv],
+	        Output.u0u   [lev][iu][iv],
+	        Output.uu    [lev][j][iu][iv]
+	  - moved function calls uvspec_check(), convolve(), and spline_interpolate() to 
+	    uvspec() in tools/uvspec.c. The whole calculation is now done inside 
+	    uvspec().
+	  - Added 'transmittance' as an input variable
+	* tools/aerosol.c: (BM)
+          - fixed a bug in read_aerosol_tau(); due to an indexing problem,
+	    the lowest layer in the aerosol_tau_file was accidentally
+	    thrown away. 
+	  - changed all input.rte.nlyr to output->atm.nlyr and 
+	    input.rte.nlev to output->atm.nlev 
+	* tools/ancillary.c (BM)
+	  - new function, interpolate_wavelength()  (see tools/solve_rte.c)
+	  - new function, multiply_extraterrestrial()  (see tools/solve_rte.c)
+	  - changed spline_interpolate() and convolve() to account for the 
+	    new indexing (see tools/solve_rte.c) which shortened the code
+	    considerably.
+	  - many cosmetic changes 
+	  - added lots of 
+	    if (status!=0) {...}
+	    to comply with the sixth commandment:
+	     "If a function be advertised to return an error code in the event of 
+	      difficulties, thou shalt check for that code, yea, even though the 
+	      checks triple the size of thy code and produce aches in thy typing 
+	      fingers, for if thou thinkest ``it cannot happen to me'', 
+	      the gods shall surely punish thee for thy arrogance."
+	  - fixed a memory leak in convolve()
+	  - removed a dangerous 
+	           free(output->wl.lambda_s);
+	    which was called _before_ allocating memory for output->wl.lambda_s
+	  - Added 'transmittance' support:
+                     if (input.transmittance == 0) { ...
+	* tools/ancillary.h (BM)
+	  - added headers for the new functions in tools/ancillary.c
+	* tools/atmosphere.c:
+	  - added support for O2, H2O, CO2, and NO2 densities
+	* tools/cloud.c: (BM)
+          - fixed a small problem: 'wc_set_tau 0' works now even if the 
+            liquid water content is 0 throughout the whole atmosphere 
+            (this produced a disort error before)
+	  - memory for output->wc.wczd, output->wc.wccon, and output->wc.wceffr is 
+	    now allocated, even if no cloud file is specified (makes things safer).
+	  - removed temporary arrays (tmp_wc_dtau, tmp_wc_gg, tmp_wc_ssa)
+	  - new function to allocate memory for a wc_out_struct:
+        	int calloc_wc_out (wc_out_struct *out, int Nlam, int Nlev) 
+	  - new function to copy a wc_out_struct:
+	        int cp_wc_out (wc_out_struct *target, wc_out_struct source);
+	  - changed all input.rte.nlyr to output->atm.nlyr and 
+	    input.rte.nlev to output->atm.nlev 
+	* tools/cloud.h:
+	  - added prototypes for the new functions in cloud.c
+	* tools/extraterrestrial.c:
+	  - fixed memory leak in read_extraterrestrial() by adding 
+            ASCII_free_float (wl_data, rows);
+	* tools/ipa.c: (BM)
+	  - new source file to prepare IPA calculations (convert 3D clouds
+	    to independent 1D pixels).
+	* tools/ipa.h: (BM)
+	  - header file for ipa.c
+	* tools/Makefile.in: (BM)
+	  - added ipa.c to UVSPEC
+	* tools/molecular.c: (BM)
+	  - changed all input.rte.nlyr to output->atm.nlyr and 
+	    input.rte.nlev to output->atm.nlev 
+	* tools/solve_rte.c: (BM)
+	  - restructured arrays in output_struct:
+	    rfldir [wavelength] [level]  ->  rfldir [level][wavelength]
+	      (same for rfldn, flup, uavgso, uavgdn, uavgup, uavg)
+	    u0u [wavelength] [level] [zenith] -> u0u [level] [zenith] [wavelength]
+	    uu [wavelength] [level] [azimuth] [zenith] ->
+        	             uu [level] [azimuth] [zenith] [wavelength]
+	    This simplifies the algorithm a lot. All temporary arrays, required 
+	    for the wavelength interpolation routines could be removed. Changes 
+	    were also necessary in tools/uvspec_lex.l and tools/ancillary.c
+	    (see below).
+	  - summarized wavelength interpolation in interpolate_wavelength(); 
+	    moved this function to tools/ancillary.c;
+	    moved the function call to tools/uvspec, function uvspec()
+	  - summarized multiplication with extraterrestrial irradiance to
+	    multiply_extraterrestrial(); moved this function to tools/ancillary.c;
+	    moved the function call to tools/uvspec, function uvspec()
+	  - many, many cosmetic changes
+	  - added loop over all independent pixels; 
+	    for 1D calculations, a "1 pixel" setup is created in setup_ipa().
+	  - fixed memory leak: replaced 
+		for (j=0;j<input.rte.nphi;j++)
+		  free(tmp_uu_c[j][lu]);
+	    with
+		for (j=0;j<input.rte.maxphi;j++)
+		  free(tmp_uu_c[j][lu]);
+	* tools/solve_rte.h: (BM)
+	  - added prototype
+        	int setup_result (input_struct input, output_struct *output);
+	  - replaced  
+             #ifdef __solver_h
+              ...
+	    with 
+              #ifdef __solve_rte_h
+              ...
+	    (to avoid collision with the new src_f/solver.h)
+	* test/test.pl: (BM)
+	  - replaced 
+	    printf stderr "Found %d serious differences for $test test.\n";
+          with 	
+      	    printf stderr "Found %d serious differences for $test test.\n", $ndiffs;
+          at two occurrences.     
+         (test.pl always reported '0 serious differences' before)
+	* test/test.pl: (AK)
+	  Added --nox option to J-value tests. Otherwise it does not work properly.
+	* src_c/Makefile.in: (BM)
+	  - added mc.h to INCLUDES
+	  - add two dependency lines for radiative.c and crs_o3.c:
+	        radiative.o: radiative.c radiative.h ../tools/uvspec.h
+	        crs_o3.o:    crs_o3.c crs_o3.h ../tools/uvspec.h
+	    radiative.c and crs_o3 depend on tools/uvspec.h because they use
+	    output_struct, etc. Which is kind of weird because here the library 
+	    (libRadtran_c.a) depends on the tool (uvspec). 
+	    Suggestion: Move respective functions to a source file in tools/, 
+	    e.g., ancillary.c ?
+	* src_c/ascii.c: (BM)
+	  - changed field separator in ASCII_parsestring() to "\t\v\f\r\n"
+            (should improve handling of DOS files under UNIX and vice versa)
+          - added parameter 'down' to ASCII_sortarray() to allow sorting in
+            descending order.
+          - some small fixes in the documentation
+          src_c/ascii.h: (BM)
+          - added parameter 'down' to ASCII_sortarray() (see above)
+	* src_c/cnv.c (BM)
+	  - small change in the documentation    
+	* src_c/crs_o3.c:
+	  - fixed memory leak in crs_o3() by adding 
+	       ASCII_free_float(data, rows);
+	    and changing 
+	       static float **data=NULL;
+	    to 
+	       float **data=NULL;
+	  - some cleanup
+	* src_c/mc.c: (BM)
+	  - converted memory-consuming structures to float; these are 
+	      profile3D *ksca3D=NULL, *kabs3D=NULL, *gcld3D=NULL;  
+	    and 
+	      float  ***k3D=NULL, ***g3D=NULL, ***w3D=NULL;
+	  - removed the variable calc3D; all calculations are now 3D by default. 
+	    For a 1D calculation simply specify a wcloud3D.dat without any 
+	    cloudy pixels.
+	  - created 
+		typedef struct {
+	          double **edir;
+	          double **edn; 
+	          double **eup;  
+	          double **fdir;
+	          double **fdn; 
+	          double **fup;  
+	        } result;
+	    to hold surface radiation data (result *earth) and profiles (result **alt).
+	  - fixed some memory leaks (they are everywhere :-)
+          - Added 'absorption' feature. If absorption is set
+            to 1 in mc(), the absorption for each 3D box
+            is calculated and written to a file.
+          - Added 'radiance' feature. Radiances in any direction 
+            can be calculated by specifying the direction and
+            the opening angle in sample2D.dat
+          - Added support for non-HG phase functions; if phase is
+            set to 1 in mc(), the Legendre coeffients of the 
+            cloud phase function are read from a file.
+	  - A lot of cleanup
+	* src_c/mc.h: (BM)
+	  - new header file for mc.c
+	* src_c/radiative.c: (BM)
+	  - bugfix in optical_properties();    
+            changed 	
+               output->omaer[atm_out->nlyr-1-lu]   = output->aer.gg[iv][lu];
+               output->omcld[atm_out->nlyr-1-lu]   = output->wc.gg[iv][lu]; 
+               output->omice[atm_out->nlyr-1-lu]   = output->ice.gg[iv][lu];
+  	    to
+               output->fgaer[atm_out->nlyr-1-lu]   = output->aer.gg[iv][lu];
+               output->fgcld[atm_out->nlyr-1-lu]   = output->wc.gg[iv][lu];
+               output->fgice[atm_out->nlyr-1-lu]   = output->ice.gg[iv][lu];    
+	    (typical copy-and-paste error :-)
+	  - fixed memory leak in set_out(): added 
+	         free(cumtau);
+	    at the end of setout()
+	* src_c/spl.h (BM)
+	  - replaced 
+              #include <numeric.h>
+	    by
+              #include "numeric.h"
+	* src_c/wcloud3d.c:
+	  - converted memory-consuming structures from double to float; the function 
+	    call of read_3D_cloud() changed to 
+	      int read_3D_cloud (char *filename, 
+                         int *Nx, int *Ny, int *Nz,
+                         double *delX, double *delY,
+                         double  **zcld3D, float ****kcld3d, int **threed,
+                         float ****gcld3d, int *gspec,
+                         float ****wcld3d, int *wspec);
+	  - fixed some small memory leaks
+	  - Added 'radiance' support
+	* src_c/wcloud3d.h:
+	  - changed prototype of read_3D_cloud (see src_c/wcloud3d.c)
+	  - Added 'radiance' support
+	* src_f/disort.f:
+	  - changed 
+	      IF( ABS(UTAU(LU)-TAUC(NLYR)).LE.1.E-4)
+	     $             UTAU(LU) = TAUC(NLYR)
+	    to 
+	      IF( (ABS(UTAU(LU)-TAUC(NLYR)).LE.1.E-4 ) .OR.
+	     $             (ABS(UTAU(LU)-TAUC(NLYR)).LE.1.E-6*TAUC(NLYR)) )
+	     $             UTAU(LU) = TAUC(NLYR)
+	      IF( ABS(UTAU(LU)).LE.1.E-6 )
+	     $             UTAU(LU) = 0.0
+	    This should only be a temporary fix. The problem is that since 0.15-alpha_b, 
+	    UTAU is calculated by a C program, set_out(), while TAUC is calculated 
+	    by a Fortran program, disort(). Differences in the numerical treatment
+	    between Fortran and C may cause the following condition to be met where 
+	    it shouldn't be. Can that be handled within set_out() ?
+	* src_f/wcloud.f: (BM)
+          - added parameter 'wclyr' to wcloud() and changed source code
+  	    accordingly. wclyr .EQ. 0 means that the cloud properties are
+            defined per level (as before the change) while a different
+	    value means cloud properties  defined per layer.
+	* src_f/Makefile.in (BM)
+	  - added mc.h to SPECIAL
+	* src_f/solver.h (BM)
+	  - new header file for the Fortran RTE solvers
+	* doc/Makefile.in: (BM)
+	  - removed ../src_f/rayleigh.f and ../src_f/setout.f from F_SOURCES
+	* README.windows: (BM)
+          - replaced with the newer version from December 1, 1998.
+
+
+Wed Mar 31 14:44:52 MET DST 1999   Arve Kylling <arve.kylling@nilu.no>
+	* Version 0.14
+	* Fixed a memory bug in aerprof.f. uvspec crashed with a
+	  'segmentation fault' when aerosols were switched on 
+          AND the number of levels in the atmosphere file was smaller than
+	  34. Cured and fixed by BM.
+	* Temporary path fixes in flexstor/Spectrum.pm. Bernhard Mayer (BM).
+	* A MC model is now callable from uvspec. Uvspec has been changed
+	  to allow for this. The MC model is available upon request from
+	  BM.
+	* tools/snowalbedo.c split in two and parts moved to
+	  src_c/snow.c while main function stayed in tools/snowalbedo.c
+	  (BM)
+	* 'C-u 8 M-x texinfo-multiple-files-update' added to
+	  doc/Makefile.in and corresponding entry in the Makefile to call
+	  emacs in batch mode, BM.
+	* 'ALL_FFLAGS = $(FFLAGS)' added to Makeconf.in because 
+	  the Fortran compiler was called with command line options
+          $(ALL_FFLAGS) which was not defined, BM.
+	* tools/uvspec_anc.c: Cleaned up memory allocation and reading of 
+          atm_out->dens. Remover 'OTHER' column, BM.
+	*  src_c/sun.c: Added two functions:
+           Gregorian2Julian() and Julian2Gregorian() 
+           These functions help to answer questions like 
+           "which date is 666 days after December 31, 1999?", BM.
+	*  src_c/sun.c: Fixed a small error in declination() which 
+           happened to be there due to an inconsistency in Iqbal
+           (replaced 0.07257 by 0.070257 and checked against original
+           reference Spencer), BM.
+	*  Fixed numerous problems with test/test.pl. Earlier it would
+	   happily say that all tests were succesful even if that was not
+	   true. Should work now, AK.
+        *  src_c/linear.c, src_c/spl.c, src_c/spl.h: Small fix to 
+           linear_coeffc() and calc_splined_value to correctly 
+           handle linear "interpolation" of 0 and 1 data points, BM.
+        *  ./README.windows: updated documentation to version beta 20 
+           of the Cygnus compiler.
+        *  tools/uvspec_anc.c: Introduced a new shift_atmosphere()
+    	   function which no longer interpolates the shifted profiles back
+	   to the original altitudes. Altitudes are shifted ( z' = z -
+	   altitude ), and the z'=0 layer is created by linear
+	   interpolation between the adjacent layers. E.g. altitude = 1.6
+	   would shift an original profile (0, 1, 2, 3, ..., 120 km) to
+	   (-1.6, -0.6, 0.4, 1.4, ..., 118.4 km). Values at z' = 0km are
+	   interpolated linearely between z' = -0.6 km and 0.4 km. The
+	   final profile has values at (0, 0.4, 1,4, ..., 118.4 km). 
+           Advantages compared to the old method: 
+           (1) No interpolation required, except for z'=0. No introduction
+              of extra uncertainty :-)
+           (2) Cloud handling is pretty easy: just subtract altitude from 
+              z_cloud, that's it!
+           Disadvantages: Probably none. BM.
+	*  Cloud profiles are now shifted in the same way as the
+	   atmosphere profiles. This required the following changes:
+	   tools/uvspec_anc.c: Introduced new function, shift_cloud()
+	   which simply subtracts altitude from wczd[]. 
+	   tools/uvspec_anc.h: added prototype for shift_cloud().
+           tools/uvspec.c: Inserted call to shift_cloud(), re-arranged
+	   order of checks a little bit (the cloud profile is checked if
+	   it matches the shifted atmospheric profile, AFTER shifting, of
+	   course), BM. 
+        *  tools/uvspec_lex.l: changed type of 'altitude' from FLOAT to
+           SIGNED_FLOAT; negative altitudes should be no problem, given
+	   that the profiles start below the specified altitude, BM.
+        *  Removed $(OBJECTS): $(SOURCES) from src_c/Makefile.in, kind of
+     	   overkill, BM+AK.
+ 	*  The uvspec radiance test did not include aerosols even if that
+    	   was stated in the documentation. It now does, AK.
+        *  Included uvspec example with water clouds and aerosol_tau_file 
+	   in aerosol example., AK.
+	
+Fri Aug 14 21:30:26 MET DST 1998   Arve Kylling <arve.kylling@nilu.no>
+	* Version 0.13
+	* Fixed memory allocation bug found and corrected by Bernhard
+     	  Mayer. 
+	* Fixed a bug that caused aerosol visibility to always be
+ 	  infinite. Caused by wrong initialization of angstrom beta
+	  coefficient. Thanks to Andre Lehmann (dal@sap.sma.ch) for
+	  reporting the problem. Andre Lehmann also reported the memory
+	  bug mentioned above.
+	* Included perl stuff for calculation of J-values. See
+	  tools/Calc_J.pl.
+	* Included perl stuff for reading flexstor files. See flexstor
+          directory. 
+	
+Thu Jul  9 14:54:05 MET DST 1998   Arve Kylling <arve.kylling@nilu.no>
+	* Version 0.12
+	* A number of cleanups in the documentation, Bernhard Mayer.
+	* altitude input parameter added. Bernhard Mayer.
+	* vac2air, a tool to shift spectra from vacuum 2 air or 
+	  reverse is a new addition, Bernhard Mayer.	  
+	* new o3 cross section parameterization. Ola Engelsen.
+	* Fixed the NAN problem on all computers (?).
+	* All input parameters that in previos versions required 
+	  floats, do now accept integers as well, e.g 
+	  "ozone_column 300" and "ozone_column 300.0" gives the
+	  same result.
+	* Temporary fix for return 0 statements in uvspec.c. See 
+	  TODO for a possible clean up.
+	* Cleaned up uvspec.c a little (actually just moved a lot of stuff
+	  to uvspec_anc.c)
+	* If wavelength albedo is specified it is know linearly
+	  interpolated instead of using cubic splines. The latter caused
+	  negative albedos.
+	* uvspec may now produce (unchecked) flexstor output.
+	
+Thu Apr 16 15:34:11 MET DST 1998   Arve Kylling <arve.kylling@nilu.no>
+	* Version 0.11
+	* Fixed a programming error in src_f/setout.f causing radiation
+	  quantities to be output in the wrong altitude order.
+	* Fixed a problem in the mapping of 1-D fortran arys to 
+	  4-D C arys, src_c/fortran_and_c.c
+	
+Tue Apr 14 12:40:10 MET DST 1998   Arve Kylling <arve.kylling@nilu.no>
+	* Version 0.10
+	* Instructions for installation of libRadtran under windows
+	  added. Courtesy B. Mayer.
+	* Convolution of a spectrum with a slit function and subsequent
+	  spline interpolation to specified wavelengths may now been done
+	  using uvspec, i.e. there is no need to call conv and spline
+	  afterwards. 
+	* A preliminary Mie Program has been added.	
+	
+Mon Feb 16 15:43:17 MET 1998   Arve Kylling <arve.kylling@nilu.no>
+	* Version 0.09
+	* Fixed a memory allocation bug in the 3D and 4D functions in ascii.c 
+        * Number of minor fixes to get libRadtran running under IBM AIX.
+	* Make check target implemented. Includes the addition of
+	  a test directory.
+	
+Tue Dec 30 11:22:02 MET 1997   Arve Kylling <arve.kylling@nilu.no>
+	* Version 0.08
+	* New uvspec input parameter wc_set_tau which is used to
+	  set the total water cloud optical depth for all wavelengths.
+	* Introduced  parameter transmittance_wl_file which allows
+	  users to select their own internal transmittance grid
+	  (possibly dangerous option:-)
+	* Gen_wc_tab, a perl script to generate tables used to 
+	  retrieve the cloud optical depth from global radiation is included.
+        * read_o3_tab modified to read tables generated by Gen_wc_tab.
+	
+Fri Nov 21 12:49:41 MET 1997   Arve Kylling <arve.kylling@nilu.no>
+	
+	* Version 0.07
+	* Better help menu in time2sza due to Ola.Engelsen@itek.norut.no
+	* The twostr radiative transfer solver is now included.
+	* Gen_o3_tab, a perl script to generate tables used to 
+	  retrieve ozone columns from global radiation is included.
+	* uvspec calculates radiances.
+	* examples directory added.
+	
+Fri Sep 26 09:55:26 MET 1997   Arve Kylling <arve.kylling@nilu.no>
+	
+	* Version 0.06
+	* User may now chose between Molina and Molina, Bass and Paur, or
+	  Daumont et al. ozone cross sections. Thanks to Ola 
+	  (Ola.Engelsen@itek.norut.no) for this possibility.
+	* Delta-M scaling may be turned on/off
+	* More documentation.
+
+Wed Sep 10 11:55:05 MET 1997   Arve Kylling <arve.kylling@nilu.no>
+	
+	* Version 0.05
+	* Added aerosol_tau_file input parameter to uvspec.
+	* Added prndis, print disort input/output, parameter.
+	* Simplified configure.in.
+	* A number of minor bug fixes.
+	* More documentation.
+	* I have changed affiliation:-)
+	
+Sun Aug 10 21:37:52 MET 1997  Arve Kylling <arve.kylling@itek.norut.no>
+	
+	* Version 0.04
+	* uvspec.f -> uvspec.c, reads input file using flex
+	* which means, new input file format.
+	* Added allocation of memory for 3D float arys to ascii.c
+	* More documentation
+	
+Wed Apr  9 12:41:50 MET 1997  Arve Kylling <arve.kylling@itek.norut.no>
+
+	* Version 0.02
+	* Uvspec outputs uavg_dn and uavg_up instead of uavg.
+	* Fixed a bug in crs_o3.f.
+	* Ozone absorption in the Chappuis band included.
+	* conv (convolution) and spline (spline interpolation) from
+	  B. Mayer included.
+
+Wed Mar 12 21:22:18 MET 1997  Arve Kylling <arve.kylling@itek.norut.no>
+
+	* Version 0.01
+	* written time2sza.
+	* Fixed mixing files problems with version 0.00.
+	* Fixed fortran bug in com2tex.
+	* Fixed bug while using 'sca_file' input directive for uvspec.
+
+Wed Mar 12 11:06:42 MET 1997   Arve Kylling <arve.kylling@itek.norut.no>
+
+	* Version 0.00
+	* libRadtran born
+

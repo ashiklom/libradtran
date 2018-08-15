@@ -1,0 +1,51 @@
+#
+# Makefile for libRadtran's bin directory
+#
+# Bernhard Mayer
+# bernhard.mayer@dlr.de
+
+TOPDIR = ../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = bin
+
+DATAFILES = 
+
+DISTFILES = Makefile.in
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../`cat ../.fname`/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../`cat ../.fname`/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/$THISDIR
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../config.status
+	cd ../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

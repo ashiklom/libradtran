@@ -1,0 +1,2 @@
+Title: Radiance
+The downwelling radiance for a one layer cloud is calculated in the principal plane. WARNING: This example sets nstr=126 and thus requires a lot of memory. You may also have to increase MXUMU and MXCMU in the file libsrc_f/DISORT.MXD and recompile uvspec.

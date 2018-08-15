@@ -1,0 +1,69 @@
+#
+# Makefile for libRadtran's data/ic/yang56 directory
+#
+# Bernhard Mayer
+# bernhard.mayer@dlr.de
+
+TOPDIR = ../../../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = yang56
+
+DATAFILES =  ext.Solid-Column     ssa.Solid-Column     g.Solid-Column  \
+             ext.Hollow-Column    ssa.Hollow-Column    g.Hollow-Column \
+             ext.Rosette-4        ssa.Rosette-4        g.Rosette-4     \
+             ext.Rosette-6        ssa.Rosette-6        g.Rosette-6     \
+             ext.Rough-Aggregate  ssa.Rough-Aggregate  g.Rough-Aggregate     \
+             ext.Plate            ssa.Plate            g.Plate         \
+             ext.Dendrite         ssa.Dendrite         g.Dendrite
+
+DATAFILES2 =  ext.new.Solid-Column     ssa.new.Solid-Column     g.new.Solid-Column  \
+              ext.new.Hollow-Column    ssa.new.Hollow-Column    g.new.Hollow-Column \
+              ext.new.Rosette-4        ssa.new.Rosette-4        g.new.Rosette-4     \
+              ext.new.Rosette-6        ssa.new.Rosette-6        g.new.Rosette-6     \
+              ext.new.Rough-Aggregate  ssa.new.Rough-Aggregate  g.new.Rough-Aggregate     \
+              ext.new.Plate            ssa.new.Plate            g.new.Plate         \
+              ext.new.Dendrite         ssa.new.Dendrite         g.new.Dendrite      \
+              ext.new.Droxtal          ssa.new.Droxtal          g.new.Droxtal       \
+              ext.new.Spheroid         ssa.new.Spheroid         g.new.Spheroid 
+
+
+DISTFILES = Makefile.in $(DATAFILES) $(DATAFILES2)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+install:
+	$(MKPATH) $(datafiledir)/ic/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(DATAFILES2) $(datafiledir)/ic/$(THISDIR)
+.PHONY: clean
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/ic/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/ic/$(THISDIR)
+.PHONY: mystic-dist
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

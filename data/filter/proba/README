@@ -1,0 +1,11 @@
+The response functions are from CHRIS Data Format document.
+
+CHRIS has different operation modes, which are indicated by the letter after the last underscore of the names of the filterfunctions:
+*_aXX: Mode 1
+*_wXX: Mode 2 - water bands
+*_lXX: Mode 3 - land channels
+*_lXXa: Mode 3a - land channels
+*_cXX: Mode 4 - chlorophyll band set
+*_hXX: Mode 5 - land channels
+
+[XX is the number of channel]

@@ -1,0 +1,358 @@
+angres.o: angres.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h
+snowalbedo.o: snowalbedo.c ../libsrc_c/getopt.h ../libsrc_c/snow.h \
+ ../libsrc_c/ascii.h ../libsrc_c/numeric.h ../libsrc_c/equation.h \
+ ../libsrc_c/numeric.h ../libsrc_c/function.h ../libsrc_c/spl.h \
+ ../libsrc_c/locate.h ../libsrc_c/linear.h ../libsrc_c/cnv.h \
+ ../libsrc_c/regress.h ../libsrc_c/integrat.h ../libsrc_c/table.h \
+ ../libsrc_c/ascii.h ../libsrc_c/table.h ../libsrc_f/f77-uscore.h
+conv.o: conv.c ../libsrc_c/ascii.h ../libsrc_c/numeric.h \
+ ../libsrc_c/equation.h ../libsrc_c/numeric.h ../libsrc_c/function.h \
+ ../libsrc_c/spl.h ../libsrc_c/locate.h ../libsrc_c/linear.h \
+ ../libsrc_c/cnv.h ../libsrc_c/regress.h ../libsrc_c/integrat.h \
+ ../libsrc_c/table.h ../libsrc_c/ascii.h
+integrate.o: integrate.c ../libsrc_c/ascii.h ../libsrc_c/numeric.h \
+ ../libsrc_c/equation.h ../libsrc_c/numeric.h ../libsrc_c/function.h \
+ ../libsrc_c/spl.h ../libsrc_c/locate.h ../libsrc_c/linear.h \
+ ../libsrc_c/cnv.h ../libsrc_c/regress.h ../libsrc_c/integrat.h \
+ ../libsrc_c/table.h ../libsrc_c/ascii.h ../libsrc_c/getopt.h
+spline.o: spline.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h \
+ ../libsrc_c/numeric.h ../libsrc_c/equation.h ../libsrc_c/numeric.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h
+cldprp.o: cldprp.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h \
+ ../libsrc_c/numeric.h ../libsrc_c/equation.h ../libsrc_c/numeric.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h ckdfu.h \
+ uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h
+atmosphere.o: atmosphere.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ckdfu.h ../libsrc_c/ascii.h ../libsrc_c/fortran_and_c.h \
+ ../libsrc_c/ascii.h
+cloud.o: cloud.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ckdfu.h \
+ ../libsrc_c/ascii.h ../libsrc_c/numeric.h ../libsrc_c/equation.h \
+ ../libsrc_c/numeric.h ../libsrc_c/function.h ../libsrc_c/spl.h \
+ ../libsrc_c/locate.h ../libsrc_c/linear.h ../libsrc_c/cnv.h \
+ ../libsrc_c/regress.h ../libsrc_c/integrat.h ../libsrc_c/table.h \
+ ../libsrc_c/ascii.h ../libsrc_c/miecalc.h ../libsrc_c/wcloud3d.h \
+ ../libsrc_c/mystic.h ../libsrc_c/errors.h
+redistribute.o: redistribute.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/ascii.h ../libsrc_c/errors.h
+ckdfu.o: ckdfu.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/fortran_and_c.h ../libsrc_c/ascii.h ckdfu.h \
+ fl_radparams.cinc
+ancillary.o: ancillary.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/cdisort.h ckdfu.h ../libsrc_c/ascii.h \
+ ../libsrc_c/netCDF_functions.h ../libsrc_c/numeric.h \
+ ../libsrc_c/equation.h ../libsrc_c/numeric.h ../libsrc_c/function.h \
+ ../libsrc_c/spl.h ../libsrc_c/locate.h ../libsrc_c/linear.h \
+ ../libsrc_c/cnv.h ../libsrc_c/regress.h ../libsrc_c/integrat.h \
+ ../libsrc_c/table.h ../libsrc_c/ascii.h ../libsrc_f/solver.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/errors.h
+aerosol.o: aerosol.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/ascii.h ../libsrc_c/numeric.h ../libsrc_c/equation.h \
+ ../libsrc_c/numeric.h ../libsrc_c/function.h ../libsrc_c/spl.h \
+ ../libsrc_c/locate.h ../libsrc_c/linear.h ../libsrc_c/cnv.h \
+ ../libsrc_c/regress.h ../libsrc_c/integrat.h ../libsrc_c/table.h \
+ ../libsrc_c/ascii.h ../libsrc_c/miecalc.h ../libsrc_c/fortran_and_c.h
+ck.o: ck.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ckdfu.h \
+ ../libsrc_c/ascii.h ../libsrc_c/fortran_and_c.h ../libsrc_c/ascii.h \
+ ../libsrc_f/avhrr_kratz.h ../libsrc_f/f77-uscore.h sbtaugas.h
+ipa.o: ipa.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ../libsrc_c/ascii.h \
+ ../libsrc_c/errors.h
+plkavg.o: plkavg.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_f/solver.h ../libsrc_f/f77-uscore.h
+cldprp.o: cldprp.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h \
+ ../libsrc_c/numeric.h ../libsrc_c/equation.h ../libsrc_c/numeric.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h ckdfu.h \
+ uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h
+time2sza.o: time2sza.c ../libsrc_c/getopt.h ../libsrc_f/f77-uscore.h
+sza2time.o: sza2time.c ../libsrc_c/getopt.h ../libsrc_c/sun.h
+zenith.o: zenith.c ../libsrc_c/getopt.h ../libsrc_c/sun.h \
+ ../libsrc_c/sunpos.h
+noon.o: noon.c ../libsrc_c/getopt.h ../libsrc_c/sun.h \
+ ../libsrc_c/sunpos.h
+make_slitfunction.o: make_slitfunction.c ../libsrc_c/getopt.h
+make_angresfunc.o: make_angresfunc.c ../libsrc_c/getopt.h
+read_Stamnes_tab.o: read_Stamnes_tab.c ../libsrc_c/getopt.h \
+ ../libsrc_c/ascii.h ../libsrc_c/numeric.h ../libsrc_c/equation.h \
+ ../libsrc_c/numeric.h ../libsrc_c/function.h ../libsrc_c/spl.h \
+ ../libsrc_c/locate.h ../libsrc_c/linear.h ../libsrc_c/cnv.h \
+ ../libsrc_c/regress.h ../libsrc_c/integrat.h ../libsrc_c/table.h \
+ ../libsrc_c/ascii.h ../libsrc_c/table.h ../libsrc_c/sun.h
+mie.o: mie.c ../libsrc_c/ascii.h mie.h ../libsrc_c/miecalc.h \
+ ../libsrc_c/numeric.h ../libsrc_c/equation.h ../libsrc_c/numeric.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h \
+ ../libsrc_c/getopt.h
+mie_lex.o: mie_lex.c ../libsrc_c/getopt.h mie.h ../libsrc_c/miecalc.h
+phase.o: phase.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h \
+ ../libsrc_c/miecalc.h
+pmom.o: pmom.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h \
+ ../libsrc_c/numeric.h ../libsrc_c/equation.h ../libsrc_c/numeric.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h
+sofi.o: sofi.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h \
+ ../libsrc_c/numeric.h ../libsrc_c/equation.h ../libsrc_c/numeric.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h \
+ ../libsrc_c/sofi.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h
+uvspec.o: uvspec.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ../libsrc_c/numeric.h \
+ ../libsrc_c/equation.h ../libsrc_c/numeric.h ../libsrc_c/function.h \
+ ../libsrc_c/spl.h ../libsrc_c/locate.h ../libsrc_c/linear.h \
+ ../libsrc_c/cnv.h ../libsrc_c/regress.h ../libsrc_c/integrat.h \
+ ../libsrc_c/table.h ../libsrc_c/ascii.h
+ancillary.o: ancillary.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/cdisort.h ckdfu.h ../libsrc_c/ascii.h \
+ ../libsrc_c/netCDF_functions.h ../libsrc_c/numeric.h \
+ ../libsrc_c/equation.h ../libsrc_c/numeric.h ../libsrc_c/function.h \
+ ../libsrc_c/spl.h ../libsrc_c/locate.h ../libsrc_c/linear.h \
+ ../libsrc_c/cnv.h ../libsrc_c/regress.h ../libsrc_c/integrat.h \
+ ../libsrc_c/table.h ../libsrc_c/ascii.h ../libsrc_f/solver.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/errors.h
+atmosphere.o: atmosphere.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ckdfu.h ../libsrc_c/ascii.h ../libsrc_c/fortran_and_c.h \
+ ../libsrc_c/ascii.h
+extraterrestrial.o: extraterrestrial.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/ascii.h ../libsrc_c/sun.h
+aerosol.o: aerosol.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/ascii.h ../libsrc_c/numeric.h ../libsrc_c/equation.h \
+ ../libsrc_c/numeric.h ../libsrc_c/function.h ../libsrc_c/spl.h \
+ ../libsrc_c/locate.h ../libsrc_c/linear.h ../libsrc_c/cnv.h \
+ ../libsrc_c/regress.h ../libsrc_c/integrat.h ../libsrc_c/table.h \
+ ../libsrc_c/ascii.h ../libsrc_c/miecalc.h ../libsrc_c/fortran_and_c.h
+cloud.o: cloud.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ckdfu.h \
+ ../libsrc_c/ascii.h ../libsrc_c/numeric.h ../libsrc_c/equation.h \
+ ../libsrc_c/numeric.h ../libsrc_c/function.h ../libsrc_c/spl.h \
+ ../libsrc_c/locate.h ../libsrc_c/linear.h ../libsrc_c/cnv.h \
+ ../libsrc_c/regress.h ../libsrc_c/integrat.h ../libsrc_c/table.h \
+ ../libsrc_c/ascii.h ../libsrc_c/miecalc.h ../libsrc_c/wcloud3d.h \
+ ../libsrc_c/mystic.h ../libsrc_c/errors.h
+cloud3d.o: cloud3d.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ckdfu.h ../libsrc_c/wcloud3d.h ../libsrc_c/mystic.h elevation2d.h \
+ temperature2d.h ../libsrc_c/ascii.h ../libsrc_c/errors.h \
+ ../libsrc_c/vroom.h
+elevation2d.o: elevation2d.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ elevation2d.h ../libsrc_c/ascii.h
+temperature2d.o: temperature2d.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/wcloud3d.h ../libsrc_c/mystic.h ../libsrc_c/ascii.h
+molecular.o: molecular.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/ascii.h ../libsrc_c/numeric.h ../libsrc_c/equation.h \
+ ../libsrc_c/numeric.h ../libsrc_c/function.h ../libsrc_c/spl.h \
+ ../libsrc_c/locate.h ../libsrc_c/linear.h ../libsrc_c/cnv.h \
+ ../libsrc_c/regress.h ../libsrc_c/integrat.h ../libsrc_c/table.h \
+ ../libsrc_c/ascii.h ../libsrc_c/rayleigh.h
+sza.o: sza.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ../libsrc_c/ascii.h \
+ ../libsrc_c/sun.h ../libsrc_f/solver.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/cdisort.h
+albedo.o: albedo.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/fortran_and_c.h ../libsrc_c/ascii.h ../libsrc_c/ascii.h
+redistribute.o: redistribute.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/ascii.h ../libsrc_c/errors.h
+fluorescence.o: fluorescence.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/ascii.h
+molecular3d.o: molecular3d.c uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h \
+ solve_rte.h sza.h ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/ascii.h
+solve_rte.o: solve_rte.c solve_rte.h uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ ancillary.h atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h \
+ fluorescence.h ipa.h molecular.h molecular3d.h redistribute.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ../libsrc_c/ascii.h \
+ ../libsrc_c/numeric.h ../libsrc_c/equation.h ../libsrc_c/numeric.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h \
+ ../libsrc_c/fortran_and_c.h ../libsrc_c/rodents.h \
+ ../libsrc_c/twostrebe.h ../libsrc_c/twomaxrnd.h ../libsrc_c/cdisort.h \
+ ../libsrc_c/c_tzs.h ../libsrc_c/sslidar.h ../libsrc_c/errors.h \
+ ../libsrc_c/sos.h ../libsrc_f/solver.h ../libsrc_f/f77-uscore.h
+ipa.o: ipa.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ../libsrc_c/ascii.h \
+ ../libsrc_c/errors.h
+ck.o: ck.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ckdfu.h \
+ ../libsrc_c/ascii.h ../libsrc_c/fortran_and_c.h ../libsrc_c/ascii.h \
+ ../libsrc_f/avhrr_kratz.h ../libsrc_f/f77-uscore.h sbtaugas.h
+ckdfu.o: ckdfu.c uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h \
+ ../libsrc_c/fortran_and_c.h ../libsrc_c/ascii.h ckdfu.h \
+ fl_radparams.cinc
+uvspecfunction.o: uvspecfunction.c ../libsrc_c/ascii.h
+uvspec_mpi.o: uvspec_mpi.c
+uvspec_lex.o: uvspec_lex.c ../libsrc_c/getopt.h ../libsrc_c/sun.h \
+ uvspec.h ../libsrc_c/mystic.h ../libsrc_c/phasetable.h \
+ ../libsrc_c/cdisort.h ../libsrc_c/ocean.h ../libsrc_f/f77-uscore.h \
+ ../libsrc_c/ambralsfor.h albedo.h aerosol.h ancillary.h atmosphere.h \
+ ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h ipa.h \
+ molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ../libsrc_c/ascii.h \
+ ../libsrc_c/netCDF_functions.h ../libsrc_f/solver.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/cdisort.h \
+ ../libsrc_c/uvspecrandom.h
+vac2air.o: vac2air.c ../libsrc_c/getopt.h ../libsrc_c/ascii.h \
+ ../libsrc_c/numeric.h ../libsrc_c/equation.h ../libsrc_c/numeric.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h \
+ ../libsrc_c/wavelength.h
+vrs_ocean_albedo.o: vrs_ocean_albedo.c ../libsrc_c/getopt.h \
+ ../libsrc_c/ascii.h ancillary.h uvspec.h ../libsrc_c/mystic.h \
+ ../libsrc_c/phasetable.h ../libsrc_c/cdisort.h ../libsrc_c/ocean.h \
+ ../libsrc_f/f77-uscore.h ../libsrc_c/ambralsfor.h albedo.h aerosol.h \
+ atmosphere.h ck.h cloud.h cloud3d.h extraterrestrial.h fluorescence.h \
+ ipa.h molecular.h molecular3d.h redistribute.h solve_rte.h sza.h \
+ ../libsrc_c/yang56.h ../libsrc_c/specrend_uvspec.h ../libsrc_c/numeric.h \
+ ../libsrc_c/equation.h ../libsrc_c/numeric.h ../libsrc_c/function.h \
+ ../libsrc_c/spl.h ../libsrc_c/locate.h ../libsrc_c/linear.h \
+ ../libsrc_c/cnv.h ../libsrc_c/regress.h ../libsrc_c/integrat.h \
+ ../libsrc_c/table.h ../libsrc_c/ascii.h ../libsrc_c/table.h
+ssradar.o: ssradar.c ../libsrc_c/errors.h ../libsrc_c/ascii.h \
+ ../libsrc_c/integrat.h ../libsrc_c/numeric.h ../libsrc_c/equation.h \
+ ../libsrc_c/function.h ../libsrc_c/spl.h ../libsrc_c/locate.h \
+ ../libsrc_c/linear.h ../libsrc_c/cnv.h ../libsrc_c/regress.h \
+ ../libsrc_c/integrat.h ../libsrc_c/table.h ../libsrc_c/ascii.h

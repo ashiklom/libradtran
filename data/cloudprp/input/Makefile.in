@@ -1,0 +1,54 @@
+#
+# Makefile for libRadtran's data/cloudprp/input directory
+#
+# Arve Kylling
+# arve.kylling@gmail.com
+
+TOPDIR = ../../../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+THISDIR = input
+
+DATAFILES =  ch006.wvl ch008.wvl ch016.wvl ch039.wvl ch062.wvl \
+             ch073.wvl ch087.wvl ch097.wvl ch108.wvl ch120.wvl ch134.wvl  
+	           
+
+DISTFILES = Makefile.in $(DATAFILES)
+
+MYSTICDISTFILES = $(DISTFILES)
+
+include $(TOPDIR)/Makeconf
+
+all: 
+
+dist: all
+	ln $(DISTFILES) ../../../`cat ../../../.fname`/data/cloudprp/$(THISDIR)
+.PHONY: dist
+
+mystic-dist: all
+	ln $(MYSTICDISTFILES) ../../../`cat ../../../.fname`/data/cloudprp/$(THISDIR)
+.PHONY: mystic-dist
+
+install: all
+	$(MKPATH) $(datafiledir)/cloudprp/$(THISDIR)
+	$(INSTALL_DATA) $(DATAFILES) $(datafiledir)/cloudprp/$(THISDIR)
+.PHONY: install
+
+clean:
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../../../config.status
+	cd ../../../; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof

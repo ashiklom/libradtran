@@ -1,0 +1,23 @@
+# Extraterrestrial flux for Fu and Liou [1993] correlated-k algorithm.
+# Flux is integrated over each of the 18 wavelength bands
+# taken from 'if misc_subs.f (isolar_spectrum .eq. 1) then ... !!!  Mod3.5_kurucz'
+# normalized to 1368 W / m2 (as it is done within the Fu and Liou code)
+
+  550.0 630.113
+ 1000.0 496.161
+ 1600.0 156.044
+ 2200.0 51.4429
+ 3000.0 28.6608
+ 3700.0 5.57818
+ 4900.0   0.000
+ 5600.0   0.000
+ 6500.0   0.000
+ 7600.0   0.000
+ 8500.0   0.000
+ 9600.0   0.000
+11300.0   0.000
+13700.0   0.000
+16600.0   0.000
+21500.0   0.000
+30000.0   0.000
+70000.0   0.000

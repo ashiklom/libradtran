@@ -1,0 +1,77 @@
+Recommended Tools to Install the libRadtran C and Fortran Libraries
+under Mac OS X
+
+Last update: April 18, 2008
+
+To be able to build the libRadtran C and Fortran libraries and associated
+tools, the XCODE from apple is first needed. It either is included with
+your computer on a DVD or you may get it from 
+
+      http://developer.apple.com/tools/xcode/
+
+No fortran compiler is included with xcode. We recommend that you use the 
+gfortran compiler. It is available from 
+
+
+      http://gcc.gnu.org/wiki/GFortran
+
+
+Download the latest version for Mac OS X and install as
+recommended. (On my, Arve's, iMac the last part of the install failed
+for some reason. Nevertheless gofrtran was there, just had to set the
+path correctly in .bashrc:  export PATH=/usr/local/gfortran/bin:$PATH)
+
+The rest is easy. Open a terminal under Max OS X and following the 
+standard libRadtran instructions in the README file.
+
+
+BUT THAT IS NOT ALL!
+
+
+Alas, two things will be missing with the above installation procedure. Thus
+not all functionality is included. To get the rest you need a little
+more:
+
+* The gnu scientific library (libgsl) and the gnu multiple precision
+  library (libgmp).
+
+  The by far easiest ways to install these are to get the port
+  software from http://www.macports.org. Then installing gsl and gmp
+  is done by issuing the following to commands:
+
+      sudo port install gsl
+      sudo port install gmp
+
+  Alas, that may not be all as gmp is installed in /opt which is not
+  in the load paths etc. Hence add the following lines to your
+  .profile or .bashrc file:
+
+  export LDFLAGS=-L/opt/local/lib
+  export CPPFLAGS=-I/opt/local/include
+
+  Alternatively you may get libgsl and libgmp from 
+
+      http://www.gnu.org/software/gsl
+      http://www.gnu.org/software/gmp
+
+  Follow the Mac OS X specific installation procedures. After libgsl
+  and libgmp are installed, rebuild libRadtran (./configure and make).
+
+
+* The (NETCDF) Network Common Data Form) library. This you may get from:
+
+      http://www.unidata.ucar.edu/software/netcdf/
+
+  Download the source file and .configure, make, make check and sudo make install.
+  Next rebuild libRadtran.
+
+* Finally, if you are a dedicated xemacs user you will find that it is
+  not included in the Xcode packages. The easiest way to get it up and
+  going is to install the port software
+
+      http://www.macports.org
+
+  Once you have port in your PATH open a terminal window and do
+
+      sudo port install xemacs
+

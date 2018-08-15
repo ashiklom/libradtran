@@ -1,0 +1,70 @@
+# Makefile for GNU makeinfo.  -*- Indented-Text -*-
+# Copyright (C) 1993 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+TOPDIR = ../
+
+srcdir = @srcdir@
+VPATH = $(srcdir)
+
+include $(TOPDIR)/Makeconf
+
+SUBDIRS = crs atmmod solar_flux wc ic albedo altitude aerosol \
+	 correlated_k filter cloudprp scripts
+ 	
+DISTFILES = Makefile.in
+
+MYSTICDISTFILES = $(DISTFILES)
+
+all: 
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: all
+
+dist:
+	for dir in $(SUBDIRS); do mkdir ../`cat ../.fname`/data/$$dir; $(MAKE) -C $$dir $@ || exit $$?; done
+	ln $(DISTFILES) ../`cat ../.fname`/data
+.PHONY: dist
+
+mystic-dist:
+	for dir in $(SUBDIRS); do mkdir ../`cat ../.fname`/data/$$dir; $(MAKE) -C $$dir $@ || exit $$?; done
+	ln $(MYSTICDISTFILES) ../`cat ../.fname`/data
+.PHONY: mystic-dist
+
+clean:
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: clean
+
+install:
+	for dir in $(SUBDIRS); do $(MAKE) -C $$dir $@ || exit $$?; done
+.PHONY: install
+
+uninstall:
+.PHONY: uninstall
+
+mostlyclean: clean
+
+distclean: clean
+	rm -f Makefile config.status
+
+realclean: distclean
+
+Makefile: Makefile.in ../config.status
+	cd ..; sh config.status
+
+# Prevent GNU make v3 from overflowing arg limit on SysV.
+.NOEXPORT:
+
+# eof
